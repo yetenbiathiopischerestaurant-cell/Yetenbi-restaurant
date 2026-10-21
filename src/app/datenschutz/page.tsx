@@ -150,7 +150,7 @@ function German({ owner }: { owner: Owner }) {
       <p>
         Wenn Sie einen Tisch anfragen, verarbeiten wir Name, E-Mail-Adresse, Telefonnummer, Datum, Uhrzeit, Personenzahl
         und Ihre optionale Anmerkung, um die Reservierung durchzuführen und Sie zu kontaktieren (Art. 6 Abs. 1 lit.
-        business DSGVO). Name, E-Mail-Adresse und Telefonnummer sind erforderlich; ohne sie können wir die Reservierung
+        b DSGVO). Name, E-Mail-Adresse und Telefonnummer sind erforderlich; ohne sie können wir die Reservierung
         nicht bestätigen. Reservierungen, die Sie telefonisch durchgeben, trägt das Team ebenso ein. Reservierungen
         werden 180 Tage nach dem Reservierungsdatum automatisch gelöscht.
       </p>
