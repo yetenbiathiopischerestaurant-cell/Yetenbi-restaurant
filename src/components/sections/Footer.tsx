@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLanguage } from "@/lib/language";
 import { restaurant } from "@/lib/data";
+import CookieSettings from "../CookieSettings";
 import FooterWordmark from "../FooterWordmark";
 import { Jebena3D } from "../three/Scenes";
 import Stela from "../heritage/Stela";
@@ -43,6 +44,7 @@ export default function Footer() {
               <Link href="/bestellbedingungen" className="transition-colors hover:text-gold-soft">
                 {t.footer.terms}
               </Link>
+              <CookieSettings className="cursor-pointer transition-colors hover:text-gold-soft" />
             </span>
           </div>
         </div>

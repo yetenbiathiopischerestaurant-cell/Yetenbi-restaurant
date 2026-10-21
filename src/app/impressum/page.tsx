@@ -40,6 +40,8 @@ export default async function Impressum() {
       <p>
         Die Gewerbeerlaubnis nach § 14 oder § 55c der Gewerbeordnung (GewO) wurde am 14.04.2026 von folgender Stelle
         erteilt: Ordnungsamt Würzburg.
+        <br />
+        Zuständige Aufsichtsbehörde: Stadt Würzburg, Ordnungsamt
       </p>
       <h2 className="pt-4 font-display text-xl font-semibold text-gold-soft">
         Berufsbezeichnung und berufsrechtliche Regelungen
@@ -57,6 +59,15 @@ export default async function Impressum() {
       <p>
         Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle
         teilzunehmen.
+      </p>
+      <h2 className="pt-4 font-display text-xl font-semibold text-gold-soft">Verantwortlich für den Inhalt</h2>
+      <p>
+        nach § 18 Abs. 2 MStV: {business.ownerName || "[Name wird ergänzt]"}, {restaurant.street}, {restaurant.city}
+      </p>
+      <h2 className="pt-4 font-display text-xl font-semibold text-gold-soft">Werbe-E-Mails</h2>
+      <p>
+        Der Nutzung der hier veröffentlichten Kontaktdaten zur Zusendung von nicht ausdrücklich angeforderter Werbung
+        und Informationsmaterialien wird hiermit widersprochen.
       </p>
       <p className="pt-4 text-sm text-cream/60">
         Fotos: Unsplash (Unsplash-Lizenz). Gestaltung und Umsetzung der Website: im Auftrag von Yetenbi.

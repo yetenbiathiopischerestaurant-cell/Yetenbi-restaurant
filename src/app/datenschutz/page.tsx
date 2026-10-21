@@ -145,19 +145,28 @@ function German({ owner }: { owner: Owner }) {
         Browser), um die Seite auszuliefern und vor Angriffen zu schützen (Art. 6 Abs. 1 lit. f DSGVO). Diese Protokolle
         speichert Vercel nur kurzzeitig (höchstens wenige Tage).
       </p>
+      <p>
+        Alle Seiten werden verschlüsselt übertragen (TLS, erkennbar an „https://“ und dem Schloss-Symbol im Browser),
+        damit Dritte Ihre Eingaben nicht mitlesen können.
+      </p>
 
       <H>4. Tischreservierung</H>
       <p>
         Wenn Sie einen Tisch anfragen, verarbeiten wir Name, E-Mail-Adresse, Telefonnummer, Datum, Uhrzeit, Personenzahl
-        und Ihre optionale Anmerkung, um die Reservierung durchzuführen und Sie zu kontaktieren (Art. 6 Abs. 1 lit.
-        b DSGVO). Name, E-Mail-Adresse und Telefonnummer sind erforderlich; ohne sie können wir die Reservierung
-        nicht bestätigen. Reservierungen, die Sie telefonisch durchgeben, trägt das Team ebenso ein. Reservierungen
-        werden 180 Tage nach dem Reservierungsdatum automatisch gelöscht.
+        und Ihre optionale Anmerkung, um die Reservierung durchzuführen und Sie zu kontaktieren (Art. 6 Abs. 1 lit. b
+        DSGVO). Name, E-Mail-Adresse und Telefonnummer sind erforderlich; ohne sie können wir die Reservierung nicht
+        bestätigen. Reservierungen, die Sie telefonisch durchgeben, trägt das Team ebenso ein. Reservierungen werden 180
+        Tage nach dem Reservierungsdatum automatisch gelöscht.
       </p>
       <p>
         Ist die Online-Reservierung vorübergehend nicht verfügbar, öffnet das Formular stattdessen WhatsApp mit einer
         vorbereiteten Nachricht. Die Übermittlung erfolgt erst, wenn Sie die Nachricht selbst absenden, und unterliegt
         dann den Bedingungen von WhatsApp (Meta).
+      </p>
+      <p>
+        Im Restaurant können Sie Ihre Rechnung über einen QR-Code auf Ihr Handy holen. Die Rechnung enthält nur Tisch,
+        Rechnungsnummer, Speisen, Beträge mit Trinkgeld, Zahlungsart und Uhrzeit, keine Angaben zu Ihrer Person; der
+        Link ist ein zufälliger, nicht erratbarer Code. Beim Aufruf fallen nur die Server-Protokolle aus Abschnitt 3 an.
       </p>
 
       <H>5. Online-Bestellungen</H>
@@ -202,17 +211,17 @@ function German({ owner }: { owner: Owner }) {
       <H>7. Kundenkonto und Anmeldung mit Google</H>
       <p>
         Wenn Sie ein Konto anlegen, speichern wir Name, E-Mail-Adresse, optional Telefonnummer und Ihre bevorzugte
-        Sprache (Art. 6 Abs. 1 lit. b DSGVO). Ihr Passwort wird ausschließlich als sicherer Hash gespeichert.
-        Damit niemand mit fremder Adresse bestellt, senden wir nach der Anmeldung einen Bestätigungslink (24 Stunden
-        gültig); erst danach ist das Bestellen möglich. Das Konto bleibt bestehen, bis Sie es löschen. Im Profil können
-        Sie Ihre Daten jederzeit ändern, herunterladen oder das Konto löschen. Beim Löschen entfernen wir auch unsere
-        Notizen zu Ihnen (Abschnitt 8); Ihre Bestellungen und Reservierungen bleiben ohne Verknüpfung zum Konto bis zum
-        Ablauf ihrer Frist (180 Tage) gespeichert.
+        Sprache (Art. 6 Abs. 1 lit. b DSGVO). Ihr Passwort wird ausschließlich als sicherer Hash gespeichert. Damit
+        niemand mit fremder Adresse bestellt, senden wir nach der Anmeldung einen Bestätigungslink (24 Stunden gültig);
+        erst danach ist das Bestellen möglich. Das Konto bleibt bestehen, bis Sie es löschen. Im Profil können Sie Ihre
+        Daten jederzeit ändern, herunterladen oder das Konto löschen. Beim Löschen entfernen wir auch unsere Notizen zu
+        Ihnen (Abschnitt 8); Ihre Bestellungen und Reservierungen bleiben ohne Verknüpfung zum Konto bis zum Ablauf
+        ihrer Frist (180 Tage) gespeichert.
       </p>
       <p>
         Bei der „Anmeldung mit Google“ erhalten wir von Google Ihren Namen, Ihre E-Mail-Adresse und eine Kennung Ihres
-        Google-Kontos (Art. 6 Abs. 1 lit. b DSGVO). Für die Anmeldung selbst ist Google Ireland Ltd.
-        verantwortlich; es gelten deren Datenschutzbestimmungen.
+        Google-Kontos (Art. 6 Abs. 1 lit. b DSGVO). Für die Anmeldung selbst ist Google Ireland Ltd. verantwortlich; es
+        gelten deren Datenschutzbestimmungen.
       </p>
 
       <H>8. Kundenübersicht und Notizen des Teams</H>
@@ -257,14 +266,16 @@ function German({ owner }: { owner: Owner }) {
         von Google.
       </p>
 
-      <H>12. Schriften, Cookies und lokale Speicherung</H>
+      <H id="cookies">12. Schriften, Cookies und lokale Speicherung</H>
       <p>
         Schriften werden von unserem eigenen Server geladen, nicht von Google. Wir setzen keine Analyse- oder
-        Werbe-Cookies und keine Tracking-Dienste, daher gibt es kein Cookie-Banner. Ihre Sprachwahl und Ihr Warenkorb
-        werden nur in Ihrem Browser gespeichert (localStorage), und erst, wenn Sie eine Sprache wählen bzw. etwas in den
-        Warenkorb legen. Wenn Sie sich anmelden, setzen wir ein Sitzungs-Cookie (30 Tage); bei der Anmeldung mit Google
-        zusätzlich für höchstens 10 Minuten ein Cookie zur Absicherung des Anmeldevorgangs. Diese Speicherungen sind für
-        die von Ihnen gewünschten Funktionen unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG).
+        Werbe-Cookies und keine Tracking-Dienste, daher gibt es nichts, dem Sie zustimmen müssten, und kein
+        Cookie-Banner. Ihre Sprachwahl und Ihr Warenkorb werden nur in Ihrem Browser gespeichert (localStorage), und
+        erst, wenn Sie eine Sprache wählen bzw. etwas in den Warenkorb legen. Wenn Sie sich anmelden, setzen wir ein
+        Sitzungs-Cookie (30 Tage); bei der Anmeldung mit Google zusätzlich für höchstens 10 Minuten ein Cookie zur
+        Absicherung des Anmeldevorgangs. Diese Speicherungen sind für die von Ihnen gewünschten Funktionen unbedingt
+        erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG). Unter „Cookie-Einstellungen“ (unten auf jeder Seite) sehen Sie, was
+        davon in Ihrem Browser gerade gespeichert ist, und können es löschen oder sich abmelden.
       </p>
 
       <H>13. Speicherdauer auf einen Blick</H>
@@ -362,25 +373,34 @@ function English({ owner }: { owner: Owner }) {
         the site and protect it from attacks (Art. 6(1)(f) GDPR). Vercel keeps these logs only briefly (a few days at
         most).
       </p>
+      <p>
+        Every page is sent encrypted (TLS, shown by &quot;https://&quot; and the lock symbol in your browser), so others
+        cannot read what you enter.
+      </p>
 
       <H>4. Table reservations</H>
       <p>
         When you request a table we process your name, email, phone number, date, time, party size and optional note to
-        handle the booking and contact you (Art. 6(1)(b) GDPR). Name, email and phone are required; without them
-        we cannot confirm the booking. Bookings made by phone are entered by the team in the same way. Reservations are
+        handle the booking and contact you (Art. 6(1)(b) GDPR). Name, email and phone are required; without them we
+        cannot confirm the booking. Bookings made by phone are entered by the team in the same way. Reservations are
         deleted automatically 180 days after the reservation date.
       </p>
       <p>
         If online booking is temporarily unavailable, the form opens WhatsApp with a prepared message instead. Nothing
         is sent until you send it yourself; WhatsApp&apos;s (Meta&apos;s) terms then apply.
       </p>
+      <p>
+        In the restaurant you can get your bill on your phone through a QR code. The bill shows only the table, bill
+        number, dishes, amounts including tip, payment method and time, nothing about you; the link is a random code
+        that cannot be guessed. Opening it only creates the server logs described in section 3.
+      </p>
 
       <H>5. Online orders</H>
       <p>
         Ordering requires an account. We process your name, phone number, your account email, for delivery your address
         and note for the driver, the dishes, payment method and requested time, to prepare and deliver the order and
-        email you at each step (Art. 6(1)(b) GDPR). These details (except the notes) are required; without them
-        we cannot deliver.
+        email you at each step (Art. 6(1)(b) GDPR). These details (except the notes) are required; without them we
+        cannot deliver.
       </p>
       <p>
         Within the team, the kitchen sees only the dishes and your note; the driver sees only their own deliveries with
@@ -413,12 +433,12 @@ function English({ owner }: { owner: Owner }) {
 
       <H>7. Customer account and Google sign-in</H>
       <p>
-        When you create an account we store your name, email, optional phone number and preferred language (Art.
-        6(1)(b) GDPR). Your password is stored only as a secure hash. So that nobody orders with someone
-        else&apos;s address, we send a confirmation link after sign-up (valid 24 hours); ordering is possible once it is
-        confirmed. The account exists until you delete it. In your profile you can change, download or delete your data
-        at any time. Deleting the account also removes our notes about you (section 8); your orders and reservations
-        remain, unlinked from the account, until their period (180 days) ends.
+        When you create an account we store your name, email, optional phone number and preferred language (Art. 6(1)(b)
+        GDPR). Your password is stored only as a secure hash. So that nobody orders with someone else&apos;s address, we
+        send a confirmation link after sign-up (valid 24 hours); ordering is possible once it is confirmed. The account
+        exists until you delete it. In your profile you can change, download or delete your data at any time. Deleting
+        the account also removes our notes about you (section 8); your orders and reservations remain, unlinked from the
+        account, until their period (180 days) ends.
       </p>
       <p>
         With &quot;Sign in with Google&quot; we receive your name, email and an identifier of your Google account from
@@ -463,13 +483,15 @@ function English({ owner }: { owner: Owner }) {
         Maps in a new window, where Google&apos;s privacy policy applies.
       </p>
 
-      <H>12. Fonts, cookies and local storage</H>
+      <H id="cookies-en">12. Fonts, cookies and local storage</H>
       <p>
         Fonts are loaded from our own server, not from Google. We use no analytics or advertising cookies and no
-        tracking, so there is no cookie banner. Your language choice and basket are stored only in your browser
-        (localStorage), and only once you choose a language or add something to the basket. When you sign in we set a
-        session cookie (30 days), and for Google sign-in an additional cookie for at most 10 minutes to secure the
-        sign-in. These are strictly necessary for the functions you request (§ 25(2) no. 2 TDDDG).
+        tracking, so there is nothing to agree to and no cookie banner. Your language choice and basket are stored only
+        in your browser (localStorage), and only once you choose a language or add something to the basket. When you
+        sign in we set a session cookie (30 days), and for Google sign-in an additional cookie for at most 10 minutes to
+        secure the sign-in. These are strictly necessary for the functions you request (§ 25(2) no. 2 TDDDG). Under
+        &quot;Cookie settings&quot; (at the bottom of every page) you can see which of these are stored in your browser
+        right now, delete them or sign out.
       </p>
 
       <H>13. Retention at a glance</H>

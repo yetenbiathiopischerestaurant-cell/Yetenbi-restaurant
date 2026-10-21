@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CookieSettings from "./CookieSettings";
 
 /* Impressum, Datenschutz and Bestellbedingungen, reachable from every page (§ 5 DDG, Art. 12 DSGVO). */
 export default function LegalLinks({ className = "" }: { className?: string }) {
@@ -21,6 +22,7 @@ export default function LegalLinks({ className = "" }: { className?: string }) {
           {link.label}
         </Link>
       ))}
+      <CookieSettings className="cursor-pointer underline-offset-4 transition-colors hover:text-gold-soft hover:underline" />
     </nav>
   );
 }
