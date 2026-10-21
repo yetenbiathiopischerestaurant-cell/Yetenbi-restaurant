@@ -14,7 +14,7 @@ import { createRequire } from "node:module";
 import { chromium, webkit, devices } from "playwright";
 import { neon } from "@neondatabase/serverless";
 
-const SITE = (process.env.SITE ?? "https://yetenbi-restaurant.vercel.app").replace(/\/$/, "");
+const SITE = (process.env.SITE ?? "https://www.yetenbi-wu.de").replace(/\/$/, "");
 const HEADED = process.env.HEADED === "1";
 const ONLY = process.env.ONLY ?? "";
 const OUT = process.env.OUT ?? "test-results/devices";

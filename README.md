@@ -3,7 +3,7 @@
 Website for Yetenbi, an Ethiopian restaurant and café at Theaterstraße 6, 97070 Würzburg.
 German first. Next.js 16, React 19, Tailwind CSS 4, Motion, Lenis, three.js (React Three Fiber).
 
-Live: https://yetenbi-restaurant.vercel.app (every push to `main` deploys automatically on Vercel).
+Live: https://www.yetenbi-wu.de (every push to `main` deploys automatically on the owner's Vercel).
 
 ## Run locally
 

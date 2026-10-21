@@ -2,7 +2,7 @@ import { latestRelease } from "@/lib/server/app-releases";
 import { siteUrl } from "@/lib/site-url";
 
 /*
-  GET /app – the one link to share for the service app (e.g. yetenbi-restaurant.vercel.app/app). Opened on an Android
+  GET /app – the one link to share for the service app (e.g. www.yetenbi-wu.de/app). Opened on an Android
   phone or tablet it downloads the newest published version straight away; it always follows the latest release, so
   the link never changes. Without a published version it goes to /service, which explains.
 */

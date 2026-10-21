@@ -10,7 +10,7 @@ plugins {
   The server the app talks to. Release builds use the live site; debug builds can be pointed elsewhere,
   e.g. ./gradlew installDebug -PapiUrl=http://10.0.2.2:3000 (the emulator's name for this computer).
 */
-val apiUrl = (findProperty("apiUrl") as String?) ?: "https://yetenbi-restaurant.vercel.app"
+val apiUrl = (findProperty("apiUrl") as String?) ?: "https://www.yetenbi-wu.de"
 
 /* Set by scripts/release-app.mjs for every published version; devices update to a higher versionCode. */
 val appVersionCode = (findProperty("versionCode") as String?)?.toInt() ?: 1
