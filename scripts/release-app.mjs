@@ -62,6 +62,15 @@ const versionCode = (last?.version_code ?? 0) + 1;
 const versionName =
   option("name") ?? (last ? last.version_name.replace(/(\d+)$/, (n) => String(Number(n) + 1)) : "1.0.0");
 if (!/^\d+\.\d+\.\d+$/.test(versionName)) fail(`Version name must look like 1.2.0, got ${versionName}`);
+if (option("name") && last?.version_name === versionName)
+  fail(`${versionName} is already released. Pick a higher --name, or leave it out to bump it.`);
+
+// Gradle needs Java; use the JDK that came with the Android setup when the shell has none.
+const jdk = path.join(home, "Android", "jdk21");
+if (!process.env.JAVA_HOME && existsSync(path.join(jdk, "bin"))) {
+  process.env.JAVA_HOME = jdk;
+  process.env.PATH = `${path.join(jdk, "bin")}${path.delimiter}${process.env.PATH}`;
+}
 console.log(`→ Building ${versionName} (build ${versionCode}) …`);
 
 // Full path: Windows may not run programs from the current folder.
