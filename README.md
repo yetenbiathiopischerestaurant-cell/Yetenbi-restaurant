@@ -211,8 +211,6 @@ for a manual deploy.
 - Create the team's logins in /admin → Team (kitchen staff and drivers), then run one test order through every step
   (accept → Küche: Essen fertig, Verpackt → hand to a driver → Lieferung: Zugestellt) and check the emails arrive.
 - Google sign-in: if the OAuth consent screen in Google Cloud is still in "Testing", publish it so every guest can use it.
-- Impressum: the VAT ID, if the owner has one (/admin → Betrieb & Rechtliches). If the restaurant serves alcohol, name
-  the Gaststättenerlaubnis there too.
 - Till rules (KassenSichV): the service app closes bills and records payments. Ask the tax adviser whether it needs a
   certified TSE and registration with the tax office, or whether a separate certified till is used for that.
 - **Allergens (LMIV/LMIDV):** enter the 14 allergens and the additives for every dish in /admin → Speisekarte (needs the
