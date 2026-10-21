@@ -116,9 +116,12 @@ const upload = await gh(
   { method: "POST", body: bytes, headers: { "Content-Type": "application/vnd.android.package-archive" } },
 );
 
-await sql`
-  insert into app_releases (version_code, version_name, url, sha256, size_bytes, notes, notes_en, mandatory)
-  values (${versionCode}, ${versionName}, ${upload.browser_download_url}, ${sha256}, ${size}, ${notes}, ${option("notes-en") ?? ""}, ${flag("mandatory")})
-`;
+// OLD_DATABASE_URL (optional): a database an older site still reads, so phones still pointed there see the update too.
+for (const target of [sql, ...(process.env.OLD_DATABASE_URL ? [neon(process.env.OLD_DATABASE_URL)] : [])]) {
+  await target`
+    insert into app_releases (version_code, version_name, url, sha256, size_bytes, notes, notes_en, mandatory)
+    values (${versionCode}, ${versionName}, ${upload.browser_download_url}, ${sha256}, ${size}, ${notes}, ${option("notes-en") ?? ""}, ${flag("mandatory")})
+  `;
+}
 console.log(`✔ Published ${versionName} (build ${versionCode})${flag("mandatory") ? " as a mandatory update" : ""}`);
 console.log(`  ${upload.browser_download_url}`);
