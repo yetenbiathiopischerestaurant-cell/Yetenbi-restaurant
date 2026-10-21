@@ -127,10 +127,14 @@ export async function getReport({ from, to }: Range): Promise<Report> {
 
 /* ---------- CSV for the accountant (no names, addresses or contact details) ---------- */
 
-/** Amounts with a decimal comma; text quoted when it contains a separator, quote or line break. */
-function csvCell(value: string | number) {
-  const text = typeof value === "number" ? value.toFixed(2).replace(".", ",") : value;
-  return /[;"\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+/**
+  Amounts with a decimal comma; text quoted when it contains a separator, quote or line break. Text starting with
+  = + - @ or a tab gets a leading apostrophe, so Excel shows it instead of running it as a formula (CSV injection).
+*/
+export function csvCell(value: string | number) {
+  let text = typeof value === "number" ? value.toFixed(2).replace(".", ",") : value;
+  if (typeof value === "string" && /^[=+\-@\t\r]/.test(text)) text = `'${text}`;
+  return /[;"\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 /** Semicolons and a byte-order mark, so German Excel opens it with the right columns and umlauts. */
 const toCsv = (rows: (string | number)[][]) =>

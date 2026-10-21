@@ -236,7 +236,8 @@ export const am: Dict = {
     google: "በGoogle ይቀጥሉ",
     or: "ወይም",
     noPassword: "በGoogle ይገባሉ። እዚህ የይለፍ ቃልም ማዘጋጀት ይችላሉ።",
-    verifyNotice: (email: string) => `እባክዎ የኢሜይል አድራሻዎን ያረጋግጡ፦ ወደ ${email} ሊንክ ልከናል። ከተረጋገጠ በኋላ ጠረጴዛ ማስያዝ እና በመስመር ላይ ማዘዝ ይችላሉ።`,
+    verifyNotice: (email: string) =>
+      `እባክዎ የኢሜይል አድራሻዎን ያረጋግጡ፦ ወደ ${email} ሊንክ ልከናል። ከተረጋገጠ በኋላ ጠረጴዛ ማስያዝ እና በመስመር ላይ ማዘዝ ይችላሉ።`,
     verifyResend: "ሊንኩን እንደገና ላክ",
     verifySent: "አዲስ ሊንክ ተልኳል።",
     verifyTitle: "የኢሜይል አድራሻ ማረጋገጫ",

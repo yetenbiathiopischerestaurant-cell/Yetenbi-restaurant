@@ -64,28 +64,29 @@ export default async function TeamDatenschutz() {
           wird nur als sicherer Hash gespeichert.
         </li>
         <li>
-          <strong>Tische und Rechnungen:</strong> zu jeder Runde, jeder Rechnung und jeder Zahlung wird gespeichert,
-          wer sie mit welchem Zeitpunkt aufgenommen, geschlossen oder kassiert hat (Name). Der Küchenbildschirm zeigt bei
-          jeder Runde den Namen der Bedienung. Bezahlte Rechnungen werden wegen der steuerlichen Aufbewahrungspflicht
-          (§ 147 AO) zehn Jahre aufbewahrt und danach automatisch gelöscht.
+          <strong>Tische und Rechnungen:</strong> zu jeder Runde, jeder Rechnung und jeder Zahlung wird gespeichert, wer
+          sie mit welchem Zeitpunkt aufgenommen, geschlossen oder kassiert hat (Name). Der Küchenbildschirm zeigt bei
+          jeder Runde den Namen der Bedienung. Bezahlte Rechnungen werden wegen der steuerlichen Aufbewahrungspflicht (§
+          147 AO) zehn Jahre aufbewahrt und danach automatisch gelöscht.
         </li>
         <li>
           <strong>Feedback:</strong> wenn Sie in der App „Feedback senden“ nutzen, Ihr Name, Ihre Nachricht, der
           Bildschirm, auf Wunsch ein Bildschirmfoto, App-Version und Gerätemodell. Gelöscht nach 90 Tagen.
         </li>
         <li>
-          <strong>Absturzberichte:</strong> stürzt die App ab, sendet sie beim nächsten Start App-Version,
-          Gerätemodell, Android-Version und den technischen Fehlerbericht (ohne Ihren Namen). Der Bericht geht auch per
-          E-Mail an das Postfach für Fehlermeldungen. Gelöscht nach 90 Tagen.
+          <strong>Absturzberichte:</strong> stürzt die App ab, sendet sie beim nächsten Start App-Version, Gerätemodell,
+          Android-Version und den technischen Fehlerbericht (ohne Ihren Namen). Der Bericht geht auch per E-Mail an das
+          Postfach für Fehlermeldungen. Gelöscht nach 90 Tagen.
         </li>
         <li>
           <strong>Auf dem Gerät:</strong> der Anmeldeschlüssel, Ihr Name, die Sprache und ob Klingel und
-          Hintergrund-Benachrichtigungen eingeschaltet sind. Abmelden oder die App deinstallieren entfernt diese Angaben.
+          Hintergrund-Benachrichtigungen eingeschaltet sind. Abmelden oder die App deinstallieren entfernt diese
+          Angaben.
         </li>
         <li>
-          <strong>Herunterladen und Updates:</strong> die App-Datei liegt bei GitHub (GitHub Inc., USA, nach dem
-          EU-US Data Privacy Framework zertifiziert). Beim Herunterladen erhält GitHub dabei technisch bedingt die
-          IP-Adresse des Geräts. Ob es ein Update gibt, fragt die App bei unserer Website ab.
+          <strong>Herunterladen und Updates:</strong> die App-Datei liegt bei GitHub (GitHub Inc., USA, nach dem EU-US
+          Data Privacy Framework zertifiziert). Beim Herunterladen erhält GitHub dabei technisch bedingt die IP-Adresse
+          des Geräts. Ob es ein Update gibt, fragt die App bei unserer Website ab.
         </li>
       </ul>
       <p>

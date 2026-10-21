@@ -72,8 +72,8 @@ export type DiningTable = { id: string; label: string; area: string; seats: numb
 
 export type RoundLine = { itemId: string; qty: number; note: string; seat: number | null; hold: boolean };
 
-export const MAX_LINES = 40;
-export const MAX_NOTE = 140;
+const MAX_LINES = 40;
+const MAX_NOTE = 140;
 
 /** Cents-exact sum of the lines still on the bill (voided lines are free). */
 export function checkTotal(items: Pick<CheckItem, "unit" | "qty" | "status">[]) {

@@ -69,6 +69,19 @@ async function signIn(page, [email, password], to) {
   // load the target page fresh, so nothing of the login page is still on screen
   await page.goto(page.url(), { waitUntil: "networkidle" });
 }
+/** Skips the particle intro and waits until it has gone (the page can't scroll while it is on screen). */
+async function skipIntro(page) {
+  await page
+    .getByRole("button", { name: /Intro überspringen/ })
+    .click({ timeout: 2000 })
+    .catch(() => {});
+  await page
+    .locator('[aria-label="Intro"]')
+    .waitFor({ state: "detached", timeout: 10000 })
+    .catch(() => {});
+}
+// Online ordering can be switched off (lib/features.ts): /bestellen then sends visitors home.
+const ORDERING_ON = (await fetch(`${SITE}/bestellen`, { redirect: "manual" })).status === 200;
 const overflow = (page) => page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 async function waitStatus(ref, status, ms = 20000) {
   const end = Date.now() + ms;
@@ -105,9 +118,7 @@ for (const name of ONLY === "flow" ? [] : Object.keys(DEVICES)) {
     const ttfb = Date.now() - t0;
     await page.waitForLoadState("networkidle");
     check(name, "home", res.status() === 200, `loads (${ttfb} ms to first HTML, ${Date.now() - t0} ms until idle)`);
-    const skip = page.getByRole("button", { name: /Intro überspringen/ });
-    if (await skip.isVisible().catch(() => false)) await skip.click();
-    await page.waitForTimeout(1200);
+    await skipIntro(page);
     check(name, "home", (await overflow(page)) <= 1, `no sideways scrolling (overflow ${await overflow(page)} px)`);
     await shot(page, `${short(name)}_home`);
 
@@ -171,13 +182,27 @@ for (const name of ONLY === "flow" ? [] : Object.keys(DEVICES)) {
       check(name, "pages", r.status() === 200 && (await overflow(page)) <= 1, `${path} loads, fits the screen`);
     }
     await page.goto(`${SITE}/bestellen`, { waitUntil: "networkidle" });
+    if (ORDERING_ON) {
+      check(
+        name,
+        "ordering",
+        await page.getByText("Zum Bestellen anmelden").isVisible(),
+        "signed-out visitors are asked to sign in",
+      );
+      check(name, "ordering", (await overflow(page)) <= 1, "order page fits the screen");
+    } else {
+      check(name, "ordering", new URL(page.url()).pathname === "/", "online ordering is off: /bestellen sends home");
+    }
+    // booking a table needs an account: signed-out visitors see the sign-in box instead of the form
+    await page.goto(SITE, { waitUntil: "networkidle" });
+    await skipIntro(page);
+    await page.locator("#reservieren").scrollIntoViewIfNeeded();
     check(
       name,
-      "ordering",
-      await page.getByText("Zum Bestellen anmelden").isVisible(),
-      "signed-out visitors are asked to sign in",
+      "reservation",
+      (await page.getByText("Zum Reservieren anmelden").isVisible()) && (await page.locator("#res-name").count()) === 0,
+      "signed-out visitors are asked to sign in before booking",
     );
-    check(name, "ordering", (await overflow(page)) <= 1, "order page fits the screen");
     check(
       name,
       "console",
@@ -194,12 +219,9 @@ for (const name of ONLY === "flow" ? [] : Object.keys(DEVICES)) {
 for (const name of ONLY === "flow" ? [] : ["Desktop 1440 (Chrome)", "Pixel 7 (Chrome)"]) {
   const ctx = await context(name);
   const page = await ctx.newPage();
-  for (const path of ["/", "/bestellen", "/login", "/impressum"]) {
+  for (const path of ["/", ...(ORDERING_ON ? ["/bestellen"] : []), "/login", "/impressum", "/datenschutz"]) {
     await page.goto(`${SITE}${path}`, { waitUntil: "networkidle" });
-    await page
-      .getByRole("button", { name: /Intro überspringen/ })
-      .click({ timeout: 1500 })
-      .catch(() => {});
+    await skipIntro(page);
     await page.waitForTimeout(800);
     await page.addScriptTag({ content: AXE });
     const found = await page.evaluate(async () => {
@@ -225,6 +247,9 @@ const missing = Object.entries(ACC)
   .filter(([, a]) => !a)
   .map(([role]) => role);
 const runFlow = ONLY !== "public" && !missing.length;
+// the order flow needs online ordering; the reservation flow (D) runs either way
+const runOrders = runFlow && ORDERING_ON;
+if (runFlow && !ORDERING_ON) console.log("\nOrder flow skipped: online ordering is switched off.");
 if (ONLY !== "public" && missing.length)
   console.log(`\nOrder flow skipped: set TEST_<ROLE>_EMAIL and TEST_<ROLE>_PASSWORD for ${missing.join(", ")}.`);
 
@@ -242,7 +267,7 @@ process.on("SIGINT", async () => {
   process.exit(130);
 });
 
-if (runFlow) {
+if (runOrders) {
   const [setting] = await sql`select (value->>'ignoreHours')::boolean as on from settings where key = 'ordering'`;
   if (!setting?.on) {
     await sql`update settings set value = jsonb_set(value, '{ignoreHours}', 'true') where key = 'ordering'`;
@@ -417,19 +442,19 @@ if (runFlow) {
   } catch (e) {
     check("flow", "order flow", false, `stopped: ${String(e).split("\n")[0]}`);
   }
+}
 
+if (runFlow) {
   /* ===================== D. reservation on iPhone, confirmed on desktop ===================== */
   try {
     const ctx = await context("iPhone 14 (Safari)");
     const page = await ctx.newPage();
+    // booking needs a confirmed account: sign in as the test guest first
+    await signIn(page, ACC.guest, (url) => new URL(url).pathname !== "/login");
     await page.goto(SITE, { waitUntil: "networkidle" });
-    await page
-      .getByRole("button", { name: /Intro überspringen/ })
-      .click({ timeout: 2000 })
-      .catch(() => {});
+    await skipIntro(page);
     await page.locator("#reservieren").scrollIntoViewIfNeeded();
     await page.locator("#res-name").fill("Suite Test Reservierung");
-    await page.locator("#res-email").fill(ACC.guest[0]);
     await page.locator("#res-phone").fill("+49 170 5550333");
     let picked = "";
     for (let k = 2; k < 12 && !picked; k++) {

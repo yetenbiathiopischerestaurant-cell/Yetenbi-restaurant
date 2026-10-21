@@ -5,11 +5,13 @@ German first. Next.js 16, React 19, Tailwind CSS 4, Motion, Lenis, three.js (Rea
 
 Live: https://www.yetenbi-wu.de (every push to `main` deploys automatically on the owner's Vercel).
 
+How the parts fit together, who may do what, and the security and data rules: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## Run locally
 
 ```bash
 npm install
-cp .env.example .env.local   # fill in at least DATABASE_URL and ADMIN_SESSION_SECRET
+cp .env.example .env.local   # fill in at least DATABASE_URL (use the staging database!) and ADMIN_SESSION_SECRET
 npm run db:setup             # creates or updates the tables and copies the menu in once (safe to repeat)
 npm run owner:create -- owner@example.com "long password" "Name"   # first /admin login
 npm run dev                  # development, http://localhost:3000
@@ -38,8 +40,8 @@ sign-in or Cloudinary (those variables exist for Production only), so nothing re
 
 ## Security headers
 
-`next.config.ts` sends a Content-Security-Policy on every page: scripts, styles and fonts only from the site itself,
-images also from Cloudinary, uploads to Cloudinary's API, and no frames at all. If you add a service
+`next.config.ts` sends a Content-Security-Policy on every page: scripts, styles, fonts and images only from the site
+itself (the owner's Cloudinary photos come through `/foto`, a rewrite), uploads to Cloudinary's API, and no frames. If you add a service
 that loads anything in the browser (analytics, a booking widget, another map), add its address there or it is blocked.
 
 ## Errors
@@ -50,7 +52,8 @@ holds the place and the message, never guest data, tokens or cookies. Details st
 
 ## Reservations
 
-- Guests book on the page; requests are stored in Neon Postgres (project **yetenbi**, Frankfurt) as *pending*.
+- Guests book on the page with an account whose email is confirmed (signed-out visitors see a sign-in box); requests
+  are stored in Neon Postgres (Frankfurt) as *pending*. The receipt goes to the account's address.
 - The team signs in at **/login** with an owner account and lands in **/admin**, where they accept or decline each request
   (optionally with a message), enter phone bookings and set closed days.
 - Emails (receipt, confirmation with calendar file, decline; plus a notification to the restaurant) are sent once
@@ -192,6 +195,8 @@ then runs a whole order through every role (guest → admin → kitchen → driv
 
 - One-time setup: `npx playwright install chromium webkit`, and the `TEST_*` logins in `.env.local` (see `.env.example`).
 - `HEADED=1` shows the browser windows; `ONLY=public` or `ONLY=flow` runs one part; `SITE=…` tests another address.
+- The flow signs in as the test guest to book a table (booking needs an account). It skips the orders while online
+  ordering is switched off.
 - The order flow places real test orders named "Suite Test …", so their emails arrive. It deletes them at the end, and
   if ordering outside opening hours is off, it switches it on for the run and back off afterwards.
 - Results and screenshots go to `test-results/devices/`.
@@ -206,8 +211,10 @@ for a manual deploy.
 - Create the team's logins in /admin → Team (kitchen staff and drivers), then run one test order through every step
   (accept → Küche: Essen fertig, Verpackt → hand to a driver → Lieferung: Zugestellt) and check the emails arrive.
 - Google sign-in: if the OAuth consent screen in Google Cloud is still in "Testing", publish it so every guest can use it.
-- Impressum and Datenschutz: fill in the owner's name, a contact email (required in the Impressum) and the VAT ID,
-  if any – marked `[Name wird ergänzt]` / `[wird ergänzt]`.
+- Impressum: the VAT ID, if the owner has one (/admin → Betrieb & Rechtliches). If the restaurant serves alcohol, name
+  the Gaststättenerlaubnis there too.
+- Till rules (KassenSichV): the service app closes bills and records payments. Ask the tax adviser whether it needs a
+  certified TSE and registration with the tax office, or whether a separate certified till is used for that.
 - **Allergens (LMIV/LMIDV):** enter the 14 allergens and the additives for every dish in /admin → Speisekarte (needs the
   kitchen's recipes, including sauces, spice mixes and injera); then update section 7 of /bestellbedingungen.
 - In the same place: drink volumes and deposit (Pfand) for bottles and cans, and the gluten wording per dish
@@ -229,6 +236,5 @@ for a manual deploy.
     drivers) within 180 days. Set up a routine for that and tell the team.
   - Complete and keep up to date the record of processing activities (Art. 30), drafted in
     `docs/verarbeitungsverzeichnis.md` (fill in the marked places). Give new staff the notice at /datenschutz/team.
-  - Fill in the owner's name and contact email in /admin; the privacy policy shows them too.
 - Photos are Unsplash stock: set the Cloudinary variables in Vercel, then upload Yetenbi's own in /admin → Fotos.
 - Amharic text should be checked by a native speaker (including the new order-step emails and status labels).

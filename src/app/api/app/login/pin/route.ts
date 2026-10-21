@@ -5,11 +5,14 @@ import { hasDatabase } from "@/lib/server/db";
 import { isLimited, recordHit, visitorKey } from "@/lib/server/rate-limit";
 
 const PIN_TRIES = { max: 5, minutes: 15 };
+// A 4-digit PIN has only 10,000 values: at most 10 wrong tries a day, so guessing one would take years.
+const PIN_TRIES_DAY = { max: 10, minutes: 24 * 60 };
 
 /*
   POST /api/app/login/pin { userId, pin } -> { token, user }
   Switching waiters on a phone or tablet that is already signed in: tap your name, type your PIN (set in
-  /admin/team). Only works from a signed-in app, and 5 wrong PINs lock that person's PIN for 15 minutes.
+  /admin/team). Only works from a signed-in app; 5 wrong PINs lock that person's PIN for 15 minutes, 10 in a day
+  until the next day.
 */
 export async function POST(request: Request) {
   if (!hasDatabase()) return Response.json({ code: "unavailable" }, { status: 503 });
@@ -27,6 +30,7 @@ export async function POST(request: Request) {
   const ip = await visitorKey(request);
   if (
     (await isLimited("pin-user", String(userId), PIN_TRIES)) ||
+    (await isLimited("pin-user", String(userId), PIN_TRIES_DAY)) ||
     (await isLimited("pin-ip", ip, { max: 20, minutes: 15 }))
   )
     return Response.json({ code: "too_many" }, { status: 429 });

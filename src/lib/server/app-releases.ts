@@ -6,7 +6,7 @@ import { db, hasDatabase } from "./db";
   off). Phones and tablets ask /api/app/version on start and every half hour and install the newest one.
 */
 
-export type AppRelease = {
+type AppRelease = {
   id: number;
   versionCode: number;
   versionName: string;

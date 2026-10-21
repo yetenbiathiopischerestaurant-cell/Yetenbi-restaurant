@@ -45,7 +45,9 @@ export default async function Impressum() {
         Zuständige Aufsichtsbehörde: Stadt Würzburg, Ordnungsamt
       </p>
       <h2 className="pt-4 font-display text-xl font-semibold text-gold-soft">
-        Verbraucherstreitbeilegung/Universalschlichtungsstelle
+        Verbraucherstreitbeilegung/
+        <wbr />
+        Universalschlichtungsstelle
       </h2>
       <p>
         Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle
