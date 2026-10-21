@@ -9,7 +9,7 @@ export const ONLINE_ORDERING = false;
   "Demo" service account (the app asks /api/app/login/demo). Set to true and deploy: the app shows its login screen
   again (Google + email), no app update needed.
 */
-export const APP_LOGIN = false;
+export const APP_LOGIN = true;
 
 /*
   "Feedback" button in the service app (with a screenshot of the screen), for the client's test. What testers send
