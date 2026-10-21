@@ -62,7 +62,7 @@ export default async function TeamDatenschutz() {
       <H>3. Zweck und Rechtsgrundlage</H>
       <p>
         Der Zugang und die Arbeitsschritte sind nötig, damit Sie Bestellungen und Reservierungen bearbeiten können (Art.
-        6 Abs. 1 lit. business DSGVO, Durchführung des Beschäftigungsverhältnisses). Das Protokoll dient dazu, Fehler
+        6 Abs. 1 lit. b DSGVO, Durchführung des Beschäftigungsverhältnisses). Das Protokoll dient dazu, Fehler
         und Missbrauch nachvollziehen zu können (Art. 6 Abs. 1 lit. f DSGVO); es wird nicht zur Leistungs- oder
         Verhaltenskontrolle verwendet. Sehen können es nur die Inhaber/innen.
       </p>

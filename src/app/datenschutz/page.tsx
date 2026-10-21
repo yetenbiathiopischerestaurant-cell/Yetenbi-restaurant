@@ -165,7 +165,7 @@ function German({ owner }: { owner: Owner }) {
         Zum Bestellen ist ein Kundenkonto nötig. Wir verarbeiten Name, Telefonnummer, die E-Mail-Adresse Ihres Kontos,
         bei Lieferung Ihre Adresse und Ihren Hinweis für den Fahrer, die bestellten Speisen, Zahlungsart und Wunschzeit,
         um die Bestellung zuzubereiten, zu liefern und Sie bei jedem Schritt per E-Mail zu informieren (Art. 6 Abs. 1
-        lit. business DSGVO). Diese Angaben (außer den Hinweisen) sind erforderlich; ohne sie können wir nicht liefern.
+        lit. b DSGVO). Diese Angaben (außer den Hinweisen) sind erforderlich; ohne sie können wir nicht liefern.
       </p>
       <p>
         Im Team sieht die Küche nur die Speisen und Ihre Anmerkung, die Fahrerin oder der Fahrer nur die eigenen
@@ -202,7 +202,7 @@ function German({ owner }: { owner: Owner }) {
       <H>7. Kundenkonto und Anmeldung mit Google</H>
       <p>
         Wenn Sie ein Konto anlegen, speichern wir Name, E-Mail-Adresse, optional Telefonnummer und Ihre bevorzugte
-        Sprache (Art. 6 Abs. 1 lit. business DSGVO). Ihr Passwort wird ausschließlich als sicherer Hash gespeichert.
+        Sprache (Art. 6 Abs. 1 lit. b DSGVO). Ihr Passwort wird ausschließlich als sicherer Hash gespeichert.
         Damit niemand mit fremder Adresse bestellt, senden wir nach der Anmeldung einen Bestätigungslink (24 Stunden
         gültig); erst danach ist das Bestellen möglich. Das Konto bleibt bestehen, bis Sie es löschen. Im Profil können
         Sie Ihre Daten jederzeit ändern, herunterladen oder das Konto löschen. Beim Löschen entfernen wir auch unsere
@@ -211,7 +211,7 @@ function German({ owner }: { owner: Owner }) {
       </p>
       <p>
         Bei der „Anmeldung mit Google“ erhalten wir von Google Ihren Namen, Ihre E-Mail-Adresse und eine Kennung Ihres
-        Google-Kontos (Art. 6 Abs. 1 lit. business DSGVO). Für die Anmeldung selbst ist Google Ireland Ltd.
+        Google-Kontos (Art. 6 Abs. 1 lit. b DSGVO). Für die Anmeldung selbst ist Google Ireland Ltd.
         verantwortlich; es gelten deren Datenschutzbestimmungen.
       </p>
 
@@ -366,7 +366,7 @@ function English({ owner }: { owner: Owner }) {
       <H>4. Table reservations</H>
       <p>
         When you request a table we process your name, email, phone number, date, time, party size and optional note to
-        handle the booking and contact you (Art. 6(1)(business) GDPR). Name, email and phone are required; without them
+        handle the booking and contact you (Art. 6(1)(b) GDPR). Name, email and phone are required; without them
         we cannot confirm the booking. Bookings made by phone are entered by the team in the same way. Reservations are
         deleted automatically 180 days after the reservation date.
       </p>
@@ -379,7 +379,7 @@ function English({ owner }: { owner: Owner }) {
       <p>
         Ordering requires an account. We process your name, phone number, your account email, for delivery your address
         and note for the driver, the dishes, payment method and requested time, to prepare and deliver the order and
-        email you at each step (Art. 6(1)(business) GDPR). These details (except the notes) are required; without them
+        email you at each step (Art. 6(1)(b) GDPR). These details (except the notes) are required; without them
         we cannot deliver.
       </p>
       <p>
@@ -414,7 +414,7 @@ function English({ owner }: { owner: Owner }) {
       <H>7. Customer account and Google sign-in</H>
       <p>
         When you create an account we store your name, email, optional phone number and preferred language (Art.
-        6(1)(business) GDPR). Your password is stored only as a secure hash. So that nobody orders with someone
+        6(1)(b) GDPR). Your password is stored only as a secure hash. So that nobody orders with someone
         else&apos;s address, we send a confirmation link after sign-up (valid 24 hours); ordering is possible once it is
         confirmed. The account exists until you delete it. In your profile you can change, download or delete your data
         at any time. Deleting the account also removes our notes about you (section 8); your orders and reservations
@@ -422,7 +422,7 @@ function English({ owner }: { owner: Owner }) {
       </p>
       <p>
         With &quot;Sign in with Google&quot; we receive your name, email and an identifier of your Google account from
-        Google (Art. 6(1)(business) GDPR). Google Ireland Ltd. is responsible for the sign-in itself; its privacy policy
+        Google (Art. 6(1)(b) GDPR). Google Ireland Ltd. is responsible for the sign-in itself; its privacy policy
         applies.
       </p>
 

@@ -12,7 +12,7 @@ export default async function Impressum() {
     <LegalPage title="Impressum">
       <p className="font-display text-lg text-cream/80">Angaben gemäß § 5 DDG</p>
       <p>
-        Yetenbi Äthiopisches Restaurant & Café
+        Yetenbi Äthiopisches Restaurant Würzburg
         <br />
         Inhaber/in: <strong>{business.ownerName || "[Name wird ergänzt]"}</strong>
         <br />
@@ -36,9 +36,27 @@ export default async function Impressum() {
         )}
       </p>
       {business.vatId && <p>Umsatzsteuer-Identifikationsnummer gemäß § 27 a UStG: {business.vatId}</p>}
+      <h2 className="pt-4 font-display text-xl font-semibold text-gold-soft">Gewerbeanmeldung</h2>
       <p>
-        Verbraucherstreitbeilegung: Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer
-        Verbraucherschlichtungsstelle teilzunehmen (§ 36 VSBG).
+        Die Gewerbeerlaubnis nach § 14 oder § 55c der Gewerbeordnung (GewO) wurde am 14.04.2026 von folgender Stelle
+        erteilt: Ordnungsamt Würzburg.
+      </p>
+      <h2 className="pt-4 font-display text-xl font-semibold text-gold-soft">
+        Berufsbezeichnung und berufsrechtliche Regelungen
+      </h2>
+      <p>
+        Berufsbezeichnung: Fachkraft für Gastronomie
+        <br />
+        Zuständige Kammer: Caritas-Don Bosco GmbH
+        <br />
+        Verliehen in: Deutschland
+      </p>
+      <h2 className="pt-4 font-display text-xl font-semibold text-gold-soft">
+        Verbraucherstreitbeilegung/Universalschlichtungsstelle
+      </h2>
+      <p>
+        Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle
+        teilzunehmen.
       </p>
       <p className="pt-4 text-sm text-cream/60">
         Fotos: Unsplash (Unsplash-Lizenz). Gestaltung und Umsetzung der Website: im Auftrag von Yetenbi.
