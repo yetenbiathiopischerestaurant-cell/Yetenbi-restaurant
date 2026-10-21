@@ -192,6 +192,9 @@ export const en: Dict = {
     waText: "Send the prepared message in WhatsApp. We'll reply with a confirmation.",
     waAgain: "Open WhatsApp again",
     another: "Another request",
+    loginTitle: "Sign in to reserve",
+    loginText:
+      "You need an account to reserve a table. That way we can reach you, and you see your bookings in your profile. You can also reserve by phone.",
     ticketFor: "A table for",
     open: "to choose",
   },
@@ -248,7 +251,7 @@ export const en: Dict = {
     or: "or",
     noPassword: "You sign in with Google. You can also set a password here.",
     verifyNotice: (email: string) =>
-      `Please confirm your email address: we sent a link to ${email}. You can order online once it is confirmed.`,
+      `Please confirm your email address: we sent a link to ${email}. You can reserve and order online once it is confirmed.`,
     verifyResend: "Send the link again",
     verifySent: "A new link is on its way.",
     verifyTitle: "Confirm your email address",

@@ -18,8 +18,8 @@ export default async function TeamDatenschutz() {
   return (
     <LegalPage title="Datenschutz für das Team">
       <p>
-        Diese Hinweise gelten für alle, die mit einem Team-Zugang (Inhaber/in, Küche, Fahrer/in) mit der Website
-        arbeiten. Für Gäste gilt die allgemeine Datenschutzerklärung.
+        Diese Hinweise gelten für alle, die mit einem Team-Zugang (Inhaber/in, Küche, Service, Fahrer/in) mit der
+        Website oder der Service-App arbeiten. Für Gäste gilt die allgemeine Datenschutzerklärung.
       </p>
       <p className="text-sm text-cream/60">Stand: Oktober 2026</p>
 
@@ -55,22 +55,58 @@ export default async function TeamDatenschutz() {
           erlauben, Browser-Benachrichtigungen. Beides können Sie im Browser jederzeit löschen bzw. widerrufen.
         </li>
       </ul>
+      <H>2a. Zusätzlich in der Service-App</H>
+      <ul className="list-disc space-y-2 pl-6">
+        <li>
+          <strong>Anmeldung:</strong> mit Ihrem Website-Zugang (E-Mail oder Google). Die App erhält dafür einen
+          Anmeldeschlüssel, der 30 Tage gilt; auf dem Server liegt er nur als Hash. Optional legt die Inhaberin oder der
+          Inhaber eine vierstellige PIN an, mit der Sie auf einem gemeinsamen Gerät die Bedienung wechseln; auch die PIN
+          wird nur als sicherer Hash gespeichert.
+        </li>
+        <li>
+          <strong>Tische und Rechnungen:</strong> zu jeder Runde, jeder Rechnung und jeder Zahlung wird gespeichert,
+          wer sie mit welchem Zeitpunkt aufgenommen, geschlossen oder kassiert hat (Name). Der Küchenbildschirm zeigt bei
+          jeder Runde den Namen der Bedienung. Bezahlte Rechnungen werden wegen der steuerlichen Aufbewahrungspflicht
+          (§ 147 AO) zehn Jahre aufbewahrt und danach automatisch gelöscht.
+        </li>
+        <li>
+          <strong>Feedback:</strong> wenn Sie in der App „Feedback senden“ nutzen, Ihr Name, Ihre Nachricht, der
+          Bildschirm, auf Wunsch ein Bildschirmfoto, App-Version und Gerätemodell. Gelöscht nach 90 Tagen.
+        </li>
+        <li>
+          <strong>Absturzberichte:</strong> stürzt die App ab, sendet sie beim nächsten Start App-Version,
+          Gerätemodell, Android-Version und den technischen Fehlerbericht (ohne Ihren Namen). Der Bericht geht auch per
+          E-Mail an das Postfach für Fehlermeldungen. Gelöscht nach 90 Tagen.
+        </li>
+        <li>
+          <strong>Auf dem Gerät:</strong> der Anmeldeschlüssel, Ihr Name, die Sprache und ob Klingel und
+          Hintergrund-Benachrichtigungen eingeschaltet sind. Abmelden oder die App deinstallieren entfernt diese Angaben.
+        </li>
+        <li>
+          <strong>Herunterladen und Updates:</strong> die App-Datei liegt bei GitHub (GitHub Inc., USA, nach dem
+          EU-US Data Privacy Framework zertifiziert). Beim Herunterladen erhält GitHub dabei technisch bedingt die
+          IP-Adresse des Geräts. Ob es ein Update gibt, fragt die App bei unserer Website ab.
+        </li>
+      </ul>
       <p>
-        Es werden keine Standorte, Arbeitszeiten oder Leistungskennzahlen einzelner Personen erfasst oder ausgewertet.
+        Es werden keine Standorte und keine Arbeitszeiten erfasst. Die Namen an Runden, Rechnungen und Zahlungen dienen
+        der Abrechnung und dem Nachvollziehen von Fehlern. Sie werden nicht zu Ranglisten oder Leistungskennzahlen
+        einzelner Personen ausgewertet.
       </p>
 
       <H>3. Zweck und Rechtsgrundlage</H>
       <p>
         Der Zugang und die Arbeitsschritte sind nötig, damit Sie Bestellungen und Reservierungen bearbeiten können (Art.
-        6 Abs. 1 lit. b DSGVO, Durchführung des Beschäftigungsverhältnisses). Das Protokoll dient dazu, Fehler
-        und Missbrauch nachvollziehen zu können (Art. 6 Abs. 1 lit. f DSGVO); es wird nicht zur Leistungs- oder
-        Verhaltenskontrolle verwendet. Sehen können es nur die Inhaber/innen.
+        6 Abs. 1 lit. b DSGVO, Durchführung des Beschäftigungsverhältnisses). Die Aufbewahrung der Rechnungen ist
+        gesetzlich vorgeschrieben (Art. 6 Abs. 1 lit. c DSGVO, § 147 AO). Protokoll, Feedback und Absturzberichte dienen
+        dazu, Fehler und Missbrauch nachvollziehen und die App verbessern zu können (Art. 6 Abs. 1 lit. f DSGVO); sie
+        werden nicht zur Leistungs- oder Verhaltenskontrolle verwendet. Sehen können sie nur die Inhaber/innen.
       </p>
 
       <H>4. Dienstleister</H>
       <p>
         Die Daten liegen bei denselben Dienstleistern wie die Gästedaten (Vercel, Neon in Frankfurt, E-Mail-Versand);
-        Details stehen in Abschnitt 2 der{" "}
+        die App-Datei zusätzlich bei GitHub (siehe oben). Details stehen in Abschnitt 2 der{" "}
         <a href="/datenschutz" className="text-gold-soft underline underline-offset-4">
           Datenschutzerklärung
         </a>
@@ -81,7 +117,8 @@ export default async function TeamDatenschutz() {
       <p>
         Endet Ihre Tätigkeit, entfernt die Inhaberin oder der Inhaber Ihren Team-Zugang. Er wird dann zu einem normalen
         Gastkonto, das Sie im Profil selbst löschen können; auf Wunsch löschen wir es für Sie. Protokolleinträge bleiben
-        bis zum Ablauf ihres Jahres mit Ihrem Namen erhalten.
+        bis zum Ablauf ihres Jahres, Feedback bis zum Ablauf der 90 Tage und Rechnungen bis zum Ablauf der zehn Jahre
+        mit Ihrem Namen erhalten.
       </p>
 
       <H>6. Ihre Rechte</H>

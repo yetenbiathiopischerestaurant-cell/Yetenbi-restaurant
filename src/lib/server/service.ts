@@ -654,3 +654,13 @@ export async function markRoundReady(checkId: number, round: number) {
     where check_id = ${checkId} and round = ${round} and kitchen and status = 'sent'
   `;
 }
+
+/*
+  Retention (nightly cleanup): app feedback and crash reports after 90 days; finished bills, with their dishes and
+  payments, after the 10-year tax retention period (§ 147 AO). Open bills are never touched.
+*/
+export async function purgeServiceData() {
+  await db()`delete from app_feedback where created_at < now() - interval '90 days'`;
+  await db()`delete from app_crashes where created_at < now() - interval '90 days'`;
+  await db()`delete from table_checks where status <> 'open' and closed_at < now() - interval '10 years'`;
+}

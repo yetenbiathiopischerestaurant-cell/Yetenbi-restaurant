@@ -152,7 +152,8 @@ function German({ owner }: { owner: Owner }) {
 
       <H>4. Tischreservierung</H>
       <p>
-        Wenn Sie einen Tisch anfragen, verarbeiten wir Name, E-Mail-Adresse, Telefonnummer, Datum, Uhrzeit, Personenzahl
+        Zum Reservieren über die Website ist ein Kundenkonto mit bestätigter E-Mail-Adresse nötig (Abschnitt 7); die
+        Bestätigung geht an die Adresse Ihres Kontos. Wenn Sie einen Tisch anfragen, verarbeiten wir Name, E-Mail-Adresse, Telefonnummer, Datum, Uhrzeit, Personenzahl
         und Ihre optionale Anmerkung, um die Reservierung durchzuführen und Sie zu kontaktieren (Art. 6 Abs. 1 lit. b
         DSGVO). Name, E-Mail-Adresse und Telefonnummer sind erforderlich; ohne sie können wir die Reservierung nicht
         bestätigen. Reservierungen, die Sie telefonisch durchgeben, trägt das Team ebenso ein. Reservierungen werden 180
@@ -167,6 +168,12 @@ function German({ owner }: { owner: Owner }) {
         Im Restaurant können Sie Ihre Rechnung über einen QR-Code auf Ihr Handy holen. Die Rechnung enthält nur Tisch,
         Rechnungsnummer, Speisen, Beträge mit Trinkgeld, Zahlungsart und Uhrzeit, keine Angaben zu Ihrer Person; der
         Link ist ein zufälliger, nicht erratbarer Code. Beim Aufruf fallen nur die Server-Protokolle aus Abschnitt 3 an.
+      </p>
+      <p>
+        Bestellungen am Tisch nimmt das Team mit unserer Service-App auf: Tisch, Speisen, Ihre Wünsche dazu und
+        gegebenenfalls die Platznummer, aber nicht Ihren Namen. Die bezahlte Rechnung (mit dem Namen der Bedienung)
+        bewahren wir wegen der steuerlichen Aufbewahrungspflicht (§ 147 AO, Art. 6 Abs. 1 lit. c DSGVO) zehn Jahre auf
+        und löschen sie danach automatisch.
       </p>
 
       <H>5. Online-Bestellungen</H>
@@ -213,7 +220,7 @@ function German({ owner }: { owner: Owner }) {
         Wenn Sie ein Konto anlegen, speichern wir Name, E-Mail-Adresse, optional Telefonnummer und Ihre bevorzugte
         Sprache (Art. 6 Abs. 1 lit. b DSGVO). Ihr Passwort wird ausschließlich als sicherer Hash gespeichert. Damit
         niemand mit fremder Adresse bestellt, senden wir nach der Anmeldung einen Bestätigungslink (24 Stunden gültig);
-        erst danach ist das Bestellen möglich. Das Konto bleibt bestehen, bis Sie es löschen. Im Profil können Sie Ihre
+        erst danach sind Reservieren und Bestellen möglich. Das Konto bleibt bestehen, bis Sie es löschen. Im Profil können Sie Ihre
         Daten jederzeit ändern, herunterladen oder das Konto löschen. Beim Löschen entfernen wir auch unsere Notizen zu
         Ihnen (Abschnitt 8); Ihre Bestellungen und Reservierungen bleiben ohne Verknüpfung zum Konto bis zum Ablauf
         ihrer Frist (180 Tage) gespeichert.
@@ -249,12 +256,11 @@ function German({ owner }: { owner: Owner }) {
 
       <H>10. Fotos (Cloudinary)</H>
       <p>
-        Fotos, die das Restaurant selbst hochlädt, werden über den Bilddienst Cloudinary (Cloudinary Ltd., Israel, mit
-        Servern u. a. in der EU und den USA) gespeichert und ausgeliefert. Beim Anzeigen dieser Fotos wird Ihre
-        IP-Adresse technisch bedingt an Cloudinary übertragen (Art. 6 Abs. 1 lit. f DSGVO, berechtigtes Interesse an
-        einer schnellen Darstellung). Für Israel besteht ein Angemessenheitsbeschluss der EU-Kommission; Übermittlungen
-        in die USA erfolgen auf Grundlage des DPF bzw. von Standardvertragsklauseln. Die übrigen Bilder liefern wir von
-        unserem eigenen Server aus.
+        Fotos, die das Restaurant selbst hochlädt, werden beim Bilddienst Cloudinary (Cloudinary Ltd., Israel, mit
+        Servern u. a. in der EU und den USA) gespeichert. Ausgeliefert werden sie über unseren eigenen Server: Ihr
+        Browser verbindet sich dabei nicht mit Cloudinary, und Ihre IP-Adresse wird nicht an Cloudinary übertragen. Die
+        Fotos zeigen Speisen und das Restaurant, keine Gäste. Für Israel besteht ein Angemessenheitsbeschluss der
+        EU-Kommission; Übermittlungen in die USA erfolgen auf Grundlage des DPF bzw. von Standardvertragsklauseln.
       </p>
 
       <H>11. Karte</H>
@@ -282,6 +288,7 @@ function German({ owner }: { owner: Owner }) {
       <Table
         rows={[
           ["Reservierungen", "180 Tage nach dem Reservierungsdatum"],
+          ["Rechnungen aus dem Restaurant (Service-App)", "10 Jahre (§ 147 AO)"],
           ["Bestellungen", "180 Tage nach der Bestellung"],
           ["Kundenkonto", "bis Sie es löschen"],
           ["Notiz des Teams", "mit dem Konto bzw. sobald nichts anderes mehr von Ihnen gespeichert ist"],
@@ -308,7 +315,7 @@ function German({ owner }: { owner: Owner }) {
         <p className="font-semibold text-cream">Widerspruchsrecht (Art. 21 DSGVO)</p>
         <p>
           Soweit wir Daten auf Grundlage berechtigter Interessen verarbeiten (Art. 6 Abs. 1 lit. f DSGVO, Abschnitte 3,
-          6, 8 und 10), können Sie dieser Verarbeitung aus Gründen, die sich aus Ihrer besonderen Situation ergeben,
+          6 und 8), können Sie dieser Verarbeitung aus Gründen, die sich aus Ihrer besonderen Situation ergeben,
           jederzeit widersprechen. Wir verarbeiten die Daten dann nicht mehr, es sei denn, wir können zwingende
           schutzwürdige Gründe nachweisen, die Ihre Interessen überwiegen, oder die Verarbeitung dient der
           Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen.
@@ -380,7 +387,8 @@ function English({ owner }: { owner: Owner }) {
 
       <H>4. Table reservations</H>
       <p>
-        When you request a table we process your name, email, phone number, date, time, party size and optional note to
+        Booking online requires an account with a confirmed email address (section 7); the confirmation goes to your
+        account&apos;s address. When you request a table we process your name, email, phone number, date, time, party size and optional note to
         handle the booking and contact you (Art. 6(1)(b) GDPR). Name, email and phone are required; without them we
         cannot confirm the booking. Bookings made by phone are entered by the team in the same way. Reservations are
         deleted automatically 180 days after the reservation date.
@@ -393,6 +401,11 @@ function English({ owner }: { owner: Owner }) {
         In the restaurant you can get your bill on your phone through a QR code. The bill shows only the table, bill
         number, dishes, amounts including tip, payment method and time, nothing about you; the link is a random code
         that cannot be guessed. Opening it only creates the server logs described in section 3.
+      </p>
+      <p>
+        At the table, the team takes orders with our service app: table, dishes, your wishes and, if needed, the seat
+        number, but not your name. We keep the paid bill (with the name of the staff member who served) for ten years
+        because tax law requires it (§ 147 AO, Art. 6(1)(c) GDPR) and then delete it automatically.
       </p>
 
       <H>5. Online orders</H>
@@ -435,7 +448,7 @@ function English({ owner }: { owner: Owner }) {
       <p>
         When you create an account we store your name, email, optional phone number and preferred language (Art. 6(1)(b)
         GDPR). Your password is stored only as a secure hash. So that nobody orders with someone else&apos;s address, we
-        send a confirmation link after sign-up (valid 24 hours); ordering is possible once it is confirmed. The account
+        send a confirmation link after sign-up (valid 24 hours); booking and ordering are possible once it is confirmed. The account
         exists until you delete it. In your profile you can change, download or delete your data at any time. Deleting
         the account also removes our notes about you (section 8); your orders and reservations remain, unlinked from the
         account, until their period (180 days) ends.
@@ -469,10 +482,10 @@ function English({ owner }: { owner: Owner }) {
 
       <H>10. Photos (Cloudinary)</H>
       <p>
-        Photos uploaded by the restaurant are stored and delivered by Cloudinary Ltd. (Israel, with servers in the EU
-        and the USA among others). Viewing them sends your IP address to Cloudinary (Art. 6(1)(f) GDPR, legitimate
-        interest in fast delivery). Israel has an EU adequacy decision; transfers to the USA rely on the DPF or standard
-        contractual clauses. All other images come from our own server.
+        Photos uploaded by the restaurant are stored by Cloudinary Ltd. (Israel, with servers in the EU and the USA
+        among others) and delivered through our own server: your browser does not connect to Cloudinary and your IP
+        address is not sent to it. The photos show food and the restaurant, not guests. Israel has an EU adequacy
+        decision; transfers to the USA rely on the DPF or standard contractual clauses.
       </p>
 
       <H>11. Map</H>
@@ -498,6 +511,7 @@ function English({ owner }: { owner: Owner }) {
       <Table
         rows={[
           ["Reservations", "180 days after the reservation date"],
+          ["Bills from the restaurant (service app)", "10 years (§ 147 AO)"],
           ["Orders", "180 days after ordering"],
           ["Customer account", "until you delete it"],
           ["Team note", "with the account, or once nothing else of yours is stored"],
@@ -523,7 +537,7 @@ function English({ owner }: { owner: Owner }) {
       <Box>
         <p className="font-semibold text-cream">Right to object (Art. 21 GDPR)</p>
         <p>
-          Where we process data on the basis of legitimate interests (Art. 6(1)(f) GDPR, sections 3, 6, 8 and 10), you
+          Where we process data on the basis of legitimate interests (Art. 6(1)(f) GDPR, sections 3, 6 and 8), you
           may object at any time on grounds relating to your particular situation. We will then stop, unless we can
           demonstrate compelling legitimate grounds that override your interests, or the processing serves the
           establishment, exercise or defence of legal claims.

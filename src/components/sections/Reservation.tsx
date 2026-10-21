@@ -23,6 +23,7 @@ import { ease, Heading, Rise } from "../ui/primitives";
 import { AksumFrame, LalibelaCross, Tibeb } from "../heritage/Ornaments";
 import { useHours } from "@/components/Business";
 import BackHomeLink from "@/components/BackHomeLink";
+import VerifyNotice from "@/components/account/VerifyNotice";
 
 const inputClass =
   "w-full border-0 border-b bg-transparent px-0 pb-3 pt-1 font-display text-2xl text-cream placeholder:text-cream/35 transition-colors duration-500 focus:outline-none [color-scheme:dark] disabled:opacity-50";
@@ -152,6 +153,9 @@ export default function Reservation() {
   const closures = useClosures();
   const week = useHours();
   const closedDates = useMemo(() => closures.map((closure) => closure.date), [closures]);
+  // Booking needs an account with a confirmed email (undefined = still asking the server).
+  const signedOut = account === null;
+  const unverified = !!account && !account.emailVerified;
 
   // Signed-in guests get their details filled in (only into empty fields).
   useEffect(() => {
@@ -219,6 +223,8 @@ export default function Reservation() {
         setErrors(data.errors);
       } else if (response.status === 429) {
         setServerError(t.reserve.errors.busy);
+      } else if (response.status === 401 || response.status === 403) {
+        setServerError(t.reserve.loginText);
       } else {
         setServerError(t.reserve.errors.server);
       }
@@ -247,6 +253,11 @@ export default function Reservation() {
 
         <div className="mt-16 grid gap-14 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
+            {account && !account.emailVerified && !outcome && (
+              <div className="mb-10">
+                <VerifyNotice email={account.email} />
+              </div>
+            )}
             <AnimatePresence mode="wait">
               {outcome ? (
                 <motion.div
@@ -297,6 +308,8 @@ export default function Reservation() {
                     {t.reserve.another}
                   </button>
                 </motion.div>
+              ) : signedOut ? (
+                <ReserveSignIn key="signin" />
               ) : (
                 <motion.form
                   key="form"
@@ -325,6 +338,7 @@ export default function Reservation() {
                       autoComplete="email"
                       inputMode="email"
                       value={form.email}
+                      readOnly={!!account}
                       onChange={(event) => updateField("email", event.target.value)}
                       aria-invalid={!!errors.email}
                       aria-describedby={errors.email ? "res-email-error" : undefined}
@@ -436,7 +450,7 @@ export default function Reservation() {
                     )}
                     <button
                       type="submit"
-                      disabled={sending}
+                      disabled={sending || !account || unverified}
                       className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-gold px-8 py-4 font-semibold text-ink active:scale-[0.98] disabled:opacity-70"
                     >
                       <span className="absolute inset-0 -translate-x-full bg-cream transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
@@ -468,5 +482,31 @@ export default function Reservation() {
         </div>
       </div>
     </section>
+  );
+}
+
+/** Shown instead of the form to visitors who aren't signed in: booking a table needs an account. */
+function ReserveSignIn() {
+  const { t } = useLanguage();
+  const next = encodeURIComponent("/#reservieren");
+  return (
+    <div className="flex min-h-[420px] flex-col justify-center">
+      <div className="border border-gold/40 bg-gold/[0.05] p-6">
+        <p className="font-display text-2xl text-cream">{t.reserve.loginTitle}</p>
+        <p className="mt-2 text-sm leading-relaxed text-cream/75">{t.reserve.loginText}</p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link href={`/login?next=${next}`} className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink">
+            {t.order.loginButton}
+          </Link>
+          <Link
+            href={`/login?mode=register&next=${next}`}
+            className="rounded-full border border-gold/60 px-6 py-3 text-sm font-semibold text-gold-soft hover:bg-gold hover:text-ink"
+          >
+            {t.order.registerButton}
+          </Link>
+        </div>
+        <p className="mt-4 text-xs text-cream/60">{t.reserve.orCall(restaurant.phone)}</p>
+      </div>
+    </div>
   );
 }

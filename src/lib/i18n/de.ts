@@ -199,6 +199,9 @@ export const de = {
     waText: "Sendet die vorbereitete Nachricht in WhatsApp ab. Wir melden uns mit einer Bestätigung.",
     waAgain: "WhatsApp erneut öffnen",
     another: "Weitere Anfrage",
+    loginTitle: "Zum Reservieren anmelden",
+    loginText:
+      "Für eine Tischreservierung braucht ihr ein Konto. So erreichen wir euch sicher und ihr seht eure Reservierungen im Profil. Telefonisch reservieren geht natürlich auch.",
     ticketFor: "Ein Tisch für",
     open: "noch offen",
   },
@@ -255,7 +258,7 @@ export const de = {
     or: "oder",
     noPassword: "Ihr meldet euch mit Google an. Hier könnt ihr zusätzlich ein Passwort festlegen.",
     verifyNotice: (email: string) =>
-      `Bitte bestätigt eure E-Mail-Adresse: Wir haben einen Link an ${email} geschickt. Erst danach könnt ihr online bestellen.`,
+      `Bitte bestätigt eure E-Mail-Adresse: Wir haben einen Link an ${email} geschickt. Erst danach könnt ihr reservieren und online bestellen.`,
     verifyResend: "Link erneut senden",
     verifySent: "Ein neuer Link ist unterwegs.",
     verifyTitle: "E-Mail-Adresse bestätigen",

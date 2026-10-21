@@ -37,21 +37,12 @@ export default async function Impressum() {
       </p>
       {business.vatId && <p>Umsatzsteuer-Identifikationsnummer gemäß § 27 a UStG: {business.vatId}</p>}
       <h2 className="pt-4 font-display text-xl font-semibold text-gold-soft">Gewerbeanmeldung</h2>
+      {/* Registration under § 14 GewO is a notification, not a permit. The former "Berufsbezeichnung" section was
+          removed: it applies only to regulated professions (with a chamber), not to a restaurant. */}
       <p>
-        Die Gewerbeerlaubnis nach § 14 oder § 55c der Gewerbeordnung (GewO) wurde am 14.04.2026 von folgender Stelle
-        erteilt: Ordnungsamt Würzburg.
+        Gewerbe angemeldet nach § 14 der Gewerbeordnung (GewO) am 14.04.2026 bei der Stadt Würzburg, Ordnungsamt.
         <br />
         Zuständige Aufsichtsbehörde: Stadt Würzburg, Ordnungsamt
-      </p>
-      <h2 className="pt-4 font-display text-xl font-semibold text-gold-soft">
-        Berufsbezeichnung und berufsrechtliche Regelungen
-      </h2>
-      <p>
-        Berufsbezeichnung: Fachkraft für Gastronomie
-        <br />
-        Zuständige Kammer: Caritas-Don Bosco GmbH
-        <br />
-        Verliehen in: Deutschland
       </p>
       <h2 className="pt-4 font-display text-xl font-semibold text-gold-soft">
         Verbraucherstreitbeilegung/Universalschlichtungsstelle

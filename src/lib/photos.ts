@@ -27,9 +27,16 @@ export const SLOT_KEYS = new Set(PHOTO_SLOTS.map((s) => s.key));
 export type Photo = { url: string; publicId: string; width: number; height: number; blur: string };
 export type Photos = Record<string, Photo>;
 
-/** The same Cloudinary photo with a transformation, e.g. "w_800,c_limit,f_auto,q_auto". */
-export const cloudinaryUrl = (url: string, transform: string) =>
-  url.replace("/image/upload/", `/image/upload/${transform}/`);
+/**
+  The same Cloudinary photo with a transformation, e.g. "w_800,c_limit,f_auto,q_auto". It is served through this
+  site (/foto/…, a rewrite in next.config.ts), so visitors' browsers never connect to Cloudinary (privacy policy § 10).
+*/
+export const cloudinaryUrl = (url: string, transform: string) => {
+  const parts = url.match(/^https:\/\/res\.cloudinary\.com\/([^/]+)\/image\/upload\/(.+)$/);
+  return parts
+    ? `/foto/${parts[1]}/${transform}/${parts[2]}`
+    : url.replace("/image/upload/", `/image/upload/${transform}/`);
+};
 
 /** The slot of a built-in picture, from its file path ("/_next/static/media/hero.1a2b.jpg" → "hero"). */
 export const slotOf = (path: string) => {
