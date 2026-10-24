@@ -27,7 +27,7 @@ export default function ScrollProgress() {
             type="button"
             aria-label={t.toTop}
             onClick={() => (lenis ? lenis.scrollTo(0, { duration: 2 }) : window.scrollTo({ top: 0 }))}
-            className="group fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-ink/80 backdrop-blur-md"
+            className="group fixed bottom-4 right-3 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-ink/80 backdrop-blur-md md:bottom-6 md:right-6 md:h-14 md:w-14"
             initial={{ opacity: 0, scale: 0.5, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.5, y: 20 }}
