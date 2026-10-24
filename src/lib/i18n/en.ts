@@ -24,7 +24,7 @@ export const en: Dict = {
     tagline: "Restaurant & Café · Authentically Ethiopian",
     subtitle: "Spiced wots, fresh injera and fragrant jebena coffee, in the heart of Würzburg.",
     cta: "Explore the menu",
-    services: "Dine in, pick up & delivery",
+    services: "Dine in & take away",
     price: "€10-20 per person",
   },
   manifesto: {
@@ -98,8 +98,9 @@ export const en: Dict = {
       },
       {
         term: "Takeaway",
-        value: "Pick-up and delivery",
-        detail: "You can collect your food or have it delivered. Just give us a call.",
+        value: "Everything to take away",
+        detail:
+          "Every dish is also available to take away. Give us a call beforehand and it will be ready when you arrive.",
       },
       {
         term: "Tradition",
@@ -133,7 +134,7 @@ export const en: Dict = {
     hours: "Opening hours",
     phone: "Phone",
     service: "Service",
-    serviceValue: "Dine in, pick up, delivery",
+    serviceValue: "Dine in and take away",
     route: "Get directions",
     near: "Near the Mainfranken Theater",
     photoAlt: "Jebena and cups for the coffee ceremony",

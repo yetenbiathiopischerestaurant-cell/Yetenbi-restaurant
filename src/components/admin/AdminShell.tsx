@@ -6,6 +6,7 @@ import { Suspense, useEffect, useState } from "react";
 import { LalibelaCross } from "@/components/heritage/Ornaments";
 import { logout } from "@/app/account-actions";
 import { useAccount } from "@/lib/account-client";
+import { ONLINE_ORDERING } from "@/lib/features";
 import LiveAlerts, { type Pulse } from "./LiveAlerts";
 
 /*
@@ -21,11 +22,14 @@ const NAV: Group[] = [
   {
     title: "Betrieb",
     items: [
-      { href: "/admin/bestellungen", label: "Bestellungen", badge: (counts) => counts.newOrders },
+      // online orders (delivery and pickup) only while online ordering is switched on
+      ...(ONLINE_ORDERING
+        ? [{ href: "/admin/bestellungen", label: "Bestellungen", badge: (counts: Pulse) => counts.newOrders }]
+        : []),
       { href: "/admin/reservierungen", label: "Reservierungen", badge: (counts) => counts.pendingReservations },
       { href: "/admin/service", label: "Service-App & Tische" },
       { href: "/kueche", label: "Küchenbildschirm", external: true },
-      { href: "/lieferung", label: "Lieferungen (Fahrer)", external: true },
+      ...(ONLINE_ORDERING ? [{ href: "/lieferung", label: "Lieferungen (Fahrer)", external: true }] : []),
     ],
   },
   {

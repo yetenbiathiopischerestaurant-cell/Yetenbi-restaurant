@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { redirect } from "next/navigation";
+import { ONLINE_ORDERING } from "@/lib/features";
 import { listDrivers, requireOwner, type User } from "@/lib/server/auth";
 import { hasDatabase } from "@/lib/server/db";
 import { LIMITS, listBlocks, type Block } from "@/lib/server/order-guard";
@@ -405,6 +407,8 @@ async function Board() {
 }
 
 export default function AdminOrdersPage() {
+  // online orders (delivery and pickup) are switched off in src/lib/features.ts
+  if (!ONLINE_ORDERING) redirect("/admin");
   return (
     <main id="main" className="mx-auto w-full max-w-6xl px-5 py-8 md:px-10 md:py-12">
       <AdminHeader active="orders" />

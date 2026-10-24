@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { redirect } from "next/navigation";
+import { ONLINE_ORDERING } from "@/lib/features";
 import LiveRefresh from "@/components/LiveRefresh";
 import StaffHeader from "@/components/StaffHeader";
 import { requireRole } from "@/lib/server/auth";
@@ -109,6 +111,8 @@ async function Board() {
 }
 
 export default function DeliveryPage() {
+  // no deliveries while online ordering is off (src/lib/features.ts)
+  if (!ONLINE_ORDERING) redirect("/");
   return (
     <main id="main" className="mx-auto max-w-5xl px-4 py-10 md:px-5 md:py-16">
       <Suspense fallback={<p className="mt-12 text-cream/60">Lade Lieferungen …</p>}>

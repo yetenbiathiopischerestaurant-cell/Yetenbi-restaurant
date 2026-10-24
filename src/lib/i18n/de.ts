@@ -24,7 +24,7 @@ export const de = {
     tagline: "Restaurant & Café · Authentisch Äthiopisch",
     subtitle: "Würzige Wots, frisches Injera und duftender Jebena-Kaffee, mitten in Würzburg.",
     cta: "Speisekarte entdecken",
-    services: "Vor Ort, Abholung & Lieferung",
+    services: "Vor Ort & zum Abholen",
     price: "10-20 € pro Person",
   },
   manifesto: {
@@ -103,8 +103,8 @@ export const de = {
       },
       {
         term: "Mitnehmen",
-        value: "Abholung und Lieferung",
-        detail: "Ihr könnt auch abholen oder euch liefern lassen. Fragt uns einfach telefonisch.",
+        value: "Alles auch zum Abholen",
+        detail: "Jedes Gericht gibt es auch zum Mitnehmen. Ruft einfach vorher an, dann ist es fertig, wenn ihr kommt.",
       },
       {
         term: "Tradition",
@@ -139,7 +139,7 @@ export const de = {
     hours: "Öffnungszeiten",
     phone: "Telefon",
     service: "Service",
-    serviceValue: "Vor Ort, Abholung, Lieferung",
+    serviceValue: "Vor Ort und zum Abholen",
     route: "Route planen",
     near: "Nahe Mainfranken Theater",
     photoAlt: "Jebena und Tassen für die Kaffeezeremonie",
