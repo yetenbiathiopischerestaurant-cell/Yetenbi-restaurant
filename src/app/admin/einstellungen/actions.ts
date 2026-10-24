@@ -10,7 +10,7 @@ import { readBusiness, saveBusiness } from "@/lib/server/business";
 
 type SettingsState = { ok?: string; error?: string } | null;
 
-const TIME = /^([01]\day|2[0-3]):[0-5]\d$/;
+const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 /** Opening hours and legal details. Hours apply at once to the website, reservations, ordering and search engines. */
 export async function saveBusinessSettings(_: SettingsState, form: FormData): Promise<SettingsState> {
