@@ -130,6 +130,42 @@ body {
   animation: ember-rise linear infinite;
 }
 
+/*
+  The hero's YETENBI filled with the Ethiopian flag (as Karmel fills its title with a photo). Each letter is its
+  own animated span, so every letter shows its own slice of one shared flag: --flag-w is the word's width and
+  --flag-x the letter's offset in it (both measured in Hero.tsx). The flag is a little larger than the word and
+  drifts slowly, like cloth moving; --flag-shift is registered so it can be animated.
+*/
+@property --flag-shift {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes flag-drift {
+  0%,
+  100% {
+    --flag-shift: 0;
+  }
+  50% {
+    --flag-shift: 1;
+  }
+}
+
+.flag-fill {
+  background-image: url("/img/ethiopian-flag.svg");
+  background-repeat: no-repeat;
+  background-size: calc(var(--flag-w, 6em) * 1.2) 110%;
+  background-position: calc(var(--flag-w, 6em) * -0.2 * var(--flag-shift) - var(--flag-x, 0px))
+    calc(-5% * var(--flag-shift));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px rgba(246, 226, 168, 0.45);
+  animation: flag-drift 18s ease-in-out infinite;
+}
+
 h1,
 h2,
 h3 {

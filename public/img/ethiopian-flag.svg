@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" preserveAspectRatio="none">
+  <defs>
+    <!-- soft folds, so the flag reads as cloth inside the letters -->
+    <linearGradient id="folds" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#000" stop-opacity="0.18"/>
+      <stop offset="0.16" stop-color="#fff" stop-opacity="0.16"/>
+      <stop offset="0.33" stop-color="#000" stop-opacity="0.14"/>
+      <stop offset="0.5" stop-color="#fff" stop-opacity="0.12"/>
+      <stop offset="0.67" stop-color="#000" stop-opacity="0.14"/>
+      <stop offset="0.84" stop-color="#fff" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.18"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="200" fill="#078930"/>
+  <rect y="200" width="1200" height="200" fill="#fcdd09"/>
+  <rect y="400" width="1200" height="200" fill="#da121a"/>
+  <circle cx="600" cy="300" r="135" fill="#0f47af"/>
+  <g fill="none" stroke="#fcdd09" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M600 195 L661.72 384.95 L500.14 267.55 L699.86 267.55 L538.28 384.95 Z"/>
+    <path d="M600 340.1 L600 425 M561.86 312.39 L481.12 338.63 M576.43 267.56 L526.53 198.87 M623.57 267.56 L673.47 198.87 M638.14 312.39 L718.88 338.63"/>
+  </g>
+  <rect width="1200" height="600" fill="url(#folds)"/>
+</svg>

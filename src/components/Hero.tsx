@@ -27,6 +27,26 @@ export default function Hero() {
   const { done } = useIntro();
   const { t } = useLanguage();
   const [lit, setLit] = useState(0);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+
+  // One flag across the whole word: tell every letter the word's width and where the letter sits in it.
+  useEffect(() => {
+    const heading = titleRef.current;
+    if (!heading) return;
+    const measure = () => {
+      const letters = [...heading.querySelectorAll<HTMLElement>("[data-letter]")];
+      if (letters.length === 0) return;
+      const start = letters[0].offsetLeft;
+      const last = letters[letters.length - 1];
+      heading.style.setProperty("--flag-w", `${last.offsetLeft + last.offsetWidth - start}px`);
+      letters.forEach((letter) => letter.style.setProperty("--flag-x", `${letter.offsetLeft - start}px`));
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(heading);
+    void document.fonts?.ready.then(measure);
+    return () => observer.disconnect();
+  }, []);
 
   // Once the lines are drawn, the windows light up one storey at a time.
   useEffect(() => {
@@ -84,14 +104,16 @@ export default function Hero() {
         </motion.p>
 
         <h1
-          className="mt-3 flex overflow-hidden font-display text-[clamp(4.5rem,15vw,12rem)] font-bold leading-[0.9] tracking-[0.04em]"
+          ref={titleRef}
+          className="mt-3 flex overflow-hidden font-display text-[clamp(4.5rem,15vw,12rem)] font-bold leading-[0.9] tracking-[0.04em] drop-shadow-[0_6px_24px_rgba(10,6,2,0.55)]"
           aria-label="Yetenbi"
         >
           {title.map((word, index) => (
             <motion.span
               key={index}
               aria-hidden
-              className="inline-block bg-gradient-to-b from-[#f6e2a8] via-gold-soft to-gold bg-clip-text text-transparent"
+              data-letter
+              className="flag-fill inline-block"
               initial={{ y: "105%", rotate: 8 }}
               animate={done ? { y: "0%", rotate: 0 } : undefined}
               transition={{ duration: 1.3, ease, delay: intro + 0.1 + index * 0.06 }}
