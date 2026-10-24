@@ -4,7 +4,9 @@ import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { ONLINE_ORDERING } from "@/lib/features";
 import LiveRefresh from "@/components/LiveRefresh";
+import { AdminLangProvider } from "@/components/admin/AdminLang";
 import StaffHeader from "@/components/StaffHeader";
+import { adminText } from "@/lib/server/admin-lang";
 import { requireRole } from "@/lib/server/auth";
 import { hasDatabase } from "@/lib/server/db";
 import { listDriverOrders, type Order } from "@/lib/server/orders";
@@ -65,6 +67,7 @@ function Delivery({ order, showDriver }: { order: Order; showDriver: boolean }) 
 async function Board() {
   await connection();
   const me = await requireRole(["driver", "owner"], "/lieferung");
+  const { lang } = await adminText();
   if (!hasDatabase()) return <p className="mt-12 text-cream/70">Keine Datenbank verbunden.</p>;
   const owner = me.role === "owner";
   const orders = await listDriverOrders(owner ? null : me.id);
@@ -73,7 +76,10 @@ async function Board() {
   const cash = done.filter((order) => order.payment === "cash").reduce((sum, order) => sum + order.total, 0);
   return (
     <>
-      <StaffHeader title="Lieferungen" me={me} />
+      {/* the header's language switch needs the team area's language */}
+      <AdminLangProvider lang={lang}>
+        <StaffHeader title="Lieferungen" me={me} />
+      </AdminLangProvider>
       <LiveRefresh seconds={20} />
       {open.length === 0 ? (
         <p className="mt-12 font-display text-2xl italic text-cream/70">

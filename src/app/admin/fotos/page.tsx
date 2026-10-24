@@ -6,6 +6,7 @@ import { requireOwner } from "@/lib/server/auth";
 import { isCloudinaryConfigured } from "@/lib/server/cloudinary";
 import { hasDatabase } from "@/lib/server/db";
 import { listPhotos } from "@/lib/server/photos";
+import { adminText } from "@/lib/server/admin-lang";
 import AdminHeader from "../AdminHeader";
 import { resetPhoto } from "./actions";
 import Uploader from "./Uploader";
@@ -13,25 +14,21 @@ import Uploader from "./Uploader";
 async function Gallery() {
   await connection();
   await requireOwner();
-  if (!hasDatabase()) return <p className="mt-12 text-cream/70">Keine Datenbank verbunden.</p>;
+  const { t } = await adminText();
+  const text = t.photos;
+  if (!hasDatabase()) return <p className="mt-12 text-cream/70">{t.common.noDatabase}</p>;
   const ready = isCloudinaryConfigured();
   const photos = await listPhotos();
   return (
     <>
-      <p className="mt-8 max-w-3xl text-sm leading-relaxed text-cream/70">
-        Hier ersetzt ihr die Fotos der Website durch eure eigenen. Ein hochgeladenes Foto ist sofort auf der Website zu
-        sehen; „Zurück zum Original“ stellt das ursprüngliche Bild wieder her. Querformat wirkt am besten, bei Gerichten
-        ein Foto von oben. Bis {20} MB, JPG, PNG, WebP, AVIF oder HEIC (iPhone).
-      </p>
+      <p className="mt-8 max-w-3xl text-sm leading-relaxed text-cream/70">{text.lead(20)}</p>
       {!ready && (
-        <p className="mt-4 border-l-2 border-[#f0a080] pl-4 text-sm text-[#f0a080]">
-          Cloudinary ist noch nicht eingerichtet (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
-          fehlen). Hochladen geht erst danach.
-        </p>
+        <p className="mt-4 border-l-2 border-[#f0a080] pl-4 text-sm text-[#f0a080]">{text.cloudinaryMissing}</p>
       )}
       <ul className="mt-10 grid gap-6 sm:grid-cols-2">
         {PHOTO_SLOTS.map((slot) => {
           const up = photos[slot.key];
+          const name = text.slots[slot.key] ?? slot;
           return (
             <li key={slot.key} className="border border-gold/25 bg-ink/50">
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-coal">
@@ -55,18 +52,18 @@ async function Gallery() {
                 <span
                   className={`absolute left-3 top-3 rounded-full px-3 py-0.5 text-xs font-semibold ${up ? "bg-[#7fcf9c] text-ink" : "bg-ink/80 text-cream/80"}`}
                 >
-                  {up ? "Eigenes Foto" : "Original (Beispielbild)"}
+                  {up ? text.own : text.original}
                 </span>
               </div>
               <div className="space-y-3 p-5">
-                <p className="font-display text-xl text-cream">{slot.label}</p>
-                <p className="text-xs text-cream/55">{slot.where}</p>
+                <p className="font-display text-xl text-cream">{name.label}</p>
+                <p className="text-xs text-cream/55">{name.where}</p>
                 {ready && <Uploader slot={slot.key} replace={Boolean(up)} />}
                 {up && (
                   <form action={resetPhoto}>
                     <input type="hidden" name="slot" value={slot.key} />
                     <button className="text-xs text-cream/55 underline underline-offset-4 hover:text-[#f0a080]">
-                      Zurück zum Original
+                      {text.reset}
                     </button>
                   </form>
                 )}
@@ -79,11 +76,12 @@ async function Gallery() {
   );
 }
 
-export default function PhotosPage() {
+export default async function PhotosPage() {
+  const { t } = await adminText();
   return (
     <main id="main" className="mx-auto w-full max-w-6xl px-5 py-8 md:px-10 md:py-12">
       <AdminHeader active="photos" />
-      <Suspense fallback={<p className="mt-12 text-cream/60">Lade Fotos …</p>}>
+      <Suspense fallback={<p className="mt-12 text-cream/60">{t.common.loading}</p>}>
         <Gallery />
       </Suspense>
     </main>

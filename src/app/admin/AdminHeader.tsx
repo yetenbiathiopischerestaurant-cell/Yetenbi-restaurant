@@ -1,46 +1,20 @@
+import { ONLINE_ORDERING } from "@/lib/features";
+import { adminText } from "@/lib/server/admin-lang";
+import type { AdminDict } from "@/lib/admin-i18n";
+
 /** The heading of an admin page: what it is and what you do there, in one line. Navigation lives in the sidebar. */
 
-const PAGES = {
-  dashboard: { title: "Übersicht", lead: "Was jetzt zu tun ist und wie der Tag läuft." },
-  reservations: {
-    title: "Reservierungen",
-    lead: "Anfragen annehmen oder ablehnen, telefonische Reservierungen eintragen, Schließtage.",
-  },
-  orders: {
-    title: "Bestellungen",
-    lead: "Neue Bestellungen annehmen, an Fahrer übergeben, Einstellungen für Lieferung und Abholung.",
-  },
-  menu: {
-    title: "Speisekarte",
-    lead: "Kategorien und Gerichte anlegen, ändern, sortieren, ausverkauft melden; Allergene und Pfand.",
-  },
-  photos: { title: "Fotos", lead: "Die Bilder der Website durch eigene Fotos ersetzen." },
-  reports: {
-    title: "Berichte",
-    lead: "Umsatz, Bestellungen und Reservierungen über einen Zeitraum, mit Export für die Buchhaltung.",
-  },
-  customers: { title: "Kunden", lead: "Alle Gäste mit ihren Bestellungen, Reservierungen und euren Notizen." },
-  log: { title: "Protokoll", lead: "Wer im Team wann was geändert hat." },
-  settings: {
-    title: "Betrieb & Rechtliches",
-    lead: "Öffnungszeiten, Kontaktdaten und die Angaben für Impressum und Datenschutz.",
-  },
-  team: { title: "Team & Zugänge", lead: "Logins für Verwaltung, Service, Küche und Fahrer anlegen und verwalten." },
-  service: {
-    title: "Service-App",
-    lead: "Tische und Rechnungen von heute, der Tischplan und die App-Versionen für Handys und Tablets.",
-  },
-} as const;
+type AdminPage = keyof AdminDict["pages"];
 
-type AdminPage = keyof typeof PAGES;
-
-export default function AdminHeader({ active, children }: { active: AdminPage; children?: React.ReactNode }) {
-  const page = PAGES[active];
+export default async function AdminHeader({ active, children }: { active: AdminPage; children?: React.ReactNode }) {
+  const { t } = await adminText();
+  const page: { title: string; lead: string; leadNoOrders?: string } = t.pages[active];
+  const lead = !ONLINE_ORDERING && page.leadNoOrders ? page.leadNoOrders : page.lead;
   return (
     <div className="flex flex-wrap items-end justify-between gap-4 border-b border-cream/10 pb-6">
       <div>
         <h1 className="font-display text-4xl font-semibold text-cream md:text-5xl">{page.title}</h1>
-        <p className="mt-2 max-w-2xl text-sm text-cream/60">{page.lead}</p>
+        <p className="mt-2 max-w-2xl text-sm text-cream/60">{lead}</p>
       </div>
       {children}
     </div>

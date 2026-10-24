@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { setFeedbackDone } from "@/lib/server/app-feedback";
 import { setReleaseFlags } from "@/lib/server/app-releases";
 import { audit } from "@/lib/server/audit";
+import { adminText } from "@/lib/server/admin-lang";
 import { requireOwner } from "@/lib/server/auth";
 import { saveTables } from "@/lib/server/service";
 
@@ -15,11 +16,13 @@ export type PlanState = { ok?: string; error?: string } | null;
 */
 export async function saveTablePlan(_: PlanState, form: FormData): Promise<PlanState> {
   const me = await requireOwner();
+  const { t } = await adminText();
+  const text = t.service;
   const lines = String(form.get("plan") ?? "")
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
-  if (lines.length === 0 || lines.length > 60) return { error: "Bitte 1 bis 60 Tische eintragen, einen pro Zeile." };
+  if (lines.length === 0 || lines.length > 60) return { error: text.errors.count };
   const plan: { label: string; area: string; seats: number }[] = [];
   const seen = new Set<string>();
   for (const line of lines) {
@@ -27,15 +30,15 @@ export async function saveTablePlan(_: PlanState, form: FormData): Promise<PlanS
     const label = rawLabel.slice(0, 24);
     const seats = rawSeats ? Number(rawSeats) : 4;
     const area = (rawArea ?? "").slice(0, 24);
-    if (!label) return { error: `„${line}“: Name fehlt.` };
-    if (!Number.isInteger(seats) || seats < 1 || seats > 40) return { error: `„${line}“: Plätze 1 bis 40.` };
-    if (seen.has(label.toLowerCase())) return { error: `Tisch „${label}“ steht doppelt in der Liste.` };
+    if (!label) return { error: text.errors.name(line) };
+    if (!Number.isInteger(seats) || seats < 1 || seats > 40) return { error: text.errors.seats(line) };
+    if (seen.has(label.toLowerCase())) return { error: text.errors.duplicate(label) };
     seen.add(label.toLowerCase());
     plan.push({ label, area, seats });
   }
   await saveTables(me, plan);
   revalidatePath("/admin/service");
-  return { ok: `Gespeichert: ${plan.length} Tische. Die App übernimmt sie innerhalb einer halben Minute.` };
+  return { ok: text.planSaved(plan.length) };
 }
 
 /** Feedback from the app: ticked off when dealt with (or back). */

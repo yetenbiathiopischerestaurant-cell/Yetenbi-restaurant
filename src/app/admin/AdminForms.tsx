@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useAdminText } from "@/components/admin/AdminLang";
 import { addClosedDay, addPhoneBooking, type AdminState } from "./actions";
 
 const field =
@@ -38,23 +39,25 @@ function Input({
 
 export function PhoneBookingForm() {
   const [state, action, pending] = useActionState(addPhoneBooking, null);
+  const { t } = useAdminText();
+  const form = t.reservations.form;
   return (
     <form action={action} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      <Input name="date" title="Datum" type="date" required />
-      <Input name="time" title="Uhrzeit" type="time" step={1800} required />
-      <Input name="guests" title="Personen" type="number" min={1} max={12} defaultValue={2} required />
-      <Input name="name" title="Name" required />
-      <Input name="phone" title="Telefon" type="tel" required />
-      <Input name="email" title="E-Mail (optional)" type="email" />
+      <Input name="date" title={form.date} type="date" required />
+      <Input name="time" title={form.time} type="time" step={1800} required />
+      <Input name="guests" title={form.guests} type="number" min={1} max={12} defaultValue={2} required />
+      <Input name="name" title={form.name} required />
+      <Input name="phone" title={form.phone} type="tel" required />
+      <Input name="email" title={form.emailOptional} type="email" />
       <div className="sm:col-span-2 lg:col-span-3">
-        <Input name="note" title="Anmerkung (optional)" maxLength={280} />
+        <Input name="note" title={form.noteOptional} maxLength={280} />
       </div>
       <div className="flex flex-wrap items-center gap-4 sm:col-span-2 lg:col-span-3">
         <button
           disabled={pending}
           className="rounded-full bg-gold px-6 py-2.5 text-sm font-semibold text-ink disabled:opacity-60"
         >
-          {pending ? "Speichern …" : "Reservierung eintragen"}
+          {pending ? t.common.saving : form.submit}
         </button>
         <Message state={state} />
       </div>
@@ -64,23 +67,21 @@ export function PhoneBookingForm() {
 
 export function ClosedDayForm() {
   const [state, action, pending] = useActionState(addClosedDay, null);
+  const { t } = useAdminText();
+  const form = t.reservations.form;
   return (
     <form action={action} className="flex flex-wrap items-end gap-5">
       <div className="w-44">
-        <Input name="date" title="Datum" type="date" required />
+        <Input name="date" title={form.date} type="date" required />
       </div>
       <div className="min-w-48 flex-1">
-        <Input
-          name="note"
-          title="Grund (optional, auf der Website sichtbar – keine Namen)"
-          placeholder="z. B. Feiertag, geschlossene Gesellschaft"
-        />
+        <Input name="note" title={form.closedNote} placeholder={form.closedNotePlaceholder} />
       </div>
       <button
         disabled={pending}
         className="rounded-full border border-gold/60 px-5 py-2.5 text-sm font-semibold text-gold-soft hover:bg-gold hover:text-ink disabled:opacity-60"
       >
-        Schließen
+        {form.close}
       </button>
       <div className="basis-full">
         <Message state={state} />

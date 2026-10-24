@@ -2,6 +2,8 @@
 
 import { useActionState } from "react";
 import { ADDITIVES, ALLERGENS, DISH_TAGS, type Dish, type MenuCategory } from "@/lib/menu";
+import { useAdminText } from "@/components/admin/AdminLang";
+import { ONLINE_ORDERING } from "@/lib/features";
 import { removeCategory, removeDish, saveCategory, saveDish, type MenuState } from "./actions";
 
 const field =
@@ -9,7 +11,6 @@ const field =
 const label = "text-[0.62rem] font-semibold uppercase tracking-[0.25em] text-gold";
 const chip =
   "flex cursor-pointer items-center gap-1.5 rounded border border-cream/15 px-2 py-1 text-xs text-cream/80 has-[:checked]:border-gold has-[:checked]:bg-gold/15 has-[:checked]:text-gold-soft";
-const TAG_LABEL: Record<string, string> = { special: "Hausspezialität", spicy: "Scharf", mild: "Mild", vegan: "Vegan" };
 
 function Message({ state }: { state: MenuState }) {
   if (state?.error)
@@ -55,6 +56,7 @@ function ThreeLanguages({
   area?: boolean;
   required?: boolean;
 }) {
+  const { t } = useAdminText();
   const one = (lang: "de" | "en" | "am", hint: string) =>
     area ? (
       <label key={lang} className="flex flex-col gap-1">
@@ -81,7 +83,7 @@ function ThreeLanguages({
     );
   return (
     <div className="grid gap-4 sm:grid-cols-3">
-      {[one("de", "(Deutsch)"), one("en", "(Englisch)"), one("am", "(Amharisch)")]}
+      {[one("de", t.menu.languages.de), one("en", t.menu.languages.en), one("am", t.menu.languages.am)]}
     </div>
   );
 }
@@ -91,22 +93,24 @@ function ThreeLanguages({
 export function CategoryForm({ category }: { category?: MenuCategory }) {
   const [state, action, pending] = useActionState(saveCategory, null);
   const [delState, delAction, deleting] = useActionState(removeCategory, null);
+  const { t, lang } = useAdminText();
+  const text = t.menu;
   return (
     <div className="space-y-4">
       <form action={action} className="space-y-4">
         {category && <input type="hidden" name="id" value={category.id} />}
-        <ThreeLanguages name="title" title="Name" value={category?.title} required />
-        <ThreeLanguages name="note" title="Hinweis" value={category?.note} area />
+        <ThreeLanguages name="title" title={text.name} value={category?.title} required />
+        <ThreeLanguages name="note" title={text.note} value={category?.note} area />
         <label className="flex items-center gap-2 text-sm text-cream/85">
           <input type="checkbox" name="drinks" defaultChecked={category?.drinks} className="h-4 w-4 accent-[#c9a24a]" />{" "}
-          Getränke (mit Menge und Pfand)
+          {text.drinksCheckbox}
         </label>
         <div className="flex flex-wrap items-center gap-4">
           <button
             disabled={pending}
             className="rounded-full bg-gold px-5 py-2 text-sm font-semibold text-ink disabled:opacity-60"
           >
-            {pending ? "Speichern …" : category ? "Kategorie speichern" : "Kategorie anlegen"}
+            {pending ? t.common.saving : category ? text.saveCategory : text.createCategory}
           </button>
           <Message state={state} />
         </div>
@@ -115,14 +119,14 @@ export function CategoryForm({ category }: { category?: MenuCategory }) {
         <form
           action={delAction}
           className="flex flex-wrap items-center gap-4"
-          onSubmit={(event) => !confirm(`Kategorie „${category.title.de}“ löschen?`) && event.preventDefault()}
+          onSubmit={(event) => !confirm(text.confirmDeleteCategory(category.title[lang])) && event.preventDefault()}
         >
           <input type="hidden" name="id" value={category.id} />
           <button
             disabled={deleting}
             className="text-xs text-cream/55 underline underline-offset-4 hover:text-[#f0a080]"
           >
-            Kategorie löschen
+            {text.deleteCategory}
           </button>
           <Message state={delState} />
         </form>
@@ -145,29 +149,25 @@ export function DishForm({
   const [state, action, pending] = useActionState(saveDish, null);
   const [delState, delAction, deleting] = useActionState(removeDish, null);
   const drinks = categories.find((category) => category.id === (dish?.categoryId ?? categoryId))?.drinks ?? false;
+  const { t, lang } = useAdminText();
+  const text = t.menu;
   return (
     <div className="space-y-4">
       <form action={action} className="space-y-5">
         {dish && <input type="hidden" name="id" value={dish.id} />}
-        <ThreeLanguages name="name" title="Name" value={dish?.name} required />
+        <ThreeLanguages name="name" title={text.name} value={dish?.name} required />
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field
-            name="amharic"
-            title="Name in Ge'ez-Schrift (optional)"
-            value={dish?.amharic}
-            maxLength={80}
-            lang="am"
-          />
+          <Field name="amharic" title={text.geez} value={dish?.amharic} maxLength={80} lang="am" />
           <Field
             name="price"
-            title="Preis (€)"
+            title={text.price}
             value={dish ? dish.price.toFixed(2).replace(".", ",") : ""}
             inputMode="decimal"
             placeholder="12,50"
             required
           />
           <label className="flex flex-col gap-1">
-            <span className={label}>Kategorie</span>
+            <span className={label}>{text.category}</span>
             <select name="categoryId" defaultValue={dish?.categoryId ?? categoryId} className={field}>
               {categories.map((category) => (
                 <option key={category.id} value={category.id} className="bg-coal">
@@ -177,18 +177,23 @@ export function DishForm({
             </select>
           </label>
         </div>
-        <ThreeLanguages name="description" title="Beschreibung" value={dish?.description} area />
+        <ThreeLanguages name="description" title={text.description} value={dish?.description} area />
 
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-cream/85">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              name="orderable"
-              defaultChecked={dish?.orderable ?? true}
-              className="h-4 w-4 accent-[#c9a24a]"
-            />{" "}
-            Online bestellbar
-          </label>
+          {ONLINE_ORDERING ? (
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="orderable"
+                defaultChecked={dish?.orderable ?? true}
+                className="h-4 w-4 accent-[#c9a24a]"
+              />{" "}
+              {text.orderable}
+            </label>
+          ) : (
+            // online ordering is off: keep the dish's setting as it is
+            (dish?.orderable ?? true) && <input type="hidden" name="orderable" value="on" />
+          )}
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -196,12 +201,12 @@ export function DishForm({
               defaultChecked={dish?.available ?? true}
               className="h-4 w-4 accent-[#c9a24a]"
             />{" "}
-            Verfügbar (nicht ausverkauft)
+            {text.available}
           </label>
         </div>
 
         <fieldset>
-          <legend className={`${label} mb-1.5`}>Merkmale</legend>
+          <legend className={`${label} mb-1.5`}>{text.features}</legend>
           <div className="flex flex-wrap gap-1.5">
             {DISH_TAGS.map((tag) => (
               <label key={tag} className={chip}>
@@ -212,7 +217,7 @@ export function DishForm({
                   defaultChecked={dish?.tags.includes(tag)}
                   className="accent-[#c9a24a]"
                 />{" "}
-                {TAG_LABEL[tag]}
+                {text.tags[tag]}
               </label>
             ))}
           </div>
@@ -220,23 +225,23 @@ export function DishForm({
 
         {!drinks && (
           <label className="flex flex-col gap-1 sm:max-w-md">
-            <span className={label}>Gluten-Angabe</span>
+            <span className={label}>{text.gluten}</span>
             <select name="gluten" defaultValue={dish?.gluten ?? "none"} className={field}>
               <option value="none" className="bg-coal">
-                Keine Angabe
+                {text.glutenNone}
               </option>
               <option value="noGluten" className="bg-coal">
-                „Ohne glutenhaltige Zutaten“
+                {text.glutenNo}
               </option>
               <option value="free" className="bg-coal">
-                „Glutenfrei“ (unter 20 mg/kg, auch ohne Spuren)
+                {text.glutenFree}
               </option>
             </select>
           </label>
         )}
 
         <fieldset>
-          <legend className={`${label} mb-1.5`}>Allergene</legend>
+          <legend className={`${label} mb-1.5`}>{text.allergens}</legend>
           <div className="flex flex-wrap gap-1.5">
             {ALLERGENS.map((entry) => (
               <label key={entry.code} className={chip}>
@@ -247,13 +252,13 @@ export function DishForm({
                   defaultChecked={dish?.allergens.includes(entry.code)}
                   className="accent-[#c9a24a]"
                 />
-                <span className="font-semibold">{entry.code}</span> {entry.label.de}
+                <span className="font-semibold">{entry.code}</span> {entry.label[lang]}
               </label>
             ))}
           </div>
         </fieldset>
         <fieldset>
-          <legend className={`${label} mb-1.5`}>Zusatzstoffe</legend>
+          <legend className={`${label} mb-1.5`}>{text.additives}</legend>
           <div className="flex flex-wrap gap-1.5">
             {ADDITIVES.map((entry) => (
               <label key={entry.code} className={chip}>
@@ -264,7 +269,7 @@ export function DishForm({
                   defaultChecked={dish?.additives.includes(entry.code)}
                   className="accent-[#c9a24a]"
                 />
-                <span className="font-semibold">{entry.code}</span> {entry.label.de}
+                <span className="font-semibold">{entry.code}</span> {entry.label[lang]}
               </label>
             ))}
           </div>
@@ -274,14 +279,14 @@ export function DishForm({
           <div className="grid gap-4 sm:max-w-md sm:grid-cols-2">
             <Field
               name="volume"
-              title="Menge (Liter)"
+              title={text.volume}
               value={dish?.volume ? String(dish.volume).replace(".", ",") : ""}
               inputMode="decimal"
               placeholder="0,33"
             />
             <Field
               name="deposit"
-              title="Pfand (€)"
+              title={text.deposit}
               value={dish?.deposit ? dish.deposit.toFixed(2).replace(".", ",") : ""}
               inputMode="decimal"
               placeholder="0,25"
@@ -294,7 +299,7 @@ export function DishForm({
             disabled={pending}
             className="rounded-full bg-gold px-5 py-2 text-sm font-semibold text-ink disabled:opacity-60"
           >
-            {pending ? "Speichern …" : dish ? "Speichern" : "Gericht anlegen"}
+            {pending ? t.common.saving : dish ? t.common.save : text.createDish}
           </button>
           <Message state={state} />
         </div>
@@ -303,14 +308,14 @@ export function DishForm({
         <form
           action={delAction}
           className="flex flex-wrap items-center gap-4"
-          onSubmit={(event) => !confirm(`„${dish.name.de}“ von der Speisekarte löschen?`) && event.preventDefault()}
+          onSubmit={(event) => !confirm(text.confirmDeleteDish(dish.name[lang])) && event.preventDefault()}
         >
           <input type="hidden" name="id" value={dish.id} />
           <button
             disabled={deleting}
             className="text-xs text-cream/55 underline underline-offset-4 hover:text-[#f0a080]"
           >
-            Gericht löschen
+            {text.deleteDish}
           </button>
           <Message state={delState} />
         </form>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
+import { useAdminText } from "@/components/admin/AdminLang";
+import { ONLINE_ORDERING } from "@/lib/features";
 import { addStaff, resetStaffPassword, setStaffPin, type TeamState } from "./actions";
 
 const field =
@@ -25,51 +27,52 @@ function Message({ state }: { state: TeamState }) {
 
 export function AddStaffForm() {
   const [state, action, pending] = useActionState(addStaff, null);
+  const { t } = useAdminText();
+  const text = t.team.form;
   return (
     <form action={action} className="grid gap-5 sm:grid-cols-2">
       <label className="flex flex-col gap-1.5">
-        <span className={label}>Name</span>
+        <span className={label}>{text.name}</span>
         <input name="name" maxLength={80} className={field} />
       </label>
       <label className="flex flex-col gap-1.5">
-        <span className={label}>E-Mail (Login)</span>
+        <span className={label}>{text.email}</span>
         <input name="email" type="email" required autoComplete="off" className={field} />
       </label>
       <label className="flex flex-col gap-1.5">
-        <span className={label}>Telefon (optional)</span>
+        <span className={label}>{text.phone}</span>
         <input name="phone" type="tel" className={field} />
       </label>
       <label className="flex flex-col gap-1.5">
-        <span className={label}>Rolle</span>
+        <span className={label}>{text.role}</span>
         <select name="role" defaultValue="kitchen" className={field}>
           <option value="kitchen" className="bg-coal">
-            Küche – sieht nur das Essen
+            {text.roles.kitchen}
           </option>
           <option value="service" className="bg-coal">
-            Service – nimmt Bestellungen in der App auf
+            {text.roles.service}
           </option>
-          <option value="driver" className="bg-coal">
-            Lieferung – sieht eigene Lieferungen
-          </option>
+          {ONLINE_ORDERING && (
+            <option value="driver" className="bg-coal">
+              {text.roles.driver}
+            </option>
+          )}
           <option value="owner" className="bg-coal">
-            Verwaltung – sieht alles
+            {text.roles.owner}
           </option>
         </select>
       </label>
       <label className="flex flex-col gap-1.5 sm:col-span-2">
-        <span className={label}>Startpasswort (mind. 10 Zeichen)</span>
+        <span className={label}>{text.startPassword}</span>
         <input name="password" type="text" minLength={10} autoComplete="new-password" className={field} />
       </label>
-      <p className="text-xs text-cream/55 sm:col-span-2">
-        Hat die Person schon ein Gast-Konto mit dieser E-Mail, bekommt es nur die Rolle; Name und Passwort bleiben dann
-        leer.
-      </p>
+      <p className="text-xs text-cream/55 sm:col-span-2">{text.existingNote}</p>
       <div className="flex flex-wrap items-center gap-4 sm:col-span-2">
         <button
           disabled={pending}
           className="rounded-full bg-gold px-6 py-2.5 text-sm font-semibold text-ink disabled:opacity-60"
         >
-          {pending ? "Speichern …" : "Konto anlegen"}
+          {pending ? t.common.saving : t.team.createAccount}
         </button>
         <Message state={state} />
       </div>
@@ -79,6 +82,7 @@ export function AddStaffForm() {
 
 export function ResetPasswordForm({ id }: { id: number }) {
   const [state, action, pending] = useActionState(resetStaffPassword, null);
+  const { t } = useAdminText();
   return (
     <form action={action} className="mt-3 flex flex-wrap items-end gap-3">
       <input type="hidden" name="id" value={id} />
@@ -86,8 +90,8 @@ export function ResetPasswordForm({ id }: { id: number }) {
         name="password"
         type="text"
         minLength={10}
-        placeholder="Neues Passwort"
-        aria-label="Neues Passwort"
+        placeholder={t.team.form.newPassword}
+        aria-label={t.team.form.newPassword}
         autoComplete="new-password"
         className={`${field} max-w-xs text-sm`}
       />
@@ -95,7 +99,7 @@ export function ResetPasswordForm({ id }: { id: number }) {
         disabled={pending}
         className="rounded-full border border-cream/30 px-4 py-1.5 text-xs font-semibold text-cream hover:border-gold disabled:opacity-60"
       >
-        Setzen
+        {t.common.set}
       </button>
       <div className="basis-full">
         <Message state={state} />
@@ -107,6 +111,7 @@ export function ResetPasswordForm({ id }: { id: number }) {
 /** The PIN for "Wer bedient?" in the service app: on a shared phone, tap your name and type the PIN. */
 export function PinForm({ id, hasPin }: { id: number; hasPin: boolean }) {
   const [state, action, pending] = useActionState(setStaffPin, null);
+  const { t } = useAdminText();
   return (
     <form action={action} className="mt-3 flex flex-wrap items-end gap-3">
       <input type="hidden" name="id" value={id} />
@@ -114,8 +119,8 @@ export function PinForm({ id, hasPin }: { id: number; hasPin: boolean }) {
         name="pin"
         inputMode="numeric"
         maxLength={6}
-        placeholder={hasPin ? "Neue PIN" : "PIN (4–6 Ziffern)"}
-        aria-label="App-PIN"
+        placeholder={hasPin ? t.team.form.newPin : t.team.form.pinPlaceholder}
+        aria-label={t.team.form.pinLabel}
         autoComplete="off"
         className={`${field} max-w-[10rem] text-sm`}
       />
@@ -123,7 +128,7 @@ export function PinForm({ id, hasPin }: { id: number; hasPin: boolean }) {
         disabled={pending}
         className="rounded-full border border-cream/30 px-4 py-1.5 text-xs font-semibold text-cream hover:border-gold disabled:opacity-60"
       >
-        Setzen
+        {t.common.set}
       </button>
       {hasPin && (
         <button
@@ -132,7 +137,7 @@ export function PinForm({ id, hasPin }: { id: number; hasPin: boolean }) {
           disabled={pending}
           className="rounded-full border border-[#f0a080]/60 px-4 py-1.5 text-xs font-semibold text-[#f0a080] disabled:opacity-60"
         >
-          Entfernen
+          {t.common.remove}
         </button>
       )}
       <div className="basis-full">

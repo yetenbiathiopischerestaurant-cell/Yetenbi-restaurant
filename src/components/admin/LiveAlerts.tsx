@@ -2,11 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAdminText } from "@/components/admin/AdminLang";
+import { ONLINE_ORDERING } from "@/lib/features";
 
 /*
   Live alerts for the team: checks every 10 seconds; on a new order or reservation request (owner) or a newly
   accepted order (kitchen) it plays a chime, shows a browser notification, refreshes the page and puts the count
   in the tab title. Sound needs one click per browser (autoplay rules); the choice is remembered on this device.
+  While online ordering is off, only reservations (owner) and table orders (kitchen) count.
 */
 
 export type Pulse = {
@@ -68,6 +71,7 @@ export default function LiveAlerts({
   onPulse?: (latest: Pulse) => void;
 }) {
   const router = useRouter();
+  const { t } = useAdminText();
   const [allowed, setAllowed] = useState(true);
   const [sound, setSound] = useState(false);
   const [perm, setPerm] = useState<NotificationPermission | "unsupported">("default");
@@ -124,8 +128,8 @@ export default function LiveAlerts({
         const was = prev.current;
         if (was) {
           let changed = false;
-          if (mode === "owner" && latest.lastOrderId > was.lastOrderId && latest.newOrders > 0) {
-            alert("Neue Bestellung", `${latest.newOrders} warten auf Annahme`);
+          if (ONLINE_ORDERING && mode === "owner" && latest.lastOrderId > was.lastOrderId && latest.newOrders > 0) {
+            alert(t.alerts.newOrder, t.alerts.waitingOrders(latest.newOrders));
             changed = true;
           }
           if (
@@ -133,23 +137,23 @@ export default function LiveAlerts({
             latest.lastReservationId > was.lastReservationId &&
             latest.pendingReservations > was.pendingReservations
           ) {
-            alert("Neue Reservierungsanfrage", `${latest.pendingReservations} offen`);
+            alert(t.alerts.newReservation, t.alerts.open(latest.pendingReservations));
             changed = true;
           }
-          if (mode === "kitchen" && latest.lastAccepted > was.lastAccepted) {
-            alert("Neue Bestellung für die Küche", `${latest.kitchenQueue} in Arbeit`);
+          if (ONLINE_ORDERING && mode === "kitchen" && latest.lastAccepted > was.lastAccepted) {
+            alert(t.alerts.kitchenOrder, t.alerts.inProgress(latest.kitchenQueue));
             changed = true;
           }
           if (mode === "kitchen" && latest.lastTableItem > was.lastTableItem) {
-            alert("Neue Tischbestellung", `${latest.tableQueue} Tisch-Bons offen`);
+            alert(t.alerts.tableOrder, t.alerts.tableTickets(latest.tableQueue));
             changed = true;
           }
           if (changed) router.refresh();
         }
         prev.current = latest;
         onPulse?.(latest);
-        count.current =
-          mode === "owner" ? latest.newOrders + latest.pendingReservations : latest.kitchenQueue + latest.tableQueue;
+        const orders = ONLINE_ORDERING ? (mode === "owner" ? latest.newOrders : latest.kitchenQueue) : 0;
+        count.current = orders + (mode === "owner" ? latest.pendingReservations : latest.tableQueue);
         applyTitle(count.current);
       } catch {
         // offline for a moment: try again on the next tick
@@ -161,7 +165,7 @@ export default function LiveAlerts({
       stop = true;
       clearTimeout(timer);
     };
-  }, [mode, alert, router, onPulse]);
+  }, [mode, alert, router, onPulse, t]);
 
   // Next.js sets the page title again on every navigation or refresh; put the count back in front each time.
   useEffect(() => {
@@ -193,7 +197,7 @@ export default function LiveAlerts({
         </button>
       )}
       <div className="flex items-center gap-2 rounded-full border border-gold/30 bg-coal/95 px-2 py-1.5 text-xs shadow-lg backdrop-blur">
-        <span className="pl-1 text-cream/55">Live</span>
+        <span className="pl-1 text-cream/55">{t.alerts.live}</span>
         <span aria-hidden className="h-2 w-2 animate-pulse rounded-full bg-[#7fcf9c]" />
         <button
           type="button"
@@ -201,7 +205,7 @@ export default function LiveAlerts({
           aria-pressed={sound}
           className={`rounded-full px-3 py-1 font-semibold ${sound ? "bg-gold text-ink" : "border border-cream/25 text-cream/80"}`}
         >
-          {sound ? "Ton an" : "Ton aus"}
+          {sound ? t.alerts.soundOn : t.alerts.soundOff}
         </button>
         {perm === "default" && (
           <button
@@ -209,7 +213,7 @@ export default function LiveAlerts({
             onClick={askNotifications}
             className="rounded-full border border-cream/25 px-3 py-1 font-semibold text-cream/80"
           >
-            Benachrichtigungen erlauben
+            {t.alerts.allowNotifications}
           </button>
         )}
       </div>

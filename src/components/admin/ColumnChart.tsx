@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAdminText } from "@/components/admin/AdminLang";
 
 /*
   Single-series column chart for the admin (dataviz rules: one hue, thin bars with a rounded data end,
@@ -12,10 +13,10 @@ type Column = { key: string; label: string; value: number; detail?: string };
 
 /** How values read: whole euros or plain counts (a string, so server pages can pass it). */
 type Unit = "euro" | "count";
-const FORMAT: Record<Unit, (value: number) => string> = {
-  euro: (value) =>
-    new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value),
-  count: (value) => new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 }).format(value),
+const FORMAT: Record<Unit, (value: number, intl: string) => string> = {
+  euro: (value, intl) =>
+    new Intl.NumberFormat(intl, { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value),
+  count: (value, intl) => new Intl.NumberFormat(intl, { maximumFractionDigits: 1 }).format(value),
 };
 
 /** The top of the scale: the next round number at or above the largest value (1, 2, 5 or 10 × a power of ten). */
@@ -39,7 +40,8 @@ export default function ColumnChart({
   labelEvery?: number;
   height?: number;
 }) {
-  const format = FORMAT[unit];
+  const { t } = useAdminText();
+  const format = (value: number) => FORMAT[unit](value, t.intl);
   const [hover, setHover] = useState<number | null>(null);
   const [table, setTable] = useState(false);
   const max = niceMax(Math.max(...data.map((column) => column.value), 0));
@@ -55,7 +57,7 @@ export default function ColumnChart({
           onClick={() => setTable((shown) => !shown)}
           className="text-xs text-cream/50 underline underline-offset-4 hover:text-cream"
         >
-          {table ? "Als Diagramm" : "Als Tabelle"}
+          {table ? t.chart.asChart : t.chart.asTable}
         </button>
       </div>
       {table ? (

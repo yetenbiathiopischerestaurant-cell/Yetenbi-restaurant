@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { DAY_NAMES, type Business } from "@/lib/business";
+import type { Business } from "@/lib/business";
+import { useAdminText } from "@/components/admin/AdminLang";
+import { ONLINE_ORDERING } from "@/lib/features";
 import { saveBusinessSettings } from "./actions";
 
 const field =
@@ -10,17 +12,15 @@ const label = "text-[0.62rem] font-semibold uppercase tracking-[0.25em] text-gol
 
 export default function BusinessForm({ business }: { business: Business }) {
   const [state, action, pending] = useActionState(saveBusinessSettings, null);
+  const { t } = useAdminText();
+  const text = t.settings;
   return (
     <form action={action} className="space-y-10">
       <section className="border border-gold/20 bg-ink/40 p-6 md:p-8">
-        <h2 className="font-display text-2xl font-semibold text-gold-soft">Öffnungszeiten</h2>
-        <p className="mt-2 text-sm text-cream/60">
-          Gelten sofort überall: Öffnungszeiten auf der Website, Reservierungszeiten (bis 1,5 Std. vor Schluss),
-          Online-Bestellung (bis 30 Min. vor Schluss) und Google. Einzelne Feiertage oder Betriebsferien tragt ihr unter
-          Reservierungen → Schließtage ein.
-        </p>
+        <h2 className="font-display text-2xl font-semibold text-gold-soft">{text.hours}</h2>
+        <p className="mt-2 text-sm text-cream/60">{ONLINE_ORDERING ? text.hoursLeadOrders : text.hoursLead}</p>
         <div className="mt-6 divide-y divide-cream/10">
-          {DAY_NAMES.map((name, day) => {
+          {text.days.map((name, day) => {
             const hours = business.hours[day];
             return (
               <fieldset
@@ -36,7 +36,7 @@ export default function BusinessForm({ business }: { business: Business }) {
                     defaultChecked={Boolean(hours)}
                     className="peer h-4 w-4 accent-[#c9a24a]"
                   />{" "}
-                  geöffnet
+                  {text.open}
                 </label>
                 <div className="col-span-2 flex items-center gap-3 sm:col-span-1">
                   <input
@@ -44,16 +44,16 @@ export default function BusinessForm({ business }: { business: Business }) {
                     name={`from-${day}`}
                     defaultValue={hours?.open ?? "11:00"}
                     step={900}
-                    aria-label={`${name} öffnet`}
+                    aria-label={text.opens(name)}
                     className={`${field} w-28`}
                   />
-                  <span className="text-cream/50">bis</span>
+                  <span className="text-cream/50">{text.until}</span>
                   <input
                     type="time"
                     name={`to-${day}`}
                     defaultValue={hours?.close ?? "22:00"}
                     step={900}
-                    aria-label={`${name} schließt`}
+                    aria-label={text.closes(name)}
                     className={`${field} w-28`}
                   />
                 </div>
@@ -64,14 +64,11 @@ export default function BusinessForm({ business }: { business: Business }) {
       </section>
 
       <section className="border border-gold/20 bg-ink/40 p-6 md:p-8">
-        <h2 className="font-display text-2xl font-semibold text-gold-soft">Angaben für Impressum und Datenschutz</h2>
-        <p className="mt-2 text-sm text-cream/60">
-          Pflicht nach § 5 DDG: vollständiger Name der Inhaberin oder des Inhabers und eine E-Mail-Adresse. Die
-          USt-IdNr. nur, wenn es eine gibt.
-        </p>
+        <h2 className="font-display text-2xl font-semibold text-gold-soft">{text.legal}</h2>
+        <p className="mt-2 text-sm text-cream/60">{text.legalLead}</p>
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
           <label className="flex flex-col gap-1">
-            <span className={label}>Inhaber/in (vollständiger Name)</span>
+            <span className={label}>{text.ownerName}</span>
             <input
               name="ownerName"
               defaultValue={business.ownerName}
@@ -81,7 +78,7 @@ export default function BusinessForm({ business }: { business: Business }) {
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className={label}>Kontakt-E-Mail</span>
+            <span className={label}>{text.contactEmail}</span>
             <input
               name="contactEmail"
               type="email"
@@ -91,7 +88,7 @@ export default function BusinessForm({ business }: { business: Business }) {
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className={label}>USt-IdNr. (optional)</span>
+            <span className={label}>{text.vatId}</span>
             <input
               name="vatId"
               defaultValue={business.vatId}
@@ -108,7 +105,7 @@ export default function BusinessForm({ business }: { business: Business }) {
           disabled={pending}
           className="rounded-full bg-gold px-6 py-2.5 text-sm font-semibold text-ink disabled:opacity-60"
         >
-          {pending ? "Speichern …" : "Alles speichern"}
+          {pending ? t.common.saving : text.saveAll}
         </button>
         {state?.ok && (
           <p role="status" className="text-sm text-[#9fe0b6]">

@@ -14,14 +14,16 @@ import {
 } from "@/lib/server/cloudinary";
 import { clearPhoto, setPhoto } from "@/lib/server/photos";
 import { audit } from "@/lib/server/audit";
+import { adminText } from "@/lib/server/admin-lang";
 
 type Ticket = ReturnType<typeof uploadTicket>;
 
 /** A one-time signed upload for a slot. Only owners; the file goes straight from the browser to Cloudinary. */
 export async function startUpload(slot: string): Promise<{ ticket?: Ticket; error?: string }> {
   await requireOwner();
-  if (!isCloudinaryConfigured()) return { error: "Cloudinary ist noch nicht eingerichtet." };
-  if (!SLOT_KEYS.has(slot)) return { error: "Unbekannter Platz." };
+  const { t } = await adminText();
+  if (!isCloudinaryConfigured()) return { error: t.photos.errors.notConfigured };
+  if (!SLOT_KEYS.has(slot)) return { error: t.photos.errors.unknownSlot };
   const publicId = `${FOLDER}/${slot.replace("/", "-")}-${randomBytes(4).toString("hex")}`;
   return { ticket: uploadTicket(publicId) };
 }
@@ -29,10 +31,11 @@ export async function startUpload(slot: string): Promise<{ ticket?: Ticket; erro
 /** After the upload: checks the file is in our Cloudinary folder, stores it for the slot, refreshes the website. */
 export async function finishUpload(slot: string, publicId: string): Promise<{ ok?: boolean; error?: string }> {
   const me = await requireOwner();
+  const { t } = await adminText();
   if (!SLOT_KEYS.has(slot) || !new RegExp(`^${FOLDER}/[a-z-]+-[0-9a-f]{8}$`).test(publicId))
-    return { error: "Ungültiges Foto." };
+    return { error: t.photos.errors.invalid };
   const res = await findResource(publicId);
-  if (!res) return { error: "Das Foto ist bei Cloudinary nicht angekommen. Bitte noch einmal versuchen." };
+  if (!res) return { error: t.photos.errors.notArrived };
   const previous = await setPhoto(slot, {
     url: res.secure_url,
     publicId: res.public_id,

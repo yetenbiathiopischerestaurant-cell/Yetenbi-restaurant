@@ -8,6 +8,7 @@ import { sendGuestEmail } from "@/lib/server/email";
 import { createReservation, setStatus, type Status } from "@/lib/server/reservations";
 import { audit } from "@/lib/server/audit";
 import { readBusiness } from "@/lib/server/business";
+import { adminText } from "@/lib/server/admin-lang";
 
 export type AdminState = { error?: string; ok?: string } | null;
 
@@ -59,22 +60,9 @@ export async function addPhoneBooking(_: AdminState, form: FormData): Promise<Ad
     emailOptional: true,
     week: (await readBusiness()).hours,
   });
-  const labels: Record<string, string> = {
-    date: "Datum fehlt oder liegt in der Vergangenheit.",
-    past: "Das Datum liegt in der Vergangenheit.",
-    far: "Höchstens 90 Tage im Voraus.",
-    closed: "An diesem Tag ist geschlossen.",
-    time: "Uhrzeit fehlt.",
-    slot: "Zu dieser Uhrzeit sind keine Reservierungen möglich.",
-    guests: "Personenzahl fehlt.",
-    tooMany: "Mehr als 12 Personen bitte direkt planen.",
-    name: "Name fehlt.",
-    email: "Die E-Mail-Adresse ist ungültig.",
-    phone: "Telefonnummer fehlt oder ist ungültig.",
-    note: "Anmerkung zu lang.",
-  };
+  const { t } = await adminText();
   const first = Object.values(errors)[0];
-  if (first) return { error: labels[first] };
+  if (first) return { error: t.reservations.errors[first] ?? first };
   const reservation = await createReservation(input, "de", { source: "phone", status: "confirmed" });
   if (reservation.email) await sendGuestEmail("confirmed", reservation);
   await audit(
@@ -85,7 +73,7 @@ export async function addPhoneBooking(_: AdminState, form: FormData): Promise<Ad
   );
   revalidatePath("/admin/reservierungen");
   revalidatePath("/admin");
-  return { ok: `Eingetragen: ${reservation.reference}` };
+  return { ok: t.reservations.added(reservation.reference) };
 }
 
 export async function addClosedDay(_: AdminState, form: FormData): Promise<AdminState> {
@@ -94,12 +82,13 @@ export async function addClosedDay(_: AdminState, form: FormData): Promise<Admin
   const note = String(form.get("note") ?? "")
     .trim()
     .slice(0, 120);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: "Bitte ein Datum wählen." };
+  const { t } = await adminText();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: t.reservations.pickDate };
   await addClosure(date, note);
   await audit(me, "settings", "Schließtag eingetragen", `${date}${note ? ` · ${note}` : ""}`);
   revalidatePath("/admin/reservierungen");
   revalidatePath("/admin");
-  return { ok: "Schließtag gespeichert." };
+  return { ok: t.reservations.closedSaved };
 }
 
 export async function removeClosedDay(form: FormData) {

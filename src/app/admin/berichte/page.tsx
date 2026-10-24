@@ -2,20 +2,26 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import ColumnChart from "@/components/admin/ColumnChart";
+import type { AdminDict } from "@/lib/admin-i18n";
+import { ONLINE_ORDERING } from "@/lib/features";
 import { PRESETS, parseRange, rangeQuery } from "@/lib/report-range";
+import { adminText } from "@/lib/server/admin-lang";
 import { requireOwner } from "@/lib/server/auth";
 import { hasDatabase } from "@/lib/server/db";
 import { getReport } from "@/lib/server/reports";
 import AdminHeader from "../AdminHeader";
 
 type Params = Promise<Record<string, string | string[] | undefined>>;
+type Report = Awaited<ReturnType<typeof getReport>>;
 
-const euro = (amount: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(amount);
-const percent = (part: number, whole: number) => (whole ? `${Math.round((part / whole) * 100)} %` : "–");
-const dayLabel = (iso: string) =>
-  new Date(`${iso}T12:00:00Z`).toLocaleDateString("de-DE", { day: "numeric", month: "numeric", timeZone: "UTC" });
-const longDate = (iso: string) =>
-  new Date(`${iso}T12:00:00Z`).toLocaleDateString("de-DE", {
+const euro = (amount: number, intl: string) =>
+  new Intl.NumberFormat(intl, { style: "currency", currency: "EUR" }).format(amount);
+const percent = (part: number, whole: number, intl: string) =>
+  whole ? new Intl.NumberFormat(intl, { style: "percent" }).format(part / whole) : "–";
+const dayLabel = (iso: string, intl: string) =>
+  new Date(`${iso}T12:00:00Z`).toLocaleDateString(intl, { day: "numeric", month: "numeric", timeZone: "UTC" });
+const longDate = (iso: string, intl: string) =>
+  new Date(`${iso}T12:00:00Z`).toLocaleDateString(intl, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -37,10 +43,12 @@ function Split({
   title,
   first,
   second,
+  intl,
 }: {
   title: string;
   first: { label: string; count: number; revenue: number };
   second: { label: string; count: number; revenue: number };
+  intl: string;
 }) {
   const total = first.count + second.count;
   const share = total ? (first.count / total) * 100 : 50;
@@ -54,23 +62,44 @@ function Split({
       <div className="mt-2 flex justify-between text-xs text-cream/70">
         <span>
           <span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-[#a8853a]" />
-          {first.label}: {first.count} ({percent(first.count, total)}) · {euro(first.revenue)}
+          {first.label}: {first.count} ({percent(first.count, total, intl)}) · {euro(first.revenue, intl)}
         </span>
         <span>
           <span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-cream/35" />
-          {second.label}: {second.count} ({percent(second.count, total)}) · {euro(second.revenue)}
+          {second.label}: {second.count} ({percent(second.count, total, intl)}) · {euro(second.revenue, intl)}
         </span>
       </div>
     </div>
   );
 }
 
-async function ReportView({ searchParams }: { searchParams: Params }) {
-  await connection();
-  await requireOwner();
-  if (!hasDatabase()) return <p className="mt-12 text-cream/70">Keine Datenbank verbunden.</p>;
-  const range = parseRange(await searchParams);
-  const report = await getReport(range);
+/** Confirmed and declined reservations and how they came in. Shown with or without online orders. */
+function Reservations({ report, t }: { report: Report; t: AdminDict }) {
+  const text = t.reports;
+  return (
+    <section>
+      <h2 className="mb-4 font-display text-2xl font-semibold text-gold-soft">{text.reservations}</h2>
+      <div className="grid grid-cols-2 gap-3">
+        <Kpi
+          label={text.confirmed}
+          value={String(report.reservations.confirmed)}
+          sub={t.common.guests(report.reservations.guests)}
+        />
+        <Kpi
+          label={text.rejectedCancelled}
+          value={`${report.reservations.declined} / ${report.reservations.cancelled}`}
+        />
+        <Kpi label={text.viaWebsite} value={String(report.reservations.website)} />
+        <Kpi label={text.byPhone} value={String(report.reservations.phone)} />
+      </div>
+    </section>
+  );
+}
+
+/** Revenue, charts, breakdown and top dishes. Only while online ordering is on. */
+function OrderReport({ report, t }: { report: Report; t: AdminDict }) {
+  const text = t.reports;
+  const intl = t.intl;
 
   /** The count and revenue of one group (e.g. method "delivery"), or zeros when there were none. */
   const groupOf = <T extends { count: number; revenue: number }>(
@@ -93,73 +122,31 @@ async function ReportView({ searchParams }: { searchParams: Params }) {
 
   return (
     <>
-      {/* period */}
-      <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
-        <nav aria-label="Zeitraum" className="flex flex-wrap gap-2">
-          {PRESETS.map((preset) => (
-            <Link
-              key={preset.key}
-              href={`/admin/berichte?r=${preset.key}`}
-              className={`rounded-full px-4 py-1.5 text-sm ${range.preset === preset.key ? "bg-gold font-semibold text-ink" : "border border-cream/20 text-cream/75 hover:border-gold"}`}
-            >
-              {preset.label}
-            </Link>
-          ))}
-        </nav>
-        <form className="flex flex-wrap items-end gap-3 text-sm" action="/admin/berichte">
-          <label className="flex flex-col gap-1 text-xs text-cream/60">
-            Von
-            <input
-              type="date"
-              name="von"
-              defaultValue={range.from}
-              className="border-b border-gold/30 bg-transparent text-cream [color-scheme:dark] focus:outline-none"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-xs text-cream/60">
-            Bis
-            <input
-              type="date"
-              name="bis"
-              defaultValue={range.to}
-              className="border-b border-gold/30 bg-transparent text-cream [color-scheme:dark] focus:outline-none"
-            />
-          </label>
-          <button className="rounded-full border border-cream/25 px-4 py-1.5 text-cream hover:border-gold">
-            Anzeigen
-          </button>
-        </form>
-      </div>
-      <p className="mt-3 text-sm text-cream/55">
-        {longDate(range.from)} bis {longDate(range.to)} · Umsatz = abgeschlossene Bestellungen, wie an der Tür bezahlt
-        (inkl. Pfand und Liefergebühr)
-      </p>
-
       <section className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         <Kpi
-          label="Umsatz"
-          value={euro(report.orders.revenue)}
-          sub={`davon Pfand ${euro(report.orders.deposit)}, Liefergebühren ${euro(report.orders.fees)}`}
+          label={text.revenue}
+          value={euro(report.orders.revenue, intl)}
+          sub={text.revenueSub(euro(report.orders.deposit, intl), euro(report.orders.fees, intl))}
         />
-        <Kpi label="Bestellungen" value={String(report.orders.completed)} sub={`${report.orders.all} eingegangen`} />
-        <Kpi label="Ø Bestellwert" value={euro(report.orders.average)} />
+        <Kpi label={text.orders} value={String(report.orders.completed)} sub={text.received(report.orders.all)} />
+        <Kpi label={text.average} value={euro(report.orders.average, intl)} />
         <Kpi
-          label="Abgelehnt / storniert"
+          label={text.rejectedCancelled}
           value={`${report.orders.rejected} / ${report.orders.cancelled}`}
-          sub={`${percent(report.orders.rejected + report.orders.cancelled, report.orders.all)} aller Bestellungen`}
+          sub={text.ofAllOrders(percent(report.orders.rejected + report.orders.cancelled, report.orders.all, intl))}
         />
       </section>
 
       <section className="mt-10">
-        <h2 className="mb-4 font-display text-2xl font-semibold text-gold-soft">Umsatz pro Tag</h2>
+        <h2 className="mb-4 font-display text-2xl font-semibold text-gold-soft">{text.perDay}</h2>
         <ColumnChart
-          title="Abgeschlossene Bestellungen, in Euro"
+          title={text.perDayChart}
           unit="euro"
           data={report.perDay.map((day) => ({
             key: day.day,
-            label: dayLabel(day.day),
+            label: dayLabel(day.day, intl),
             value: day.revenue,
-            detail: `${day.orders} Bestellungen`,
+            detail: text.ordersCount(day.orders),
           }))}
           labelEvery={Math.max(1, Math.ceil(report.perDay.length / 8))}
         />
@@ -167,35 +154,37 @@ async function ReportView({ searchParams }: { searchParams: Params }) {
 
       <div className="mt-10 grid gap-10 lg:grid-cols-2">
         <section>
-          <h2 className="mb-4 font-display text-2xl font-semibold text-gold-soft">Bestellungen nach Uhrzeit</h2>
+          <h2 className="mb-4 font-display text-2xl font-semibold text-gold-soft">{text.byHour}</h2>
           <ColumnChart
-            title="Abgeschlossene Bestellungen nach Eingangsstunde"
+            title={text.byHourChart}
             unit="count"
-            data={hours.map((row) => ({ key: String(row.hour), label: `${row.hour} Uhr`, value: row.orders }))}
+            data={hours.map((row) => ({ key: String(row.hour), label: text.hour(row.hour), value: row.orders }))}
             labelEvery={3}
             height={150}
           />
         </section>
         <section className="space-y-6">
-          <h2 className="font-display text-2xl font-semibold text-gold-soft">Aufteilung</h2>
+          <h2 className="font-display text-2xl font-semibold text-gold-soft">{text.split}</h2>
           <Split
-            title="Lieferung oder Abholung"
-            first={{ label: "Lieferung", ...groupOf(report.byMethod, "method", "delivery") }}
-            second={{ label: "Abholung", ...groupOf(report.byMethod, "method", "pickup") }}
+            title={text.deliveryOrPickup}
+            intl={intl}
+            first={{ label: t.common.delivery, ...groupOf(report.byMethod, "method", "delivery") }}
+            second={{ label: t.common.pickup, ...groupOf(report.byMethod, "method", "pickup") }}
           />
           <Split
-            title="Bar oder Karte"
-            first={{ label: "Bar", ...groupOf(report.byPayment, "payment", "cash") }}
-            second={{ label: "Karte", ...groupOf(report.byPayment, "payment", "card") }}
+            title={text.cashOrCard}
+            intl={intl}
+            first={{ label: text.cash, ...groupOf(report.byPayment, "payment", "cash") }}
+            second={{ label: text.card, ...groupOf(report.byPayment, "payment", "card") }}
           />
         </section>
       </div>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-2">
         <section>
-          <h2 className="mb-4 font-display text-2xl font-semibold text-gold-soft">Meistbestellt</h2>
+          <h2 className="mb-4 font-display text-2xl font-semibold text-gold-soft">{text.top}</h2>
           {report.topDishes.length === 0 ? (
-            <p className="text-cream/55">Keine abgeschlossenen Bestellungen in diesem Zeitraum.</p>
+            <p className="text-cream/55">{text.noOrders}</p>
           ) : (
             <ol className="space-y-2.5">
               {report.topDishes.map((dish, index) => (
@@ -212,50 +201,99 @@ async function ReportView({ searchParams }: { searchParams: Params }) {
                     />
                   </span>
                   <span className="text-right tabular-nums text-cream/75">
-                    {dish.qty}× · {euro(dish.revenue)}
+                    {dish.qty}× · {euro(dish.revenue, intl)}
                   </span>
                 </li>
               ))}
             </ol>
           )}
         </section>
-        <section>
-          <h2 className="mb-4 font-display text-2xl font-semibold text-gold-soft">Reservierungen</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <Kpi
-              label="Bestätigt"
-              value={String(report.reservations.confirmed)}
-              sub={`${report.reservations.guests} Gäste`}
-            />
-            <Kpi
-              label="Abgelehnt / storniert"
-              value={`${report.reservations.declined} / ${report.reservations.cancelled}`}
-            />
-            <Kpi label="Über die Website" value={String(report.reservations.website)} />
-            <Kpi label="Telefonisch" value={String(report.reservations.phone)} />
-          </div>
-        </section>
+        <Reservations report={report} t={t} />
       </div>
+    </>
+  );
+}
+
+async function ReportView({ searchParams }: { searchParams: Params }) {
+  await connection();
+  await requireOwner();
+  const { t } = await adminText();
+  const text = t.reports;
+  if (!hasDatabase()) return <p className="mt-12 text-cream/70">{t.common.noDatabase}</p>;
+  const range = parseRange(await searchParams);
+  const report = await getReport(range);
+
+  return (
+    <>
+      {/* period */}
+      <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
+        <nav aria-label={text.period} className="flex flex-wrap gap-2">
+          {PRESETS.map((preset) => (
+            <Link
+              key={preset.key}
+              href={`/admin/berichte?r=${preset.key}`}
+              className={`rounded-full px-4 py-1.5 text-sm ${range.preset === preset.key ? "bg-gold font-semibold text-ink" : "border border-cream/20 text-cream/75 hover:border-gold"}`}
+            >
+              {text.presets[preset.key]}
+            </Link>
+          ))}
+        </nav>
+        <form className="flex flex-wrap items-end gap-3 text-sm" action="/admin/berichte">
+          <label className="flex flex-col gap-1 text-xs text-cream/60">
+            {text.from}
+            <input
+              type="date"
+              name="von"
+              defaultValue={range.from}
+              className="border-b border-gold/30 bg-transparent text-cream [color-scheme:dark] focus:outline-none"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-cream/60">
+            {text.to}
+            <input
+              type="date"
+              name="bis"
+              defaultValue={range.to}
+              className="border-b border-gold/30 bg-transparent text-cream [color-scheme:dark] focus:outline-none"
+            />
+          </label>
+          <button className="rounded-full border border-cream/25 px-4 py-1.5 text-cream hover:border-gold">
+            {text.show}
+          </button>
+        </form>
+      </div>
+      <p className="mt-3 text-sm text-cream/55">
+        {text.range(longDate(range.from, t.intl), longDate(range.to, t.intl))}
+        {ONLINE_ORDERING && ` · ${text.revenueNote}`}
+      </p>
+
+      {ONLINE_ORDERING ? (
+        <OrderReport report={report} t={t} />
+      ) : (
+        <div className="mt-6 max-w-3xl">
+          <Reservations report={report} t={t} />
+        </div>
+      )}
 
       <section className="mt-12 border border-gold/20 bg-ink/40 p-6">
-        <h2 className="font-display text-2xl font-semibold text-gold-soft">Export für die Buchhaltung</h2>
+        <h2 className="font-display text-2xl font-semibold text-gold-soft">{text.export}</h2>
         <p className="mt-2 max-w-3xl text-sm text-cream/65">
-          CSV-Dateien für Excel oder das Steuerbüro, ohne Namen und Kontaktdaten. Speisen und Getränke sind getrennt
-          ausgewiesen (üblicherweise 7 % bzw. 19 % MwSt. bei Lieferung und Abholung, bitte mit dem Steuerbüro
-          abstimmen); Pfand und Liefergebühr stehen in eigenen Spalten. Maßgeblich für das Finanzamt bleibt die Kasse.
+          {ONLINE_ORDERING ? text.exportLead : text.exportLeadNoOrders}
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
-          <a
-            href={`/api/admin/export?typ=bestellungen&${rangeQuery(range)}`}
-            className="rounded-full bg-gold px-5 py-2 text-sm font-semibold text-ink"
-          >
-            Bestellungen als CSV
-          </a>
+          {ONLINE_ORDERING && (
+            <a
+              href={`/api/admin/export?typ=bestellungen&${rangeQuery(range)}`}
+              className="rounded-full bg-gold px-5 py-2 text-sm font-semibold text-ink"
+            >
+              {text.ordersCsv}
+            </a>
+          )}
           <a
             href={`/api/admin/export?typ=reservierungen&${rangeQuery(range)}`}
             className="rounded-full border border-gold/60 px-5 py-2 text-sm font-semibold text-gold-soft hover:bg-gold hover:text-ink"
           >
-            Reservierungen als CSV
+            {text.reservationsCsv}
           </a>
         </div>
       </section>
@@ -263,11 +301,12 @@ async function ReportView({ searchParams }: { searchParams: Params }) {
   );
 }
 
-export default function ReportsPage({ searchParams }: { searchParams: Params }) {
+export default async function ReportsPage({ searchParams }: { searchParams: Params }) {
+  const { t } = await adminText();
   return (
     <main id="main" className="mx-auto w-full max-w-6xl px-5 py-8 md:px-10 md:py-12">
       <AdminHeader active="reports" />
-      <Suspense fallback={<p className="mt-12 text-cream/60">Lade Bericht …</p>}>
+      <Suspense fallback={<p className="mt-12 text-cream/60">{t.common.loading}</p>}>
         <ReportView searchParams={searchParams} />
       </Suspense>
     </main>

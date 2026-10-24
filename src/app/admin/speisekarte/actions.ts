@@ -5,6 +5,7 @@ import type { L } from "@/lib/data";
 import { ADDITIVES, ALLERGENS, DISH_TAGS, type GlutenClaim } from "@/lib/menu";
 import { requireOwner } from "@/lib/server/auth";
 import { audit } from "@/lib/server/audit";
+import { adminText } from "@/lib/server/admin-lang";
 import {
   createCategory,
   createDish,
@@ -66,25 +67,26 @@ function refresh() {
 
 export async function saveCategory(_: MenuState, form: FormData): Promise<MenuState> {
   const me = await requireOwner();
+  const { t } = await adminText();
   const id = readText(form, "id", 60);
   const title = readTranslated(form, "title", 60);
-  if (!title || title.de.length < 2) return { error: "Bitte einen Namen (Deutsch) eingeben." };
+  if (!title || title.de.length < 2) return { error: t.menu.errors.name };
   const data = { title, note: readTranslated(form, "note", 400), drinks: form.get("drinks") === "on" };
   if (id) await updateCategory(id, data);
   else await createCategory(data);
   await audit(me, "menu", id ? "Kategorie geändert" : "Kategorie angelegt", title.de);
   refresh();
-  return { ok: id ? "Kategorie gespeichert." : "Kategorie angelegt." };
+  return { ok: id ? t.menu.categorySaved : t.menu.categoryCreated };
 }
 
 export async function removeCategory(_: MenuState, form: FormData): Promise<MenuState> {
   const me = await requireOwner();
+  const { t } = await adminText();
   const catId = readText(form, "id", 60);
-  if (!(await deleteCategory(catId)))
-    return { error: "Nur leere Kategorien können gelöscht werden. Erst die Gerichte löschen oder verschieben." };
+  if (!(await deleteCategory(catId))) return { error: t.menu.errors.categoryNotEmpty };
   await audit(me, "menu", "Kategorie gelöscht", catId);
   refresh();
-  return { ok: "Kategorie gelöscht." };
+  return { ok: t.menu.categoryDeleted };
 }
 
 /* ---------- dishes ---------- */
@@ -92,18 +94,19 @@ export async function removeCategory(_: MenuState, form: FormData): Promise<Menu
 export async function saveDish(_: MenuState, form: FormData): Promise<MenuState> {
   const me = await requireOwner();
   const id = readText(form, "id", 60);
+  const { t } = await adminText();
+  const errors = t.menu.errors;
   const categoryId = readText(form, "categoryId", 60);
   const category = (await readMenu()).find((candidate) => candidate.id === categoryId);
-  if (!category) return { error: "Bitte eine Kategorie wählen." };
+  if (!category) return { error: errors.pickCategory };
   const name = readTranslated(form, "name", 80);
-  if (!name || name.de.length < 2) return { error: "Bitte einen Namen (Deutsch) eingeben." };
+  if (!name || name.de.length < 2) return { error: errors.name };
   const price = readNumber(form, "price");
-  if (price === null || Number.isNaN(price) || price > 999)
-    return { error: "Bitte einen Preis in Euro eingeben, z. B. 12,50." };
+  if (price === null || Number.isNaN(price) || price > 999) return { error: errors.price };
   const volume = readNumber(form, "volume");
   const deposit = readNumber(form, "deposit");
-  if (Number.isNaN(volume) || (volume !== null && volume > 5)) return { error: "Menge bitte in Litern, z. B. 0,33." };
-  if (Number.isNaN(deposit) || (deposit !== null && deposit > 5)) return { error: "Pfand bitte in Euro, z. B. 0,25." };
+  if (Number.isNaN(volume) || (volume !== null && volume > 5)) return { error: errors.volume };
+  if (Number.isNaN(deposit) || (deposit !== null && deposit > 5)) return { error: errors.deposit };
 
   const dish: DishInput = {
     categoryId,
@@ -141,17 +144,18 @@ export async function saveDish(_: MenuState, form: FormData): Promise<MenuState>
   }
   await audit(me, "menu", action, dish.name.de);
   refresh();
-  return { ok: id ? "Gespeichert, auf der Website sichtbar." : "Gericht angelegt, auf der Website sichtbar." };
+  return { ok: id ? t.menu.dishSaved : t.menu.dishCreated };
 }
 
 export async function removeDish(_: MenuState, form: FormData): Promise<MenuState> {
   const me = await requireOwner();
+  const { t } = await adminText();
   const dishId = readText(form, "id", 60);
   const gone = await findDish(dishId);
   await deleteDish(dishId);
   await audit(me, "menu", "Gericht gelöscht", gone?.name.de ?? dishId);
   refresh();
-  return { ok: "Gelöscht." };
+  return { ok: t.menu.deleted };
 }
 
 /** Quick switch: sold out today / available again. */

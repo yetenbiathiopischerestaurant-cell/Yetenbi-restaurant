@@ -7,6 +7,8 @@ import { LalibelaCross } from "@/components/heritage/Ornaments";
 import { logout } from "@/app/account-actions";
 import { useAccount } from "@/lib/account-client";
 import { ONLINE_ORDERING } from "@/lib/features";
+import type { AdminDict } from "@/lib/admin-i18n";
+import { AdminLanguageToggle, useAdminText } from "./AdminLang";
 import LiveAlerts, { type Pulse } from "./LiveAlerts";
 
 /*
@@ -17,53 +19,57 @@ import LiveAlerts, { type Pulse } from "./LiveAlerts";
 type Item = { href: string; label: string; badge?: (counts: Pulse) => number; external?: boolean };
 type Group = { title: string; items: Item[] };
 
-const NAV: Group[] = [
-  { title: "Heute", items: [{ href: "/admin", label: "Übersicht" }] },
-  {
-    title: "Betrieb",
-    items: [
-      // online orders (delivery and pickup) only while online ordering is switched on
-      ...(ONLINE_ORDERING
-        ? [{ href: "/admin/bestellungen", label: "Bestellungen", badge: (counts: Pulse) => counts.newOrders }]
-        : []),
-      { href: "/admin/reservierungen", label: "Reservierungen", badge: (counts) => counts.pendingReservations },
-      { href: "/admin/service", label: "Service-App & Tische" },
-      { href: "/kueche", label: "Küchenbildschirm", external: true },
-      ...(ONLINE_ORDERING ? [{ href: "/lieferung", label: "Lieferungen (Fahrer)", external: true }] : []),
-    ],
-  },
-  {
-    title: "Speisekarte & Website",
-    items: [
-      { href: "/admin/speisekarte", label: "Speisekarte" },
-      { href: "/admin/fotos", label: "Fotos" },
-      { href: "/", label: "Zur Website", external: true },
-    ],
-  },
-  {
-    title: "Auswertung",
-    items: [
-      { href: "/admin/berichte", label: "Berichte" },
-      { href: "/admin/kunden", label: "Kunden" },
-      { href: "/admin/protokoll", label: "Protokoll" },
-    ],
-  },
-  {
-    title: "Einstellungen",
-    items: [
-      { href: "/admin/einstellungen", label: "Betrieb & Rechtliches" },
-      { href: "/admin/team", label: "Team & Zugänge" },
-    ],
-  },
-];
+function navFor(t: AdminDict): Group[] {
+  const { groups, items } = t.shell;
+  return [
+    { title: groups.today, items: [{ href: "/admin", label: items.overview }] },
+    {
+      title: groups.operations,
+      items: [
+        // online orders (delivery and pickup) only while online ordering is switched on
+        ...(ONLINE_ORDERING
+          ? [{ href: "/admin/bestellungen", label: items.orders, badge: (counts: Pulse) => counts.newOrders }]
+          : []),
+        { href: "/admin/reservierungen", label: items.reservations, badge: (counts) => counts.pendingReservations },
+        { href: "/admin/service", label: items.service },
+        { href: "/kueche", label: items.kitchen, external: true },
+        ...(ONLINE_ORDERING ? [{ href: "/lieferung", label: items.deliveries, external: true }] : []),
+      ],
+    },
+    {
+      title: groups.menuWebsite,
+      items: [
+        { href: "/admin/speisekarte", label: items.menu },
+        { href: "/admin/fotos", label: items.photos },
+        { href: "/", label: items.website, external: true },
+      ],
+    },
+    {
+      title: groups.analysis,
+      items: [
+        { href: "/admin/berichte", label: items.reports },
+        { href: "/admin/kunden", label: items.customers },
+        { href: "/admin/protokoll", label: items.log },
+      ],
+    },
+    {
+      title: groups.settings,
+      items: [
+        { href: "/admin/einstellungen", label: items.business },
+        { href: "/admin/team", label: items.team },
+      ],
+    },
+  ];
+}
 
 const isActive = (path: string, href: string) =>
   href === "/admin" ? path === "/admin" : path === href || path.startsWith(`${href}/`);
 
 function Nav({ path, pulse, onNavigate }: { path: string; pulse: Pulse | null; onNavigate?: () => void }) {
+  const { t } = useAdminText();
   return (
-    <nav aria-label="Verwaltung" className="space-y-6">
-      {NAV.map((group) => (
+    <nav aria-label={t.shell.navLabel} className="space-y-6">
+      {navFor(t).map((group) => (
         <div key={group.title}>
           <p className="px-3 text-[0.6rem] font-semibold uppercase tracking-[0.28em] text-cream/40">{group.title}</p>
           <ul className="mt-2 space-y-0.5">
@@ -118,21 +124,23 @@ function CloseOnNavigate({ onChange }: { onChange: () => void }) {
 
 function Account() {
   const me = useAccount();
+  const { t } = useAdminText();
   return (
     <div className="space-y-3 border-t border-cream/10 pt-4 text-sm">
       {me && (
         <p className="px-3 text-cream/60">
-          Angemeldet als <span className="text-cream">{me.name}</span>
+          {t.common.signedInAs} <span className="text-cream">{me.name}</span>
         </p>
       )}
       <div className="flex items-center gap-4 px-3">
         <Link href="/" className="text-cream/60 underline underline-offset-4 hover:text-cream">
-          Zur Website
+          {t.common.toWebsite}
         </Link>
         <form action={logout}>
-          <button className="text-cream/60 underline underline-offset-4 hover:text-cream">Abmelden</button>
+          <button className="text-cream/60 underline underline-offset-4 hover:text-cream">{t.common.signOut}</button>
         </form>
       </div>
+      <AdminLanguageToggle className="mx-3" />
     </div>
   );
 }
@@ -140,13 +148,14 @@ function Account() {
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const [pulse, setPulse] = useState<Pulse | null>(null);
   const [open, setOpen] = useState(false);
+  const { t } = useAdminText();
 
   const brand = (
     <Link href="/admin" className="flex items-center gap-3 px-3">
       <LalibelaCross className="h-7 w-7 text-gold" />
       <span>
         <span className="block font-display text-xl font-semibold leading-none text-cream">Yetenbi</span>
-        <span className="text-[0.6rem] uppercase tracking-[0.3em] text-gold">Verwaltung</span>
+        <span className="text-[0.6rem] uppercase tracking-[0.3em] text-gold">{t.shell.brand}</span>
       </span>
     </Link>
   );
@@ -174,7 +183,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           aria-controls="admin-menu"
           className="mr-2 flex items-center gap-2 rounded-full border border-cream/20 px-4 py-2 text-sm font-semibold text-cream"
         >
-          Menü
+          {t.shell.menu}
           {pulse && pulse.newOrders + pulse.pendingReservations > 0 && (
             <span className="rounded-full bg-gold px-1.5 text-xs text-ink">
               {pulse.newOrders + pulse.pendingReservations}

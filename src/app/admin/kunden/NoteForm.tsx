@@ -1,10 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
+import { useAdminText } from "@/components/admin/AdminLang";
 import { saveCustomerNote } from "./actions";
 
 export default function NoteForm({ customer, note }: { customer: string; note: string }) {
   const [state, action, pending] = useActionState(saveCustomerNote, null);
+  const { t } = useAdminText();
   return (
     <form action={action} className="space-y-3">
       <input type="hidden" name="key" value={customer} />
@@ -13,7 +15,7 @@ export default function NoteForm({ customer, note }: { customer: string; note: s
         defaultValue={note}
         rows={4}
         maxLength={1000}
-        placeholder="z. B. vor Lieferung kurz anrufen · Stammgast, liebt Kitfo · bevorzugt Fensterplatz"
+        placeholder={t.customers.notePlaceholder}
         className="w-full resize-y border border-gold/25 bg-transparent p-3 text-sm text-cream placeholder:text-cream/35 focus:border-gold focus:outline-none"
       />
       <div className="flex items-center gap-4">
@@ -21,7 +23,7 @@ export default function NoteForm({ customer, note }: { customer: string; note: s
           disabled={pending}
           className="rounded-full bg-gold px-5 py-2 text-sm font-semibold text-ink disabled:opacity-60"
         >
-          {pending ? "Speichern …" : "Notiz speichern"}
+          {pending ? t.common.saving : t.customers.saveNote}
         </button>
         {state?.ok && (
           <p role="status" className="text-sm text-[#9fe0b6]">
@@ -34,10 +36,7 @@ export default function NoteForm({ customer, note }: { customer: string; note: s
           </p>
         )}
       </div>
-      <p className="text-xs text-cream/45">
-        Nur für das Team sichtbar. Bitte nur Sachliches notieren: keine Allergien, Krankheiten, Religion oder andere
-        Gesundheitsangaben (Art. 9 DSGVO) und keine Wertungen. Der Gast sieht diese Notiz in seinem Datenexport.
-      </p>
+      <p className="text-xs text-cream/45">{t.customers.noteHint}</p>
     </form>
   );
 }

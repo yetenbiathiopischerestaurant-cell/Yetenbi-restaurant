@@ -3,7 +3,10 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import ColumnChart from "@/components/admin/ColumnChart";
 import LiveRefresh from "@/components/LiveRefresh";
+import { todayISO } from "@/lib/booking";
+import { ONLINE_ORDERING } from "@/lib/features";
 import { hasAllergenData } from "@/lib/menu";
+import { adminText } from "@/lib/server/admin-lang";
 import { requireOwner } from "@/lib/server/auth";
 import { isCloudinaryConfigured } from "@/lib/server/cloudinary";
 import { getDashboard } from "@/lib/server/dashboard";
@@ -13,20 +16,8 @@ import { readMenu } from "@/lib/server/menu";
 import { readBusiness } from "@/lib/server/business";
 import { impressumMissing } from "@/lib/business";
 import { getOrderSettings } from "@/lib/server/orders";
+import { daySummary, listOpenChecks } from "@/lib/server/service";
 import AdminHeader from "./AdminHeader";
-
-const euro = (n: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(n);
-const euroShort = (n: number) =>
-  new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
-const time = (iso: string) =>
-  new Date(iso).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Berlin" });
-const dayLabel = (iso: string) =>
-  new Date(`${iso}T12:00:00Z`).toLocaleDateString("de-DE", {
-    weekday: "short",
-    day: "numeric",
-    month: "numeric",
-    timeZone: "UTC",
-  });
 
 function Tile({
   label,
@@ -56,59 +47,74 @@ function Tile({
 async function Overview() {
   await connection();
   const me = await requireOwner();
-  if (!hasDatabase()) return <p className="mt-12 text-cream/70">Keine Datenbank verbunden.</p>;
-  const [dashboard, settings, menu, business] = await Promise.all([
+  const { t } = await adminText();
+  const text = t.dashboard;
+  if (!hasDatabase()) return <p className="mt-12 text-cream/70">{t.common.noDatabase}</p>;
+  const today = todayISO();
+  const [dashboard, settings, menu, business, restaurant, openChecks] = await Promise.all([
     getDashboard(),
     getOrderSettings(),
     readMenu(),
     readBusiness(),
+    daySummary(today),
+    listOpenChecks(),
   ]);
+
+  const euro = (amount: number) => new Intl.NumberFormat(t.intl, { style: "currency", currency: "EUR" }).format(amount);
+  const euroShort = (amount: number) =>
+    new Intl.NumberFormat(t.intl, { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(amount);
+  const time = (iso: string) =>
+    new Date(iso).toLocaleTimeString(t.intl, { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Berlin" });
+  const dayLabel = (iso: string) =>
+    new Date(`${iso}T12:00:00Z`).toLocaleDateString(t.intl, {
+      weekday: "short",
+      day: "numeric",
+      month: "numeric",
+      timeZone: "UTC",
+    });
+
+  // Online orders (delivery and pickup) only count while online ordering is switched on.
+  const newOrders = ONLINE_ORDERING ? dashboard.actions.newOrders : [];
+  const packed = ONLINE_ORDERING ? dashboard.actions.packed : [];
   const diff = dashboard.revenue.today - dashboard.revenue.sameDayLastWeek;
-  const todo =
-    dashboard.actions.newOrders.length + dashboard.actions.packed.length + dashboard.actions.pendingReservations.length;
+  const todo = newOrders.length + packed.length + dashboard.actions.pendingReservations.length;
 
   const warnings: { text: string; href: string }[] = [];
-  if (settings.ignoreHours)
-    warnings.push({
-      text: "Bestellungen auch außerhalb der Öffnungszeiten sind an (vorübergehend).",
-      href: "/admin/bestellungen",
-    });
-  if (settings.paused) warnings.push({ text: "Online-Bestellungen sind pausiert.", href: "/admin/bestellungen" });
-  if (impressumMissing(business))
-    warnings.push({
-      text: "Impressum: Name der Inhaberin/des Inhabers und Kontakt-E-Mail fehlen noch (Pflicht).",
-      href: "/admin/einstellungen",
-    });
+  if (ONLINE_ORDERING && settings.ignoreHours)
+    warnings.push({ text: text.warnings.ignoreHours, href: "/admin/bestellungen" });
+  if (ONLINE_ORDERING && settings.paused) warnings.push({ text: text.warnings.paused, href: "/admin/bestellungen" });
+  if (impressumMissing(business)) warnings.push({ text: text.warnings.impressum, href: "/admin/einstellungen" });
   if (!hasAllergenData(menu))
     warnings.push({
-      text: "Allergene sind noch nicht eingetragen (Pflicht für Online-Bestellungen).",
+      text: ONLINE_ORDERING ? text.warnings.allergensOrders : text.warnings.allergens,
       href: "/admin/speisekarte",
     });
-  if (!isMailerConfigured()) warnings.push({ text: "E-Mail-Versand ist nicht eingerichtet.", href: "/admin" });
-  if (!isCloudinaryConfigured())
-    warnings.push({ text: "Foto-Upload (Cloudinary) ist nicht eingerichtet.", href: "/admin/fotos" });
+  if (!isMailerConfigured()) warnings.push({ text: text.warnings.mail, href: "/admin" });
+  if (!isCloudinaryConfigured()) warnings.push({ text: text.warnings.cloudinary, href: "/admin/fotos" });
 
   return (
     <>
       <LiveRefresh seconds={30} />
       <p className="mt-3 text-sm text-cream/60">
-        Hallo {me.name.split(" ")[0]} ·{" "}
-        {new Date().toLocaleDateString("de-DE", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          timeZone: "Europe/Berlin",
-        })}
+        {text.hello(
+          me.name.split(" ")[0],
+          new Date().toLocaleDateString(t.intl, {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            timeZone: "Europe/Berlin",
+          }),
+        )}
       </p>
 
       {/* What needs someone now */}
       <section className="mt-8">
         <h2 className="font-display text-2xl font-semibold text-gold-soft">
-          {todo ? `Jetzt zu tun (${todo})` : "Gerade nichts zu tun"}
+          {todo ? text.todo(todo) : text.nothingTodo}
         </h2>
         {todo > 0 && (
           <ul className="mt-4 divide-y divide-gold/10 border-y border-gold/10">
-            {dashboard.actions.newOrders.map((order) => (
+            {newOrders.map((order) => (
               <li key={`o${order.id}`}>
                 <Link
                   href="/admin/bestellungen"
@@ -116,9 +122,10 @@ async function Overview() {
                 >
                   <span className="text-cream">
                     <span className="mr-3 rounded-full bg-gold px-2.5 py-0.5 text-xs font-semibold text-ink">
-                      Neue Bestellung
+                      {text.newOrder}
                     </span>
-                    {order.reference} · {order.name} · {order.method === "delivery" ? "Lieferung" : "Abholung"}
+                    {order.reference} · {order.name} ·{" "}
+                    {order.method === "delivery" ? t.common.delivery : t.common.pickup}
                   </span>
                   <span className="text-sm tabular-nums text-cream/65">
                     {time(order.createdAt)} · {euro(order.total)}
@@ -126,7 +133,7 @@ async function Overview() {
                 </Link>
               </li>
             ))}
-            {dashboard.actions.packed.map((order) => (
+            {packed.map((order) => (
               <li key={`p${order.id}`}>
                 <Link
                   href="/admin/bestellungen"
@@ -134,10 +141,10 @@ async function Overview() {
                 >
                   <span className="text-cream">
                     <span className="mr-3 rounded-full bg-[#7fcf9c] px-2.5 py-0.5 text-xs font-semibold text-ink">
-                      Verpackt
+                      {text.packed}
                     </span>
                     {order.reference} · {order.name} ·{" "}
-                    {order.method === "delivery" ? "an Fahrer übergeben" : "als abholbereit markieren"}
+                    {order.method === "delivery" ? text.handToDriver : text.markReady}
                   </span>
                 </Link>
               </li>
@@ -150,12 +157,12 @@ async function Overview() {
                 >
                   <span className="text-cream">
                     <span className="mr-3 rounded-full border border-gold/60 px-2.5 py-0.5 text-xs font-semibold text-gold-soft">
-                      Reservierungsanfrage
+                      {text.reservationRequest}
                     </span>
-                    {reservation.name} · {reservation.guests} {reservation.guests === 1 ? "Person" : "Personen"}
+                    {reservation.name} · {t.common.persons(reservation.guests)}
                   </span>
                   <span className="text-sm text-cream/65">
-                    {dayLabel(reservation.date)} · {reservation.time} Uhr
+                    {dayLabel(reservation.date)} · {t.common.clock(reservation.time)}
                   </span>
                 </Link>
               </li>
@@ -166,53 +173,77 @@ async function Overview() {
 
       {/* Today in numbers */}
       <section className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
+        {ONLINE_ORDERING ? (
+          <>
+            <Tile
+              label={text.revenueToday}
+              value={euroShort(dashboard.revenue.today)}
+              sub={text.vsLastWeek(
+                `${diff >= 0 ? "+" : "−"}${euroShort(Math.abs(diff))}`,
+                euroShort(dashboard.revenue.sameDayLastWeek),
+              )}
+              href="/admin/berichte"
+            />
+            <Tile
+              label={text.ordersToday}
+              value={String(dashboard.orders.today)}
+              sub={text.ordersSub(dashboard.orders.open, dashboard.orders.onTheWay)}
+              href="/admin/bestellungen"
+              alert={dashboard.orders.new > 0}
+            />
+          </>
+        ) : (
+          <>
+            <Tile
+              label={text.restaurantToday}
+              value={euroShort(restaurant.total)}
+              sub={text.restaurantSub(restaurant.paid, restaurant.guests)}
+              href="/admin/service"
+            />
+            <Tile
+              label={text.openTables}
+              value={String(openChecks.length)}
+              sub={text.openTablesSub}
+              href="/admin/service"
+            />
+          </>
+        )}
         <Tile
-          label="Umsatz heute"
-          value={euroShort(dashboard.revenue.today)}
-          sub={`${diff >= 0 ? "+" : "−"}${euroShort(Math.abs(diff))} ggü. letzter Woche (${euroShort(dashboard.revenue.sameDayLastWeek)})`}
-          href="/admin/berichte"
-        />
-        <Tile
-          label="Bestellungen heute"
-          value={String(dashboard.orders.today)}
-          sub={`${dashboard.orders.open} offen · ${dashboard.orders.onTheWay} unterwegs`}
-          href="/admin/bestellungen"
-          alert={dashboard.orders.new > 0}
-        />
-        <Tile
-          label="Gäste heute (Reservierung)"
+          label={text.guestsToday}
           value={String(dashboard.reservations.todayGuests)}
-          sub={`${dashboard.reservations.todayCount} Tische`}
+          sub={text.tables(dashboard.reservations.todayCount)}
           href="/admin/reservierungen"
         />
         <Tile
-          label="Offene Anfragen"
+          label={text.openRequests}
           value={String(dashboard.reservations.pending)}
-          sub="Reservierungen ab heute"
+          sub={text.fromToday}
           href="/admin/reservierungen"
           alert={dashboard.reservations.pending > 0}
         />
       </section>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-5">
-        <section className="lg:col-span-3">
-          <h2 className="mb-4 font-display text-2xl font-semibold text-gold-soft">Umsatz der letzten 14 Tage</h2>
-          <ColumnChart
-            title="Abgeschlossene Bestellungen pro Tag, in Euro"
-            data={dashboard.revenue.last14.map((day) => ({
-              key: day.day,
-              label: dayLabel(day.day),
-              value: day.total,
-              detail: `${day.orders} Bestellungen`,
-            }))}
-            unit="euro"
-            labelEvery={3}
-          />
-        </section>
-        <section className="lg:col-span-2">
-          <h2 className="mb-4 font-display text-2xl font-semibold text-gold-soft">Reservierungen heute</h2>
+        {ONLINE_ORDERING && (
+          <section className="lg:col-span-3">
+            <h2 className="mb-4 font-display text-2xl font-semibold text-gold-soft">{text.revenue14}</h2>
+            <ColumnChart
+              title={text.chartTitle}
+              data={dashboard.revenue.last14.map((day) => ({
+                key: day.day,
+                label: dayLabel(day.day),
+                value: day.total,
+                detail: text.orders(day.orders),
+              }))}
+              unit="euro"
+              labelEvery={3}
+            />
+          </section>
+        )}
+        <section className={ONLINE_ORDERING ? "lg:col-span-2" : "lg:col-span-3"}>
+          <h2 className="mb-4 font-display text-2xl font-semibold text-gold-soft">{text.bookingsToday}</h2>
           {dashboard.todaysBookings.length === 0 ? (
-            <p className="text-cream/55">Keine Reservierungen für heute.</p>
+            <p className="text-cream/55">{text.noBookingsToday}</p>
           ) : (
             <ul className="divide-y divide-gold/10 border-y border-gold/10 text-sm">
               {dashboard.todaysBookings.map((booking) => (
@@ -220,9 +251,11 @@ async function Overview() {
                   <span className="text-cream">
                     <span className="mr-3 tabular-nums text-gold-soft">{booking.time}</span>
                     {booking.name}
-                    {booking.status === "pending" && <span className="ml-2 text-xs text-[#f0a080]">unbestätigt</span>}
+                    {booking.status === "pending" && (
+                      <span className="ml-2 text-xs text-[#f0a080]">{text.unconfirmed}</span>
+                    )}
                   </span>
-                  <span className="text-cream/60">{booking.guests} P.</span>
+                  <span className="text-cream/60">{t.common.personsShort(booking.guests)}</span>
                 </li>
               ))}
             </ul>
@@ -232,7 +265,7 @@ async function Overview() {
 
       {warnings.length > 0 && (
         <section className="mt-12">
-          <h2 className="font-display text-xl font-semibold text-gold-soft">Hinweise</h2>
+          <h2 className="font-display text-xl font-semibold text-gold-soft">{text.notes}</h2>
           <ul className="mt-3 space-y-2 text-sm">
             {warnings.map((warning) => (
               <li key={warning.text}>
@@ -249,11 +282,12 @@ async function Overview() {
   );
 }
 
-export default function AdminHome() {
+export default async function AdminHome() {
+  const { t } = await adminText();
   return (
     <main id="main" className="mx-auto w-full max-w-6xl px-5 py-8 md:px-10 md:py-12">
       <AdminHeader active="dashboard" />
-      <Suspense fallback={<p className="mt-12 text-cream/60">Lade Übersicht …</p>}>
+      <Suspense fallback={<p className="mt-12 text-cream/60">{t.common.loading}</p>}>
         <Overview />
       </Suspense>
     </main>

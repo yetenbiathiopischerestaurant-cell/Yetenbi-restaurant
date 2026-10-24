@@ -605,7 +605,8 @@ export type KitchenTicket = {
   readyAt: string | null;
   /** Dishes the waiter will call later ("held"): for planning, not to cook yet. */
   held: boolean;
-  items: { id: number; qty: number; name: string; note: string; seat: number | null }[];
+  /** The dish name in every language; the kitchen shows it in the team area's language. */
+  items: { id: number; qty: number; name: L; note: string; seat: number | null }[];
 };
 
 /*
@@ -637,7 +638,7 @@ export async function listKitchenTickets(): Promise<KitchenTicket[]> {
     ticket.items.push({
       id: Number(row.id),
       qty: Number(row.qty),
-      name: (row.name as L).de,
+      name: row.name as L,
       note: String(row.note ?? ""),
       seat: row.seat == null ? null : Number(row.seat),
     });
