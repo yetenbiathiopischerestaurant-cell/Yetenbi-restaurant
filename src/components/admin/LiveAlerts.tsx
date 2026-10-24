@@ -185,7 +185,10 @@ export default function LiveAlerts({
   const askNotifications = async () => setPerm(await Notification.requestPermission());
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex max-w-[calc(100vw-2rem)] flex-col items-end gap-2">
+    <div
+      data-live-alerts
+      className="fixed bottom-3 right-3 z-50 flex max-w-[calc(100vw-1.5rem)] flex-col items-end gap-2 lg:bottom-4 lg:right-4"
+    >
       {latest && (
         <button
           type="button"
@@ -196,14 +199,14 @@ export default function LiveAlerts({
           {latest}
         </button>
       )}
-      <div className="flex items-center gap-2 rounded-full border border-gold/30 bg-coal/95 px-2 py-1.5 text-xs shadow-lg backdrop-blur">
-        <span className="pl-1 text-cream/55">{t.alerts.live}</span>
+      <div className="flex items-center gap-1.5 rounded-full border border-gold/30 bg-coal/95 px-1.5 py-1 text-[0.7rem] shadow-lg backdrop-blur lg:gap-2 lg:px-2 lg:py-1.5 lg:text-xs">
+        <span className="sr-only pl-1 text-cream/55 lg:not-sr-only">{t.alerts.live}</span>
         <span aria-hidden className="h-2 w-2 animate-pulse rounded-full bg-[#7fcf9c]" />
         <button
           type="button"
           onClick={toggleSound}
           aria-pressed={sound}
-          className={`rounded-full px-3 py-1 font-semibold ${sound ? "bg-gold text-ink" : "border border-cream/25 text-cream/80"}`}
+          className={`rounded-full px-2.5 py-0.5 font-semibold lg:px-3 lg:py-1 ${sound ? "bg-gold text-ink" : "border border-cream/25 text-cream/80"}`}
         >
           {sound ? t.alerts.soundOn : t.alerts.soundOff}
         </button>
@@ -211,7 +214,7 @@ export default function LiveAlerts({
           <button
             type="button"
             onClick={askNotifications}
-            className="rounded-full border border-cream/25 px-3 py-1 font-semibold text-cream/80"
+            className="rounded-full border border-cream/25 px-2.5 py-0.5 font-semibold text-cream/80 lg:px-3 lg:py-1"
           >
             {t.alerts.allowNotifications}
           </button>

@@ -236,6 +236,13 @@ h3 {
     256px 256px;
 }
 
+/* Team screens on phones: room at the bottom so the floating Live/Sound pill never hides the last content. */
+@media (max-width: 1023px) {
+  body:has([data-live-alerts]) main {
+    padding-bottom: 5.5rem;
+  }
+}
+
 /* The admin is a work tool: no lattice, lamps or grain behind it (also saves the GPU on the restaurant's devices). */
 body:has([data-admin-shell]) .site-bg,
 body:has([data-admin-shell]) .bg-flames,
