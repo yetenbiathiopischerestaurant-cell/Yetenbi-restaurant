@@ -95,7 +95,7 @@ export default function Header() {
             <Magnetic strength={0.2}>
               <a
                 href="#reservieren"
-                className="group flex items-center gap-3 rounded-full bg-gold py-1.5 pl-5 pr-1.5 text-sm font-medium text-ink transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97]"
+                className="group flex items-center gap-3 rounded-full btn-gild py-1.5 pl-5 pr-1.5 text-sm hover:bg-eth-green hover:bg-none hover:text-cream font-medium text-ink transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97]"
               >
                 {t.nav.reserve}
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink/10 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:-translate-y-px group-hover:translate-x-0.5 group-hover:scale-105">
@@ -163,7 +163,7 @@ export default function Header() {
             <LanguageToggle className="mt-6 w-max" layoutId="lang-pill-mobile" />
             <motion.a
               href="#reservieren"
-              className="mt-6 flex items-center justify-between rounded-full bg-gold py-2 pl-6 pr-2 font-medium text-ink"
+              className="mt-6 flex items-center justify-between rounded-full btn-gild py-2 pl-6 pr-2 font-medium hover:bg-eth-green hover:bg-none hover:text-cream text-ink"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}

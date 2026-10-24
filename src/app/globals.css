@@ -8,9 +8,10 @@
   --color-gold-soft: #e7cd8a;
   --color-cream: #f4ecdc;
   --color-sand: #b9ab92;
-  --color-eth-green: #078930;
-  --color-eth-yellow: #fcdd09;
-  --color-eth-red: #da121a;
+  /* the Ethiopian flag in the site's warm palette (matches the hero's flag and the tibeb border) */
+  --color-eth-green: #4f8a5f;
+  --color-eth-yellow: #e2bf62;
+  --color-eth-red: #b0402c;
 
   --font-display: var(--font-cormorant), var(--font-noto-ethiopic), serif;
   --font-sans: var(--font-outfit), var(--font-noto-ethiopic), sans-serif;
@@ -47,6 +48,40 @@ body {
 
 .grain {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/*
+  Gilded surfaces in the hero flag's palette, so buttons and headline accents belong to the same family as the
+  flag in YETENBI: a lit gold with a soft top highlight, and on hover the buttons fill with the flag's green.
+*/
+@layer components {
+  .btn-gild {
+    background-color: var(--color-gold);
+    background-image: linear-gradient(180deg, #efd897 0%, #dcb862 52%, #c39a45 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 244, 214, 0.55),
+      inset 0 -1px 0 rgba(110, 72, 20, 0.35),
+      0 12px 30px -14px rgba(201, 162, 74, 0.6);
+    transition:
+      color 0.5s ease,
+      background-color 0.5s ease;
+  }
+
+  /* the gold italic words of the big headings: gold warming towards the flag's brick red */
+  .text-gilded {
+    background-image: linear-gradient(180deg, #f3dea0 0%, #e2bf62 48%, #c98a4f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* the hero's info strip (services · address · price) leaves room for the buttons on short screens */
+@media (max-height: 760px) {
+  .hero-strip {
+    display: none !important;
+  }
 }
 
 .flag-stripe {
@@ -130,42 +165,6 @@ body {
   animation: ember-rise linear infinite;
 }
 
-/*
-  The hero's YETENBI filled with the Ethiopian flag (as Karmel fills its title with a photo). Each letter is its
-  own animated span, so every letter shows its own slice of one shared flag: --flag-w is the word's width and
-  --flag-x the letter's offset in it (both measured in Hero.tsx). The flag is a little larger than the word and
-  drifts slowly, like cloth moving; --flag-shift is registered so it can be animated.
-*/
-@property --flag-shift {
-  syntax: "<number>";
-  inherits: false;
-  initial-value: 0;
-}
-
-@keyframes flag-drift {
-  0%,
-  100% {
-    --flag-shift: 0;
-  }
-  50% {
-    --flag-shift: 1;
-  }
-}
-
-.flag-fill {
-  background-image: url("/img/ethiopian-flag.svg");
-  background-repeat: no-repeat;
-  background-size: calc(var(--flag-w, 6em) * 1.2) 110%;
-  background-position: calc(var(--flag-w, 6em) * -0.2 * var(--flag-shift) - var(--flag-x, 0px))
-    calc(-5% * var(--flag-shift));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 1px rgba(246, 226, 168, 0.45);
-  animation: flag-drift 18s ease-in-out infinite;
-}
-
 h1,
 h2,
 h3 {
@@ -245,8 +244,13 @@ body:has([data-admin-shell]) .grain {
 }
 
 /* Self-hosted map in "Anfahrt" (components/SiteMap). The tiles are tinted to match the dark site. */
-.site-map {
-  /* The average colour of the tinted map, so tile edges blend in on phones with fractional pixel ratios. */
+.site-map,
+.site-map.leaflet-container {
+  /*
+    The average colour of the tinted map, so tile edges blend in on phones with fractional pixel ratios, and so the
+    area beyond our tiles (e.g. above the old town on tall screens) is dark instead of Leaflet's light grey. The
+    second selector beats leaflet.css, which loads after this file.
+  */
   background: #403c35;
   z-index: 0; /* keeps Leaflet's layers below the header and menus */
 }

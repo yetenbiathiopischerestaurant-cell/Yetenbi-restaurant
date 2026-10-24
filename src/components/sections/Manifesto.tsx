@@ -7,7 +7,7 @@ import baskets from "../../../public/img/baskets.jpg";
 import platter from "../../../public/img/platter.jpg";
 import pour from "../../../public/img/jebena-pour.jpg";
 import Embers from "../motion/Embers";
-import { Ambient, Label } from "../ui/primitives";
+import { Ambient, FlagWash, Label } from "../ui/primitives";
 import { useLanguage } from "@/lib/language";
 import { Photo } from "@/components/Photos";
 
@@ -42,10 +42,7 @@ function Word({
 }) {
   const opacity = useTransform(progress, range, [0.14, 1]);
   return (
-    <motion.span
-      style={{ opacity }}
-      className={`mr-[0.24em] inline-block ${token.gold ? "italic text-gold-soft" : ""}`}
-    >
+    <motion.span style={{ opacity }} className={`mr-[0.24em] inline-block ${token.gold ? "text-gilded italic" : ""}`}>
       {token.word}
     </motion.span>
   );
@@ -85,6 +82,7 @@ export default function Manifesto() {
 
   return (
     <section id="willkommen" className="relative overflow-hidden py-32 md:py-48">
+      <FlagWash tone="green" className="-left-[25%] top-[5%] h-[90%] w-[70%]" />
       <Ambient src={baskets} className="-right-[15%] top-0 h-full w-[70%]" opacity={0.4} />
       <Embers count={12} />
       <div className="relative z-10 mx-auto max-w-6xl px-5 md:px-8">

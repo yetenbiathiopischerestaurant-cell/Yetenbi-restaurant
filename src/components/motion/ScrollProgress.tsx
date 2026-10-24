@@ -5,7 +5,7 @@ import { useLenis } from "lenis/react";
 import { useState } from "react";
 import { useLanguage } from "@/lib/language";
 
-/** Thin gold reading bar along the top plus a circular back-to-top button. */
+/** Thin reading bar in the flag's colours along the top plus a circular back-to-top button. */
 export default function ScrollProgress() {
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
@@ -19,7 +19,7 @@ export default function ScrollProgress() {
     <>
       <motion.div
         style={{ scaleX: progress }}
-        className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left will-change-transform bg-gradient-to-r from-gold via-gold-soft to-gold shadow-[0_0_12px_rgba(231,205,138,0.8)]"
+        className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left will-change-transform bg-gradient-to-r from-eth-green via-eth-yellow to-eth-red shadow-[0_0_12px_rgba(226,191,98,0.55)]"
       />
       <AnimatePresence>
         {visible && (

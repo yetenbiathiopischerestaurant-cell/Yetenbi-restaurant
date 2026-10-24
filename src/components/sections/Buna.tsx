@@ -13,26 +13,23 @@ import { AksumFrame } from "../heritage/Ornaments";
 import { geez } from "@/lib/ethiopic";
 import { Photo } from "@/components/Photos";
 
-type Round = { name: string; am: string; photo: StaticImageData; alt: string };
+type Round = { name: string; am: string; photo: StaticImageData };
 
 const rounds: Round[] = [
   {
     name: "Abol",
     am: "አቦል",
     photo: pour,
-    alt: "Kaffee wird aus der Jebena gegossen",
   },
   {
     name: "Tona",
     am: "ቶና",
     photo: cups,
-    alt: "Kleine Sini-Tassen auf einem Tablett",
   },
   {
     name: "Baraka",
     am: "በረካ",
     photo: incense,
-    alt: "Weihrauch steigt während der Zeremonie auf",
   },
 ];
 
@@ -103,7 +100,7 @@ export default function Buna() {
               viewBox="0 0 200 200"
               className="w-[min(62vw,34vh)] md:w-[min(36vw,56vh)]"
               role="img"
-              aria-label={`Runde ${round + 1} von 3: ${r.name}`}
+              aria-label={`${t.buna.roundOf(round + 1)}: ${r.name}`}
             >
               <defs>
                 <clipPath id="sini">
@@ -201,7 +198,7 @@ export default function Buna() {
                 >
                   <Photo
                     src={r.photo}
-                    alt={r.alt}
+                    alt={t.buna.photoAlts[round]}
                     fill
                     sizes="(min-width: 768px) 26vw, 45vw"
                     placeholder="blur"

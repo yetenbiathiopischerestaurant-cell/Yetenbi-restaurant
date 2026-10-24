@@ -16,10 +16,11 @@ export const de = {
     main: "Hauptnavigation",
   },
   intro: {
-    captions: ["Aus tausend Bohnen", "frisch geröstet", "in der Jebena gebrüht", "für Sie serviert"],
+    captions: ["Aus Äthiopien", "Aus tausend Bohnen", "frisch geröstet", "in der Jebena gebrüht", "für Sie serviert"],
     skip: "Intro überspringen",
   },
   hero: {
+    photoAlt: "Äthiopische Beyaynetu-Platte mit Injera, Wots und Gemüse",
     welcome: "Willkommen",
     tagline: "Restaurant & Café · Authentisch Äthiopisch",
     subtitle: "Würzige Wots, frisches Injera und duftender Jebena-Kaffee, mitten in Würzburg.",
@@ -73,6 +74,11 @@ export const de = {
     title: "Drei Runden",
     em: "Kaffee.",
     roundOf: (n: number) => `Runde ${n} von 3`,
+    photoAlts: [
+      "Kaffee wird aus der Jebena gegossen",
+      "Kleine Sini-Tassen auf einem Tablett",
+      "Weihrauch steigt während der Zeremonie auf",
+    ],
     rounds: [
       "Die erste Runde ist die stärkste: frisch geröstet, frisch gemahlen, aus der ersten Brühung der Jebena.",
       "Dasselbe Kaffeemehl wird neu aufgegossen. Milder, runder und gemacht für das Gespräch am Tisch.",
@@ -143,6 +149,7 @@ export const de = {
     route: "Route planen",
     near: "Nahe Mainfranken Theater",
     photoAlt: "Jebena und Tassen für die Kaffeezeremonie",
+    mapLabel: "Karte: Yetenbi, Theaterstraße 6, Würzburg",
     openNow: (until: string) => `Jetzt geöffnet, bis ${until} Uhr`,
     opensAt: (day: string, at: string) => `Geschlossen, öffnet ${day} um ${at} Uhr`,
     today: "heute",
@@ -393,8 +400,14 @@ export const de = {
     viewStatus: "Status ansehen",
     again: "Neue Bestellung",
   },
-  rail: ["Willkommen", "Die Platte", "Speisekarte", "Drei Runden", "Anfahrt", "Reservierung"],
+  rail: ["Willkommen", "Die Platte", "Speisekarte", "Drei Runden", "Amharisch", "Anfahrt", "Reservierung"],
+  notFound: {
+    title: "Diese Seite gibt es nicht.",
+    lead: "Die Platte steht aber noch auf dem Tisch.",
+    home: "Zur Startseite",
+  },
   footer: {
+    legal: "Rechtliches",
     bye: "Bis bald.",
     thanks: "Danke für Ihren Besuch. Genießen Sie äthiopische Gastfreundschaft.",
     imprint: "Impressum",

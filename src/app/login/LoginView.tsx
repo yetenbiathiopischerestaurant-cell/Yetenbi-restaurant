@@ -14,7 +14,7 @@ function GoogleButton({ label, next }: { label: string; next: string }) {
   return (
     <a
       href={`/api/auth/google${next ? `?next=${encodeURIComponent(next)}` : ""}`}
-      className="flex w-full items-center justify-center gap-3 rounded-full border border-cream/25 bg-cream/[0.04] px-6 py-3.5 font-semibold text-cream transition-colors hover:border-gold hover:text-gold-soft"
+      className="flex w-full items-center justify-center gap-3 rounded-full border border-cream/25 bg-cream/[0.04] px-6 py-3.5 font-semibold text-cream transition-colors hover:border-eth-green hover:bg-eth-green/15 hover:text-cream"
     >
       <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
         <path

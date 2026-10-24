@@ -10,6 +10,7 @@ const chapters = [
   { id: "platte", label: "Die Platte" },
   { id: "speisekarte", label: "Speisekarte" },
   { id: "kaffee", label: "Drei Runden" },
+  { id: "amharisch", label: "Amharisch" },
   { id: "besuch", label: "Anfahrt" },
   { id: "reservieren", label: "Reservierung" },
 ];
@@ -21,11 +22,15 @@ export default function SideRail() {
   const [lit, setLit] = useState(0);
   const { scrollY, scrollYProgress } = useScroll();
   // Stay out of the hero, which has its own stelae; fade in once it has scrolled away.
-  const show = useTransform(scrollY, (offset) =>
-    typeof window === "undefined"
-      ? 0
-      : Math.min(1, Math.max(0, (offset - window.innerHeight * 0.55) / (window.innerHeight * 0.3))),
-  );
+  // ...and fade out again as the footer comes up, so it never sits on the footer's address and links.
+  const show = useTransform(scrollY, (offset) => {
+    if (typeof window === "undefined") return 0;
+    const screen = window.innerHeight;
+    const fadeIn = (offset - screen * 0.55) / (screen * 0.3);
+    const remaining = document.documentElement.scrollHeight - offset - screen;
+    const fadeOut = (remaining - screen * 0.55) / (screen * 0.35);
+    return Math.min(1, Math.max(0, Math.min(fadeIn, fadeOut)));
+  });
 
   // One storey per sixth of the page, so the stela is fully lit when you reach the bottom.
   useMotionValueEvent(scrollYProgress, "change", (progress) =>

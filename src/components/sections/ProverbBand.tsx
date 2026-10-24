@@ -10,7 +10,7 @@ export default function ProverbBand() {
   const { t, locale } = useLanguage();
   return (
     <section
-      aria-label="Äthiopisches Sprichwort"
+      aria-label={t.proverb.caption}
       className="relative py-24 md:py-32 [content-visibility:auto] [contain-intrinsic-size:auto_900px]"
     >
       <Tibeb className="opacity-70" />

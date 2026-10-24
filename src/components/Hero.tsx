@@ -12,10 +12,10 @@ import { ArrowRight } from "@phosphor-icons/react";
 import Stela, { STELA_FLOORS } from "./heritage/Stela";
 import { LalibelaCross, Tibeb } from "./heritage/Ornaments";
 import { Photo } from "@/components/Photos";
+import HeroTitle from "./HeroTitle";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const intro = 0.15; // the entrance starts when the particle intro hands over
-const title = "YETENBI".split("");
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -27,26 +27,6 @@ export default function Hero() {
   const { done } = useIntro();
   const { t } = useLanguage();
   const [lit, setLit] = useState(0);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-
-  // One flag across the whole word: tell every letter the word's width and where the letter sits in it.
-  useEffect(() => {
-    const heading = titleRef.current;
-    if (!heading) return;
-    const measure = () => {
-      const letters = [...heading.querySelectorAll<HTMLElement>("[data-letter]")];
-      if (letters.length === 0) return;
-      const start = letters[0].offsetLeft;
-      const last = letters[letters.length - 1];
-      heading.style.setProperty("--flag-w", `${last.offsetLeft + last.offsetWidth - start}px`);
-      letters.forEach((letter) => letter.style.setProperty("--flag-x", `${letter.offsetLeft - start}px`));
-    };
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(heading);
-    void document.fonts?.ready.then(measure);
-    return () => observer.disconnect();
-  }, []);
 
   // Once the lines are drawn, the windows light up one storey at a time.
   useEffect(() => {
@@ -66,7 +46,7 @@ export default function Hero() {
         >
           <Photo
             src={heroImg}
-            alt="Äthiopische Beyaynetu-Platte mit Injera, Wots und Gemüse"
+            alt={t.hero.photoAlt}
             fill
             priority
             placeholder="blur"
@@ -87,11 +67,16 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/55 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/40" />
       <div className="grain pointer-events-none absolute inset-0 opacity-[0.05]" />
+      {/* candlelight behind the title, so the flag-filled YETENBI sits in the room's warm light */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-[12%] top-[18%] h-[62%] w-[95%] bg-[radial-gradient(closest-side,rgba(232,176,92,0.24),rgba(176,64,44,0.06)_55%,transparent)] md:w-[62%]"
+      />
       <Embers />
 
       <motion.div
         style={{ y: textY, opacity: fade }}
-        className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-5 pt-20 will-change-transform md:px-8"
+        className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-5 pt-20 will-change-transform md:px-8 md:pb-16"
       >
         <motion.p
           className="font-ethiopic text-lg text-gold/90 md:text-xl"
@@ -103,25 +88,8 @@ export default function Hero() {
           እንኳን ደህና መጡ · {t.hero.welcome}
         </motion.p>
 
-        <h1
-          ref={titleRef}
-          className="mt-3 flex overflow-hidden font-display text-[clamp(4.5rem,15vw,12rem)] font-bold leading-[0.9] tracking-[0.04em] drop-shadow-[0_6px_24px_rgba(10,6,2,0.55)]"
-          aria-label="Yetenbi"
-        >
-          {title.map((word, index) => (
-            <motion.span
-              key={index}
-              aria-hidden
-              data-letter
-              className="flag-fill inline-block"
-              initial={{ y: "105%", rotate: 8 }}
-              animate={done ? { y: "0%", rotate: 0 } : undefined}
-              transition={{ duration: 1.3, ease, delay: intro + 0.1 + index * 0.06 }}
-            >
-              {word}
-            </motion.span>
-          ))}
-        </h1>
+        {/* YETENBI as gold dust that settles into the Ethiopian flag, once the intro hands over */}
+        <HeroTitle start={done} />
 
         <motion.div
           className="mt-4 flex items-center gap-4"
@@ -130,7 +98,7 @@ export default function Hero() {
           transition={{ duration: 1, delay: intro + 0.7 }}
         >
           <motion.span
-            className="h-px w-16 origin-left bg-gold"
+            className="flag-stripe h-[2px] w-16 origin-left rounded-full"
             initial={{ scaleX: 0 }}
             animate={done ? { scaleX: 1 } : undefined}
             transition={{ duration: 1.2, ease, delay: intro + 0.7 }}
@@ -159,9 +127,9 @@ export default function Hero() {
           <Magnetic>
             <a
               href="#speisekarte"
-              className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-gold px-8 py-4 font-semibold text-ink"
+              className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full btn-gild px-8 py-4 font-semibold text-ink hover:text-cream"
             >
-              <span className="absolute inset-0 -translate-x-full bg-cream transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
+              <span className="absolute inset-0 -translate-x-full bg-eth-green transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
               <span className="relative">{t.hero.cta}</span>
               <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-ink/10 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1 group-hover:-translate-y-px">
                 <ArrowRight size={14} weight="bold" />
@@ -171,7 +139,7 @@ export default function Hero() {
           <Magnetic>
             <a
               href={restaurant.phoneHref}
-              className="inline-flex items-center gap-3 rounded-full border border-cream/30 px-8 py-4 font-semibold text-cream backdrop-blur-sm transition-colors duration-500 hover:border-gold hover:text-gold-soft"
+              className="inline-flex items-center gap-3 rounded-full border border-cream/30 px-8 py-4 font-semibold text-cream backdrop-blur-sm transition-colors duration-500 hover:border-eth-green hover:bg-eth-green/15 hover:text-cream"
             >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-eth-green opacity-75" />
@@ -206,7 +174,7 @@ export default function Hero() {
 
       {/* Info strip */}
       <motion.ul
-        className="absolute inset-x-0 bottom-0 mx-auto hidden max-w-7xl items-center gap-10 px-8 pb-12 text-xs uppercase tracking-[0.25em] text-cream/68 md:flex"
+        className="hero-strip absolute inset-x-0 bottom-0 mx-auto hidden max-w-7xl items-center gap-10 px-8 pb-12 text-xs uppercase tracking-[0.25em] text-cream/68 md:flex"
         initial={{ opacity: 0 }}
         animate={done ? { opacity: 1 } : undefined}
         transition={{ duration: 1, delay: intro + 1.4 }}

@@ -10,7 +10,7 @@ import cups from "../../../public/img/cups.jpg";
 import bowls from "../../../public/img/bowls.jpg";
 import Jebena from "../Jebena";
 import Embers from "../motion/Embers";
-import { Ambient, ease, GoldButton, Lead, Rise, Title } from "../ui/primitives";
+import { Ambient, ease, FlagWash, GoldButton, Lead, Rise, Title } from "../ui/primitives";
 import { AksumFrame, Harag, LalibelaCross, Tibeb } from "../heritage/Ornaments";
 import { useLanguage } from "@/lib/language";
 import { Photo } from "@/components/Photos";
@@ -120,6 +120,7 @@ export default function MenuCard() {
 
   return (
     <section id="speisekarte" className="relative overflow-hidden py-32 md:py-48">
+      <FlagWash tone="red" className="-right-[20%] bottom-[5%] h-[60%] w-[60%]" />
       <SidePhoto src={jebenaSet} side="left" />
       <SidePhoto src={cups} side="right" />
       <Ambient src={bowls} className="left-1/2 top-[20%] h-[70%] w-[90vw] -translate-x-1/2" opacity={0.35} />

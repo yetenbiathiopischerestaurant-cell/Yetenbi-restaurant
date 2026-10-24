@@ -1,16 +1,20 @@
+"use client";
+
 import Link from "next/link";
+import { useLanguage } from "@/lib/language";
 import CookieSettings from "./CookieSettings";
 
 /* Impressum, Datenschutz and Bestellbedingungen, reachable from every page (§ 5 DDG, Art. 12 DSGVO). */
 export default function LegalLinks({ className = "" }: { className?: string }) {
+  const { t } = useLanguage();
   const links = [
-    { href: "/impressum", label: "Impressum" },
-    { href: "/datenschutz", label: "Datenschutz" },
-    { href: "/bestellbedingungen", label: "Bestellbedingungen" },
+    { href: "/impressum", label: t.footer.imprint },
+    { href: "/datenschutz", label: t.footer.privacy },
+    { href: "/bestellbedingungen", label: t.footer.terms },
   ];
   return (
     <nav
-      aria-label="Rechtliches"
+      aria-label={t.footer.legal}
       className={`flex flex-wrap justify-center gap-x-6 gap-y-1 text-xs text-cream/60 ${className}`}
     >
       {links.map((link) => (

@@ -16,10 +16,11 @@ export const en: Dict = {
     main: "Main navigation",
   },
   intro: {
-    captions: ["From a thousand beans", "freshly roasted", "brewed in the jebena", "served to you"],
+    captions: ["From Ethiopia", "From a thousand beans", "freshly roasted", "brewed in the jebena", "served to you"],
     skip: "Skip intro",
   },
   hero: {
+    photoAlt: "Ethiopian beyaynetu platter with injera, wots and vegetables",
     welcome: "Welcome",
     tagline: "Restaurant & Café · Authentically Ethiopian",
     subtitle: "Spiced wots, fresh injera and fragrant jebena coffee, in the heart of Würzburg.",
@@ -72,6 +73,11 @@ export const en: Dict = {
     title: "Three rounds of",
     em: "coffee.",
     roundOf: (n: number) => `Round ${n} of 3`,
+    photoAlts: [
+      "Coffee being poured from the jebena",
+      "Small sini cups on a tray",
+      "Incense rising during the ceremony",
+    ],
     rounds: [
       "The first round is the strongest: freshly roasted, freshly ground, from the jebena's first brew.",
       "The same grounds are brewed again. Milder, rounder and made for conversation at the table.",
@@ -138,6 +144,7 @@ export const en: Dict = {
     route: "Get directions",
     near: "Near the Mainfranken Theater",
     photoAlt: "Jebena and cups for the coffee ceremony",
+    mapLabel: "Map: Yetenbi, Theaterstraße 6, Würzburg",
     openNow: (until: string) => `Open now, until ${until}`,
     opensAt: (day: string, at: string) => `Closed, opens ${day} at ${at}`,
     today: "today",
@@ -384,8 +391,14 @@ export const en: Dict = {
     viewStatus: "View status",
     again: "New order",
   },
-  rail: ["Welcome", "The platter", "Menu", "Three rounds", "Find us", "Reservation"],
+  rail: ["Welcome", "The platter", "Menu", "Three rounds", "Amharic", "Find us", "Reservation"],
+  notFound: {
+    title: "This page doesn't exist.",
+    lead: "But the platter is still on the table.",
+    home: "Back to the home page",
+  },
   footer: {
+    legal: "Legal",
     bye: "See you soon.",
     thanks: "Thank you for visiting. Enjoy Ethiopian hospitality.",
     imprint: "Legal notice",

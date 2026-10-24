@@ -63,9 +63,9 @@ export function SubmitButton({ children, pending }: { children: React.ReactNode;
     <button
       type="submit"
       disabled={pending}
-      className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-gold px-8 py-4 font-semibold text-ink active:scale-[0.98] disabled:opacity-60"
+      className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full btn-gild px-8 py-4 font-semibold text-ink hover:text-cream active:scale-[0.98] disabled:opacity-60"
     >
-      <span className="absolute inset-0 -translate-x-full bg-cream transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
+      <span className="absolute inset-0 -translate-x-full bg-eth-green transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
       <span className="relative">{children}</span>
     </button>
   );

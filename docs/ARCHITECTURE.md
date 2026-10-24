@@ -108,8 +108,28 @@ Change all three together.
 
 ## Feature switches
 
-`src/lib/features.ts`: `ONLINE_ORDERING` (off: `/bestellen` redirects home, `/api/order` refuses), `APP_LOGIN` (off:
+`src/lib/features.ts`: `ONLINE_ORDERING` (off: `/bestellen` redirects home, `/api/order` refuses; the website says
+"dine in and take away"; the admin hides Bestellungen, the drivers' screen `/lieferung`, the driver role, delivery
+settings and every online-order figure in the dashboard, reports, customers and kitchen screen), `APP_LOGIN` (off:
 the app signs in as a shared demo account), `APP_FEEDBACK`. Change the switch and deploy; the app needs no update.
+
+The Android app is the restaurant's internal tool: the public website has no page or link for it. It shares only the
+backend (`/api/app/*`), the accounts managed in /admin/team, the menu and the kitchen screen.
+
+## Languages
+
+- **Public site:** German, English, Amharic (`src/lib/i18n`). The choice lives only in the visitor's browser
+  (localStorage `yt-locale`); the server always renders German first.
+- **Team area** (`/admin`, `/kueche`): German and English (`src/lib/admin-i18n`), switch in the sidebar and the kitchen
+  header, kept in the cookie `yt-admin-lang` so server pages and server actions can read it
+  (`src/lib/server/admin-lang.ts`). The activity log stores German and is shown translated (`auditText`).
+
+## Intro and hero
+
+The particle intro (`src/components/intro`) plays on a visitor's first visit and on a reload; afterwards
+localStorage `yt-intro-seen` skips it (an inline script in the root layout hides the overlay before first paint).
+It is only marked as seen once it really played or was skipped. The hero's YETENBI (`HeroTitle.tsx`) is gold dust
+settling into the Ethiopian flag on a canvas over transparent real text; it is paused off screen.
 
 ## Environments
 

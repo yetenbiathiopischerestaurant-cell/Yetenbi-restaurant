@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 import Embers from "../motion/Embers";
-import { ease, Heading, Rise } from "../ui/primitives";
+import { ease, FlagWash, Heading, Rise } from "../ui/primitives";
 import { useLanguage } from "@/lib/language";
 
 /* The 33 base consonants of the fidel, each with its seven vowel orders (Unicode Ethiopic block). */
@@ -36,6 +36,7 @@ export default function Amharisch() {
       id="amharisch"
       className="relative overflow-hidden py-32 md:py-44 [content-visibility:auto] [contain-intrinsic-size:auto_900px]"
     >
+      <FlagWash tone="green" className="-right-[20%] top-[10%] h-[80%] w-[60%]" />
       <Embers count={10} />
       <div className="relative mx-auto max-w-7xl px-5 md:px-8">
         <Heading key={locale} label={t.amharisch.label} title={t.amharisch.title} em={t.amharisch.em} size="md" />

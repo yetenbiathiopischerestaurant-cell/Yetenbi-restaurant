@@ -7,7 +7,7 @@ import { restaurant } from "@/lib/data";
 import HoursTable from "../heritage/HoursTable";
 import { useLanguage } from "@/lib/language";
 import Embers from "../motion/Embers";
-import { Ambient, CinematicImage, GoldButton, Heading, Rise } from "../ui/primitives";
+import { Ambient, CinematicImage, FlagWash, GoldButton, Heading, Rise } from "../ui/primitives";
 import { AksumFrame } from "../heritage/Ornaments";
 import EthiopianNow from "../heritage/EthiopianNow";
 import { Photo } from "@/components/Photos";
@@ -25,6 +25,7 @@ export default function Visit() {
       id="besuch"
       className="relative overflow-hidden py-32 md:py-44 [content-visibility:auto] [contain-intrinsic-size:auto_900px]"
     >
+      <FlagWash tone="green" className="-right-[20%] bottom-[0%] h-[70%] w-[60%]" />
       <Ambient src={jebenaSet} className="-left-[20%] top-[10%] h-[80%] w-[60%]" opacity={0.45} />
       <Ambient src={cups} className="-right-[15%] top-[30%] h-[70%] w-[60%]" opacity={0.3} />
       <Embers count={12} />
@@ -83,10 +84,7 @@ export default function Visit() {
           <Rise className="lg:col-span-7" delay={0.15}>
             <AksumFrame className="h-full shadow-[0_60px_140px_-40px_rgba(201,162,74,0.28)]" inner="h-full">
               <div className="relative h-full">
-                <SiteMap
-                  label="Karte: Yetenbi, Theaterstraße 6, Würzburg"
-                  className="h-[420px] w-full lg:h-full lg:min-h-[600px]"
-                />
+                <SiteMap label={t.visit.mapLabel} className="h-[420px] w-full lg:h-full lg:min-h-[600px]" />
                 <a
                   href={restaurant.mapsUrl}
                   target="_blank"

@@ -29,7 +29,7 @@ export function Label({
   return (
     <div className={`flex items-center gap-4 ${className}`}>
       <motion.span
-        className="h-px w-16 origin-left bg-gold"
+        className="flag-stripe h-[2px] w-16 origin-left rounded-full"
         initial={reduce ? false : { scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
@@ -136,7 +136,7 @@ export function Heading({
         {words.map(({ word, italic }, index) => (
           <span key={index} aria-hidden className="inline-block overflow-hidden pb-[0.14em]">
             <motion.span
-              className={`inline-block ${italic ? "pr-[0.06em] font-medium italic text-gold-soft" : ""}`}
+              className={`inline-block ${italic ? "text-gilded pr-[0.06em] font-medium italic" : ""}`}
               variants={{
                 hidden: { y: "110%", rotate: 6 },
                 show: { y: "0%", rotate: 0, transition: { duration: 1.1, ease } },
@@ -172,6 +172,18 @@ export function Lead({
     >
       {children}
     </motion.p>
+  );
+}
+
+/** A very faint wash of the flag's green or red behind a section, so its colours recur quietly down the page. */
+export function FlagWash({ tone, className = "" }: { tone: "green" | "red"; className?: string }) {
+  const color = tone === "green" ? "rgba(79, 138, 95, 0.14)" : "rgba(176, 64, 44, 0.12)";
+  return (
+    <div
+      aria-hidden
+      className={`pointer-events-none absolute ${className}`}
+      style={{ background: `radial-gradient(closest-side, ${color}, transparent)` }}
+    />
   );
 }
 
@@ -213,9 +225,9 @@ export function GoldButton({
       <a
         href={href}
         {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-        className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-gold px-8 py-4 font-semibold text-ink active:scale-[0.98]"
+        className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full btn-gild px-8 py-4 font-semibold text-ink hover:text-cream active:scale-[0.98]"
       >
-        <span className="absolute inset-0 -translate-x-full bg-cream transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
+        <span className="absolute inset-0 -translate-x-full bg-eth-green transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
         <span className="relative">{children}</span>
         <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-ink/10 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:-translate-y-px group-hover:translate-x-1">
           <ArrowRight size={14} weight="bold" />

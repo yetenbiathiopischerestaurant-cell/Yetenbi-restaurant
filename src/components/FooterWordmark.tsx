@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "motion/react";
 
-/** The hero wordmark again, closing the page. */
+/** The hero wordmark again, closing the page, fading through the flag's colours. */
 export default function FooterWordmark() {
   const reduce = useReducedMotion();
   return (
@@ -18,7 +18,7 @@ export default function FooterWordmark() {
         <motion.span
           key={index}
           aria-hidden
-          className="inline-block bg-gradient-to-b from-[#f6e2a8]/90 via-gold-soft/70 to-gold/10 bg-clip-text text-transparent"
+          className="inline-block bg-gradient-to-b from-eth-green/75 via-eth-yellow/75 to-eth-red/45 bg-clip-text text-transparent"
           variants={{
             hidden: { y: "105%", rotate: 8 },
             show: { y: "0%", rotate: 0, transition: { duration: 1.3, ease: [0.22, 1, 0.36, 1] } },

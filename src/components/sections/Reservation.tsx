@@ -19,7 +19,7 @@ import {
 import { useLanguage } from "@/lib/language";
 import { useAccount, useClosures } from "@/lib/account-client";
 import Embers from "../motion/Embers";
-import { ease, Heading, Rise } from "../ui/primitives";
+import { ease, FlagWash, Heading, Rise } from "../ui/primitives";
 import { AksumFrame, LalibelaCross, Tibeb } from "../heritage/Ornaments";
 import { useHours } from "@/components/Business";
 import BackHomeLink from "@/components/BackHomeLink";
@@ -245,6 +245,7 @@ export default function Reservation() {
       id="reservieren"
       className="relative overflow-hidden py-32 md:py-44 [content-visibility:auto] [contain-intrinsic-size:auto_900px]"
     >
+      <FlagWash tone="red" className="-left-[25%] top-[15%] h-[80%] w-[65%]" />
       <div className="pointer-events-none absolute right-[10%] top-[35%] h-[80vmin] w-[80vmin] rounded-full bg-[radial-gradient(circle,rgba(201,162,74,0.18),rgba(218,90,26,0.06)_45%,transparent_70%)]" />
       <Embers count={16} />
 
@@ -451,9 +452,9 @@ export default function Reservation() {
                     <button
                       type="submit"
                       disabled={sending || !account || unverified}
-                      className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-gold px-8 py-4 font-semibold text-ink active:scale-[0.98] disabled:opacity-70"
+                      className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full btn-gild px-8 py-4 font-semibold text-ink hover:text-cream active:scale-[0.98] disabled:opacity-70"
                     >
-                      <span className="absolute inset-0 -translate-x-full bg-cream transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
+                      <span className="absolute inset-0 -translate-x-full bg-eth-green transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
                       <span className="relative">{sending ? t.reserve.sending : t.reserve.submit}</span>
                       <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-ink/10 transition-transform duration-500 group-hover:translate-x-1">
                         <ArrowRight size={14} weight="bold" />
@@ -495,7 +496,10 @@ function ReserveSignIn() {
         <p className="font-display text-2xl text-cream">{t.reserve.loginTitle}</p>
         <p className="mt-2 text-sm leading-relaxed text-cream/75">{t.reserve.loginText}</p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link href={`/login?next=${next}`} className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink">
+          <Link
+            href={`/login?next=${next}`}
+            className="rounded-full btn-gild px-6 py-3 text-sm font-semibold text-ink hover:bg-eth-green hover:bg-none hover:text-cream"
+          >
             {t.order.loginButton}
           </Link>
           <Link

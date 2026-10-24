@@ -23,14 +23,14 @@ export function LalibelaCross({ className = "" }: { className?: string }) {
   );
 }
 
-/** A projecting beam end: a square block with a carved inner square. */
-function Knob({ className }: { className: string }) {
+/** A projecting beam end: a square block with a carved inner square in one of the flag's colours. */
+function Knob({ className, tone }: { className: string; tone: "green" | "red" }) {
   return (
     <span
       aria-hidden
       className={`pointer-events-none absolute flex h-4 w-4 items-center justify-center border-[1.5px] border-gold bg-ink ${className}`}
     >
-      <span className="h-1.5 w-1.5 bg-gold/80" />
+      <span className={`h-1.5 w-1.5 ${tone === "green" ? "bg-eth-green" : "bg-eth-red"}`} />
     </span>
   );
 }
@@ -54,10 +54,10 @@ export function AksumFrame({
       <span aria-hidden className="pointer-events-none absolute -left-2 -right-2 top-[5px] h-px bg-gold/35" />
       <span aria-hidden className="pointer-events-none absolute -left-4 -right-4 bottom-0 h-[1.5px] bg-gold/75" />
       <span aria-hidden className="pointer-events-none absolute -left-2 -right-2 bottom-[5px] h-px bg-gold/35" />
-      <Knob className="-left-5 -top-2" />
-      <Knob className="-right-5 -top-2" />
-      <Knob className="-bottom-2 -left-5" />
-      <Knob className="-bottom-2 -right-5" />
+      <Knob className="-left-5 -top-2" tone="green" />
+      <Knob className="-right-5 -top-2" tone="green" />
+      <Knob className="-bottom-2 -left-5" tone="red" />
+      <Knob className="-bottom-2 -right-5" tone="red" />
       <div className={`relative overflow-hidden ${inner}`}>{children}</div>
     </div>
   );

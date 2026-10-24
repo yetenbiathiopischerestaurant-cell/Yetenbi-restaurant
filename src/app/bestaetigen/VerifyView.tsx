@@ -24,7 +24,7 @@ export default function VerifyView() {
           </p>
           <Link
             href={ONLINE_ORDERING ? "/bestellen" : "/profil"}
-            className="mt-8 inline-block rounded-full bg-gold px-7 py-3 font-semibold text-ink"
+            className="mt-8 inline-block rounded-full btn-gild px-7 py-3 font-semibold text-ink hover:bg-eth-green hover:bg-none hover:text-cream"
           >
             {ONLINE_ORDERING ? t.order.title : text.toProfile}
           </Link>

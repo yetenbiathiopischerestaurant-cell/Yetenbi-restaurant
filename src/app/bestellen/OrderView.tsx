@@ -425,9 +425,9 @@ export default function OrderView() {
                 <button
                   type="submit"
                   disabled={!account || !account.emailVerified || !canOrder || sending || cart.length === 0}
-                  className="group relative w-full overflow-hidden rounded-full bg-gold px-8 py-4 font-semibold text-ink active:scale-[0.99] disabled:opacity-50"
+                  className="group relative w-full overflow-hidden rounded-full btn-gild px-8 py-4 font-semibold text-ink hover:text-cream active:scale-[0.99] disabled:opacity-50"
                 >
-                  <span className="absolute inset-0 -translate-x-full bg-cream transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
+                  <span className="absolute inset-0 -translate-x-full bg-eth-green transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
                   <span className="relative">{sending ? text.placing : text.place(formatPrice(prices.total))}</span>
                 </button>
               </>
@@ -451,7 +451,7 @@ export default function OrderView() {
       {itemCount > 0 && (
         <a
           href="#checkout"
-          className="fixed inset-x-4 bottom-4 z-40 flex items-center justify-between rounded-full bg-gold px-6 py-3.5 font-semibold text-ink shadow-[0_20px_40px_-12px_rgba(0,0,0,0.7)] lg:hidden"
+          className="fixed inset-x-4 bottom-4 z-40 flex items-center justify-between rounded-full btn-gild px-6 py-3.5 font-semibold text-ink shadow-[0_20px_40px_-12px_rgba(0,0,0,0.7)] lg:hidden"
         >
           <span>
             {text.toCheckout} ({itemCount})
@@ -471,7 +471,10 @@ function SignInPrompt() {
       <p className="font-display text-2xl text-cream">{t.order.loginTitle}</p>
       <p className="mt-2 text-sm leading-relaxed text-cream/75">{t.order.loginText}</p>
       <div className="mt-5 flex flex-wrap gap-3">
-        <Link href="/login?next=/bestellen" className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink">
+        <Link
+          href="/login?next=/bestellen"
+          className="rounded-full btn-gild px-6 py-3 text-sm font-semibold text-ink hover:bg-eth-green hover:bg-none hover:text-cream"
+        >
           {t.order.loginButton}
         </Link>
         <Link
