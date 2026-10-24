@@ -94,8 +94,9 @@ holds the place and the message, never guest data, tokens or cookies. Details st
 Waiters take table orders in the **Yetenbi Service** app (`android/`, Kotlin + Jetpack Compose, German and English).
 Phones show one screen at a time; tablets show the bill and the menu side by side.
 
-- Sign-in with a **Service** (or owner) account from /admin/team. On the website, service staff land on **/service**,
-  where they download the app.
+- Sign-in with a **Service** (or owner) account from /admin/team. The app is the restaurant's internal tool: the
+  public website has no page or link for it. The owner downloads it on a new device from /admin/service (the button
+  goes straight to the GitHub release); service staff who sign in on the website just get their profile.
 - **Tische**: the tables drawn from above (chairs, plates for seated guests, the number), free / taken / food ready.
   Tap a free table, choose the number of guests, add dishes (long-press for a wish such as "extra scharf"), *An die
   Küche*. Food appears on **/kueche** as a ticket per table and course; *Fertig* there makes every waiter's phone ring
@@ -131,7 +132,7 @@ Build locally (JDK 17+ and the Android SDK): `cd android && ./gradlew assembleDe
   `CLOUDINARY_API_SECRET`; without them the built-in pictures stay.
 - **Team** (/admin/team): owners create logins for service staff, kitchen staff, drivers and other owners (email + starting password),
   change roles, set a new password or remove someone (they keep a plain guest account). After signing in at /login,
-  everyone lands on their own screen: owners /admin, service /service (the app download), kitchen /kueche, drivers /lieferung.
+  everyone lands on their own screen: owners /admin, kitchen /kueche, drivers /lieferung (only while online ordering is on); service staff and guests /profil.
 - Limits against abuse (`src/lib/server/rate-limit.ts`): 10 wrong passwords per account or 30 per connection in
   15 minutes, then a 15-minute pause; 3 reset emails per address and hour; 5 sign-ups and 6 reservations per
   connection and hour. Signing in with Google takes over an account with the same email only if that account never

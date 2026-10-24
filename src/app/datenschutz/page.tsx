@@ -171,8 +171,8 @@ function German({ owner }: { owner: Owner }) {
         Link ist ein zufälliger, nicht erratbarer Code. Beim Aufruf fallen nur die Server-Protokolle aus Abschnitt 3 an.
       </p>
       <p>
-        Bestellungen am Tisch nimmt das Team mit unserer Service-App auf: Tisch, Speisen, Ihre Wünsche dazu und
-        gegebenenfalls die Platznummer, aber nicht Ihren Namen. Die bezahlte Rechnung (mit dem Namen der Bedienung)
+        Bestellungen am Tisch nimmt das Team mit unserem internen Bestellsystem auf: Tisch, Speisen, Ihre Wünsche dazu
+        und gegebenenfalls die Platznummer, aber nicht Ihren Namen. Die bezahlte Rechnung (mit dem Namen der Bedienung)
         bewahren wir wegen der steuerlichen Aufbewahrungspflicht (§ 147 AO, Art. 6 Abs. 1 lit. c DSGVO) zehn Jahre auf
         und löschen sie danach automatisch.
       </p>
@@ -289,7 +289,7 @@ function German({ owner }: { owner: Owner }) {
       <Table
         rows={[
           ["Reservierungen", "180 Tage nach dem Reservierungsdatum"],
-          ["Rechnungen aus dem Restaurant (Service-App)", "10 Jahre (§ 147 AO)"],
+          ["Rechnungen aus dem Restaurant", "10 Jahre (§ 147 AO)"],
           ["Bestellungen", "180 Tage nach der Bestellung"],
           ["Kundenkonto", "bis Sie es löschen"],
           ["Notiz des Teams", "mit dem Konto bzw. sobald nichts anderes mehr von Ihnen gespeichert ist"],
@@ -404,9 +404,9 @@ function English({ owner }: { owner: Owner }) {
         that cannot be guessed. Opening it only creates the server logs described in section 3.
       </p>
       <p>
-        At the table, the team takes orders with our service app: table, dishes, your wishes and, if needed, the seat
-        number, but not your name. We keep the paid bill (with the name of the staff member who served) for ten years
-        because tax law requires it (§ 147 AO, Art. 6(1)(c) GDPR) and then delete it automatically.
+        At the table, the team takes orders with our internal ordering system: table, dishes, your wishes and, if
+        needed, the seat number, but not your name. We keep the paid bill (with the name of the staff member who served)
+        for ten years because tax law requires it (§ 147 AO, Art. 6(1)(c) GDPR) and then delete it automatically.
       </p>
 
       <H>5. Online orders</H>
@@ -512,7 +512,7 @@ function English({ owner }: { owner: Owner }) {
       <Table
         rows={[
           ["Reservations", "180 days after the reservation date"],
-          ["Bills from the restaurant (service app)", "10 years (§ 147 AO)"],
+          ["Bills from the restaurant", "10 years (§ 147 AO)"],
           ["Orders", "180 days after ordering"],
           ["Customer account", "until you delete it"],
           ["Team note", "with the account, or once nothing else of yours is stored"],

@@ -13,6 +13,7 @@ export const en: Dict = {
     open: "Open menu",
     close: "Close menu",
     language: "Language",
+    main: "Main navigation",
   },
   intro: {
     captions: ["From a thousand beans", "freshly roasted", "brewed in the jebena", "served to you"],
@@ -247,6 +248,9 @@ export const en: Dict = {
       "Your account and our notes about you are deleted for good. Orders and reservations stay, unlinked from the account, and are deleted after 180 days like all others.",
     deleteConfirm: "Delete account for good",
     adminLink: "Go to admin",
+    kitchenLink: "Go to the kitchen",
+    driverLink: "Go to deliveries",
+    staffLabel: { owner: "Admin", kitchen: "Kitchen", driver: "Deliveries" },
     google: "Continue with Google",
     or: "or",
     noPassword: "You sign in with Google. You can also set a password here.",

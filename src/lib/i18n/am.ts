@@ -14,6 +14,7 @@ export const am: Dict = {
     open: "ምናሌ ክፈት",
     close: "ምናሌ ዝጋ",
     language: "ቋንቋ",
+    main: "ዋና ማውጫ",
   },
   intro: {
     captions: ["ከሺህ የቡና ፍሬዎች", "በአዲስ ተቆልቶ", "በጀበና ተፈልቶ", "ለእርስዎ ቀረበ"],
@@ -233,6 +234,9 @@ export const am: Dict = {
       "መለያዎና ስለ እርስዎ ያለን ማስታወሻ ሙሉ በሙሉ ይሰረዛሉ። ትዕዛዞችና ቦታ ማስያዣዎች ከመለያው ተለይተው ይቀራሉ፤ እንደ ሌሎቹ ሁሉ ከ180 ቀናት በኋላ ይሰረዛሉ።",
     deleteConfirm: "መለያውን ሙሉ በሙሉ ሰርዝ",
     adminLink: "ወደ አስተዳደር",
+    kitchenLink: "ወደ ወጥ ቤት",
+    driverLink: "ወደ ማድረሻዎች",
+    staffLabel: { owner: "አስተዳደር", kitchen: "ወጥ ቤት", driver: "ማድረሻዎች" },
     google: "በGoogle ይቀጥሉ",
     or: "ወይም",
     noPassword: "በGoogle ይገባሉ። እዚህ የይለፍ ቃልም ማዘጋጀት ይችላሉ።",

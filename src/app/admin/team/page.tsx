@@ -13,7 +13,7 @@ const WHAT: Record<Exclude<Role, "guest">, string> = {
   kitchen: "Nur /kueche: angenommene Bestellungen ohne Preise und Gästedaten; drückt „Essen fertig“ und „Verpackt“.",
   driver: "Nur /lieferung: die eigenen Lieferungen mit Adresse und Betrag; drückt „Zugestellt“.",
   service:
-    "Die Service-App auf Handy oder Tablet: Tische öffnen, Bestellungen an die Küche, kassieren. Auf der Website nur /service (App laden).",
+    "Nur die Service-App auf Handy oder Tablet: Tische öffnen, Bestellungen an die Küche, kassieren. Anmeldung mit diesem Konto; auf der Website nur das eigene Profil.",
 };
 
 async function Team() {

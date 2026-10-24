@@ -5,7 +5,7 @@ import { ArrowUpRight, UserCircle } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useAccount } from "@/lib/account-client";
 import { ONLINE_ORDERING } from "@/lib/features";
-import { homeFor } from "@/lib/roles";
+import { homeFor, staffScreen } from "@/lib/roles";
 import { useState } from "react";
 import Jebena from "./Jebena";
 import Magnetic from "./motion/Magnetic";
@@ -23,10 +23,8 @@ export default function Header() {
   const me = useAccount();
   const accountHref = me ? homeFor(me.role) : "/login";
   // The team gets a labelled button to their screen; guests the account icon.
-  const staffLabel =
-    me && me.role !== "guest"
-      ? { owner: "Verwaltung", kitchen: "Küche", driver: "Lieferungen", service: "Service-App" }[me.role]
-      : null;
+  const screen = me ? staffScreen(me.role) : null;
+  const staffLabel = screen ? t.account.staffLabel[screen] : null;
   const accountLabel = staffLabel ?? (me ? t.account.myAccount : t.account.signIn);
   const links = [
     { href: "#platte", label: t.nav.links.platte },
@@ -53,7 +51,7 @@ export default function Header() {
         transition={{ duration: 0.8, ease: spring, delay: done && !hidden ? 0.9 : 0 }}
       >
         <nav
-          aria-label="Hauptnavigation"
+          aria-label={t.nav.main}
           className="flex w-full max-w-5xl items-center justify-between gap-6 rounded-full border border-cream/10 bg-ink/55 py-2 pl-5 pr-2 shadow-[inset_0_1px_0_rgba(244,236,220,0.08),0_20px_50px_-20px_rgba(10,6,2,0.8)] backdrop-blur-md lg:w-max lg:justify-start"
         >
           <a href="#top" className="group flex shrink-0 items-center gap-2.5 text-gold" onClick={() => setOpen(false)}>

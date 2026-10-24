@@ -13,6 +13,7 @@ export const de = {
     open: "Menü öffnen",
     close: "Menü schließen",
     language: "Sprache",
+    main: "Hauptnavigation",
   },
   intro: {
     captions: ["Aus tausend Bohnen", "frisch geröstet", "in der Jebena gebrüht", "für Sie serviert"],
@@ -254,6 +255,9 @@ export const de = {
       "Euer Konto und unsere Notizen zu euch werden endgültig gelöscht. Bestellungen und Reservierungen bleiben ohne Verknüpfung zum Konto erhalten und werden wie alle anderen nach 180 Tagen gelöscht.",
     deleteConfirm: "Konto endgültig löschen",
     adminLink: "Zur Verwaltung",
+    kitchenLink: "Zur Küche",
+    driverLink: "Zu den Lieferungen",
+    staffLabel: { owner: "Verwaltung", kitchen: "Küche", driver: "Lieferungen" },
     google: "Mit Google fortfahren",
     or: "oder",
     noPassword: "Ihr meldet euch mit Google an. Hier könnt ihr zusätzlich ein Passwort festlegen.",

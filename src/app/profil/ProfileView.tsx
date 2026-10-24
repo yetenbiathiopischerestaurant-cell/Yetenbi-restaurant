@@ -7,7 +7,7 @@ import { cancelMyBooking, changePassword, deleteAccount, logout, updateProfile }
 import { content, LOCALES, type Locale } from "@/lib/i18n";
 import { formatEuro, type OrderStatus } from "@/lib/ordering";
 import { useLanguage } from "@/lib/language";
-import { homeFor, type Role } from "@/lib/roles";
+import { homeFor, staffScreen, type Role } from "@/lib/roles";
 import { AuthField, fieldClass, FormMessage, SubmitButton } from "@/components/account/AccountShell";
 
 type ProfileBooking = {
@@ -54,6 +54,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function ProfileView({ user, bookings, today, hasPassword, orders }: Props) {
   const { t } = useLanguage();
   const text = t.account;
+  const screen = staffScreen(user.role as Role);
   const [profileState, profileAction, profilePending] = useActionState(updateProfile, null);
   const [pwState, pwAction, pwPending] = useActionState(changePassword, null);
   const [delState, delAction, delPending] = useActionState(deleteAccount, null);
@@ -116,12 +117,12 @@ export default function ProfileView({ user, bookings, today, hasPassword, orders
           <p className="mt-2 text-cream/65">{user.email}</p>
         </div>
         <div className="flex flex-wrap items-center gap-4">
-          {user.role !== "guest" && (
+          {screen && (
             <Link
               href={homeFor(user.role)}
               className="rounded-full border border-gold/60 px-5 py-2 text-sm font-semibold text-gold-soft hover:bg-gold hover:text-ink"
             >
-              {user.role === "owner" ? text.adminLink : user.role === "kitchen" ? "Zur Küche" : "Zu den Lieferungen"}
+              {{ owner: text.adminLink, kitchen: text.kitchenLink, driver: text.driverLink }[screen]}
             </Link>
           )}
           <form action={logout}>

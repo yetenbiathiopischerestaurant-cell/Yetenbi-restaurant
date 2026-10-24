@@ -9,7 +9,6 @@ import { listReleases } from "@/lib/server/app-releases";
 import { requireOwner } from "@/lib/server/auth";
 import { hasDatabase } from "@/lib/server/db";
 import { daySummary, listClosedChecks, listOpenChecks, listTables } from "@/lib/server/service";
-import { siteUrl } from "@/lib/site-url";
 import AdminHeader from "../AdminHeader";
 import { feedbackDone, releaseFlag } from "./actions";
 import PlanForm from "./PlanForm";
@@ -147,10 +146,13 @@ async function Service() {
           {latest ? (
             <>
               <p className="mt-5 text-sm text-cream/70">
-                Link für neue Geräte (lädt immer die neueste Version):{" "}
-                <span className="font-mono text-cream">{siteUrl().replace(/^https?:\/\//, "")}/app</span>
+                Für ein neues Handy oder Tablet: diese Seite dort öffnen und herunterladen. Die App ist ein internes
+                Werkzeug; auf der Website gibt es keinen Link zu ihr.
               </p>
-              <a href="/app" className="mt-3 inline-block rounded-full bg-gold px-6 py-2.5 font-semibold text-ink">
+              <a
+                href={latest.url}
+                className="mt-3 inline-block rounded-full bg-gold px-6 py-2.5 font-semibold text-ink"
+              >
                 Version {latest.versionName} herunterladen
               </a>
             </>
