@@ -18,6 +18,8 @@ type Entry = {
   duration: { de: string; en: string };
   kind: "cookie" | "storage";
   storageKey?: string;
+  /** A cookie scripts can read (and delete), unlike the httpOnly sign-in cookie. */
+  cookieName?: string;
 };
 
 const ENTRIES: Entry[] = [
@@ -50,6 +52,17 @@ const ENTRIES: Entry[] = [
     storageKey: "yt-locale",
   },
   {
+    id: "intro",
+    name: { de: "Intro gesehen", en: "Intro seen" },
+    purpose: {
+      de: "Merkt sich, dass Sie das Eingangs-Intro schon gesehen haben, damit es nicht bei jedem Besuch abläuft.",
+      en: "Remembers that you have seen the opening intro, so it doesn't play on every visit.",
+    },
+    duration: { de: "bis Sie es löschen", en: "until you delete it" },
+    kind: "storage",
+    storageKey: "yt-intro-seen",
+  },
+  {
     id: "cart",
     name: { de: "Warenkorb", en: "Basket" },
     purpose: { de: "Hebt Ihren Warenkorb bis zur Bestellung auf.", en: "Keeps your basket until you order." },
@@ -68,6 +81,17 @@ const ENTRIES: Entry[] = [
     kind: "storage",
     storageKey: "yt-alert-sound",
   },
+  {
+    id: "adminLang",
+    name: { de: "Sprache der Verwaltung", en: "Admin language" },
+    purpose: {
+      de: "Nur im Team-Bereich: ob Verwaltung und Küche auf Deutsch oder Englisch erscheinen (Cookie „yt-admin-lang“).",
+      en: "Team area only: whether the admin and kitchen screens show German or English (cookie “yt-admin-lang”).",
+    },
+    duration: { de: "1 Jahr", en: "1 year" },
+    kind: "cookie",
+    cookieName: "yt-admin-lang",
+  },
 ];
 
 const TEXT = {
@@ -81,7 +105,7 @@ const TEXT = {
     checking: "wird geprüft …",
     during: "nur beim Anmelden",
     clear: "Gespeicherte Daten löschen",
-    cleared: "Gelöscht. Beim nächsten Besuch startet die Seite auf Deutsch und mit leerem Warenkorb.",
+    cleared: "Gelöscht. Beim nächsten Besuch startet die Seite auf Deutsch, mit dem Intro und leerem Warenkorb.",
     nothing: "In diesem Browser ist nichts gespeichert.",
     signOut: "Abmelden und Anmelde-Cookie löschen",
     more: "Mehr dazu in der Datenschutzerklärung, Abschnitt 12.",
@@ -97,7 +121,7 @@ const TEXT = {
     checking: "checking …",
     during: "only while signing in",
     clear: "Delete stored data",
-    cleared: "Deleted. On your next visit the site starts in German with an empty basket.",
+    cleared: "Deleted. On your next visit the site starts in German, with the intro and an empty basket.",
     nothing: "Nothing is stored in this browser.",
     signOut: "Sign out and delete the sign-in cookie",
     more: "More in the privacy policy, section 12.",
@@ -113,6 +137,8 @@ const readKey = (key: string) => {
   }
 };
 
+const hasCookie = (name: string) => document.cookie.split("; ").some((pair) => pair.startsWith(`${name}=`));
+
 export default function CookieSettings({ className = "" }: { className?: string }) {
   const { locale } = useLanguage();
   const lang = locale === "de" ? "de" : "en"; // the legal texts exist in German and English
@@ -122,7 +148,10 @@ export default function CookieSettings({ className = "" }: { className?: string 
   const [message, setMessage] = useState("");
 
   const refresh = useCallback(async () => {
-    const local = Object.fromEntries(ENTRIES.filter((e) => e.storageKey).map((e) => [e.id, readKey(e.storageKey!)]));
+    const local = Object.fromEntries([
+      ...ENTRIES.filter((e) => e.storageKey).map((e) => [e.id, readKey(e.storageKey!)]),
+      ...ENTRIES.filter((e) => e.cookieName).map((e) => [e.id, hasCookie(e.cookieName!)]),
+    ]);
     setStored({ ...local, session: null });
     // The sign-in cookie is invisible to scripts (httpOnly); ask the server whether it is there.
     const signedIn = await fetch("/api/me", { cache: "no-store" })
@@ -140,6 +169,7 @@ export default function CookieSettings({ className = "" }: { className?: string 
 
   const clear = () => {
     for (const e of ENTRIES) {
+      if (e.cookieName) document.cookie = `${e.cookieName}=; path=/; max-age=0; samesite=lax`;
       if (!e.storageKey) continue;
       try {
         window.localStorage.removeItem(e.storageKey);
@@ -152,7 +182,7 @@ export default function CookieSettings({ className = "" }: { className?: string 
     void refresh();
   };
 
-  const anyLocal = ENTRIES.some((e) => e.storageKey && stored[e.id]);
+  const anyLocal = ENTRIES.some((e) => (e.storageKey || e.cookieName) && stored[e.id]);
 
   return (
     <>

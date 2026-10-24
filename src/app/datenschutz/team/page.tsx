@@ -51,8 +51,9 @@ export default async function TeamDatenschutz() {
           Lieferungen.
         </li>
         <li>
-          <strong>Auf Ihrem Gerät:</strong> ob Benachrichtigungstöne eingeschaltet sind (localStorage) und, wenn Sie es
-          erlauben, Browser-Benachrichtigungen. Beides können Sie im Browser jederzeit löschen bzw. widerrufen.
+          <strong>Auf Ihrem Gerät:</strong> ob Benachrichtigungstöne eingeschaltet sind (localStorage), die gewählte
+          Sprache der Verwaltung (Cookie „yt-admin-lang“, 1 Jahr) und, wenn Sie es erlauben, Browser-Benachrichtigungen.
+          Alles können Sie im Browser jederzeit löschen bzw. widerrufen.
         </li>
       </ul>
       <H>2a. Zusätzlich in der Service-App</H>

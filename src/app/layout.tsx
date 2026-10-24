@@ -3,6 +3,7 @@ import { siteUrl } from "@/lib/site-url";
 import { Cormorant_Garamond, Outfit, Noto_Sans_Ethiopic } from "next/font/google";
 import SmoothScroll from "@/components/motion/SmoothScroll";
 import { IntroProvider } from "@/components/intro/IntroState";
+import { introSeenScript } from "@/components/intro/seen";
 import BackgroundFlames from "@/components/three/BackgroundFlames";
 import "./globals.css";
 
@@ -60,7 +61,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="de" className={`${cormorant.variable} ${outfit.variable} ${ethiopic.variable} h-full antialiased`}>
+    // suppressHydrationWarning: the head script below may add data-intro-seen to <html> before React hydrates.
+    <html
+      lang="de"
+      className={`${cormorant.variable} ${outfit.variable} ${ethiopic.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
+      <head>
+        {/* Inline on purpose: it must run before the first paint (the CSP allows inline scripts). */}
+        <script dangerouslySetInnerHTML={{ __html: introSeenScript }} />
+      </head>
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <a
           href="#main"

@@ -1,5 +1,6 @@
 "use client";
 
+import "./quiet-three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import type { MotionValue } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -125,6 +126,83 @@ function jebena(count: number) {
   return out;
 }
 
+/* The site's muted flag palette, as raw sRGB (the shader writes colours straight to the screen). */
+const hex = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+const FLAG_GREEN = hex("#4f8a5f");
+const FLAG_GOLD = hex("#e2bf62");
+const FLAG_RED = hex("#b0402c");
+// The dark disc is lifted a little, or its sparse dots disappear against the black backdrop.
+const EMBLEM_BLUE = hex("#2f4470").map((v) => v * 1.45);
+const EMBLEM_STAR = hex("#f0d78f");
+
+/**
+ * The Ethiopian flag (2:1): green, gold and red stripes with the blue emblem disc, its five-pointed
+ * star outline and rays. Flat on z=0; the shader makes the cloth wave. Also returns each point's colour.
+ */
+function flag(count: number) {
+  const r = rng(61);
+  const out = new Float32Array(count * 3);
+  const colour = new Float32Array(count * 3);
+  const W = 7;
+  const H = 3.5;
+  const disc = H * 0.31;
+  const tip = disc * 0.8;
+  const notch = tip * 0.382; // radius of the star's inner corners
+
+  // Star outline (each tip joined to the tip two along) plus a ray out of every notch: [x0, y0, x1, y1, half width].
+  const lines: number[][] = [];
+  for (let k = 0; k < 5; k++) {
+    const a = Math.PI / 2 + (k * Math.PI * 2) / 5;
+    const b = a + (Math.PI * 4) / 5;
+    lines.push([Math.cos(a) * tip, Math.sin(a) * tip, Math.cos(b) * tip, Math.sin(b) * tip, 0.045]);
+    const g = a + Math.PI / 5;
+    lines.push([Math.cos(g) * notch * 1.2, Math.sin(g) * notch * 1.2, Math.cos(g) * tip, Math.sin(g) * tip, 0.03]);
+  }
+  const lengths = lines.map(([x0, y0, x1, y1]) => Math.hypot(x1 - x0, y1 - y0));
+  const total = lengths.reduce((s, l) => s + l, 0);
+
+  const onEmblem = (x: number, y: number) =>
+    lines.some(([x0, y0, x1, y1, w]) => {
+      const dx = x1 - x0;
+      const dy = y1 - y0;
+      const t = Math.max(0, Math.min(1, ((x - x0) * dx + (y - y0) * dy) / (dx * dx + dy * dy)));
+      return Math.hypot(x - x0 - dx * t, y - y0 - dy * t) < w;
+    });
+  const pick = (x: number, y: number) => {
+    if (x * x + y * y < disc * disc) return onEmblem(x, y) ? EMBLEM_STAR : EMBLEM_BLUE;
+    return y > H / 6 ? FLAG_GREEN : y < -H / 6 ? FLAG_RED : FLAG_GOLD;
+  };
+
+  for (let i = 0; i < count; i++) {
+    let x: number, y: number;
+    const q = r();
+    if (q < 0.1) {
+      // Extra points inside the emblem disc so the dark blue reads as a solid disc.
+      const a = r() * Math.PI * 2;
+      const d = Math.sqrt(r()) * disc;
+      x = Math.cos(a) * d;
+      y = Math.sin(a) * d;
+    } else if (q < 0.22) {
+      // Extra points along the star and rays, weighted by length, so the thin outline reads crisply.
+      let d = r() * total;
+      let j = 0;
+      while (j < lines.length - 1 && d > lengths[j]) d -= lengths[j++];
+      const [x0, y0, x1, y1] = lines[j];
+      const t = r();
+      x = x0 + (x1 - x0) * t + (r() - 0.5) * 0.03;
+      y = y0 + (y1 - y0) * t + (r() - 0.5) * 0.03;
+    } else {
+      x = (r() - 0.5) * W;
+      y = (r() - 0.5) * H;
+    }
+    out[i * 3] = x;
+    out[i * 3 + 1] = y;
+    out[i * 3 + 2] = (r() - 0.5) * 0.05;
+    colour.set(pick(x, y), i * 3);
+  }
+  return { points: out, colour };
+}
+
 /** The word YETENBI, sampled from canvas pixels and given a little depth. */
 function word(count: number, family: string) {
   const r = rng(53);
@@ -163,7 +241,8 @@ const vertex = /* glsl */ `
   uniform float uScatter;
   uniform float uPixel;
   uniform float uFit;
-  uniform vec3 uMouse;
+  attribute vec3 aFlag;
+  attribute vec3 aFlagColor;
   attribute vec3 aP1;
   attribute vec3 aP2;
   attribute vec3 aP3;
@@ -175,19 +254,29 @@ const vertex = /* glsl */ `
   mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
 
   void main() {
+    // The flag waves like cloth: a wave runs along x, growing toward the free (right) edge.
+    vec3 pf = aFlag;
+    float wave = aFlag.x * 1.15 - uTime * 2.2;
+    float amp = 0.1 + 0.035 * (aFlag.x + 3.5);
+    pf.z += sin(wave) * amp;
+    pf.y += sin(wave * 0.8 + 1.3) * amp * 0.25;
+
     // Galaxy spins faster toward its core.
     vec3 p0 = position;
     p0.xz = rot(uTime * (0.08 + 0.35 / (1.0 + length(position.xz)))) * p0.xz;
     p0.yz = rot(1.05) * p0.yz;
 
-    float l = clamp(uStage + (aRand.x - 0.5) * 0.22, 0.0, 3.0);
-    float k1 = smoothstep(0.0, 1.0, clamp(l, 0.0, 1.0));
-    float k2 = smoothstep(0.0, 1.0, clamp(l - 1.0, 0.0, 1.0));
-    float k3 = smoothstep(0.0, 1.0, clamp(l - 2.0, 0.0, 1.0));
-    vec3 pos = mix(mix(mix(p0, aP1, k1), aP2, k2), aP3, k3);
+    // Stages: 0 flag, 1 galaxy, 2 bean, 3 jebena, 4 word.
+    // Each particle runs a little ahead or behind; not yet while the flag holds, so its star stays crisp.
+    float l = clamp(uStage + (aRand.x - 0.5) * 0.22 * smoothstep(0.0, 0.3, uStage), 0.0, 4.0);
+    float k0 = smoothstep(0.0, 1.0, clamp(l, 0.0, 1.0));
+    float k1 = smoothstep(0.0, 1.0, clamp(l - 1.0, 0.0, 1.0));
+    float k2 = smoothstep(0.0, 1.0, clamp(l - 2.0, 0.0, 1.0));
+    float k3 = smoothstep(0.0, 1.0, clamp(l - 3.0, 0.0, 1.0));
+    vec3 pos = mix(mix(mix(mix(pf, p0, k0), aP1, k1), aP2, k2), aP3, k3);
 
     // Turbulence peaks mid-morph so shapes dissolve into swirling smoke.
-    float mid = sin(fract(l) * 3.14159) * step(0.001, l) * step(l, 2.999);
+    float mid = sin(fract(l) * 3.14159) * step(0.001, l) * step(l, 3.999);
     vec3 swirl = vec3(
       sin(pos.y * 1.7 + uTime * 1.3 + aRand.y * 6.28),
       cos(pos.x * 1.3 + uTime * 1.1 + aRand.z * 6.28),
@@ -200,25 +289,24 @@ const vertex = /* glsl */ `
 
     pos *= uFit;
 
-    // Final explosion outward.
+    // Scatter: the dust flies in to form the flag at the start and explodes outward at the end.
     vec3 dir = normalize(vec3(aRand.y - 0.5, aRand.z - 0.5, aRand.w - 0.5) + 0.0001);
     pos += dir * uScatter * (6.0 + aRand.x * 10.0);
 
-    // Push particles away from the pointer.
-    vec2 d = pos.xy - uMouse.xy;
-    float f = exp(-dot(d, d) * 0.9) * 1.1;
-    pos.xy += normalize(d + 0.0001) * f;
-
     vec4 mv = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mv;
-    float size = (0.55 + aRand.y * 1.05) * (1.0 + mid * 0.9 + f * 1.5);
+    // Flag points are a touch larger so the stripes read as cloth, not scattered dust.
+    float size = (0.55 + aRand.y * 1.05) * (1.0 + mid * 0.9) * (1.0 + 0.35 * (1.0 - k0));
     gl_PointSize = size * uPixel * (14.0 / -mv.z);
 
     vec3 gold = vec3(0.91, 0.76, 0.42);
     vec3 cream = vec3(1.0, 0.94, 0.82);
     vec3 ember = vec3(0.95, 0.42, 0.14);
     vColor = mix(gold, aRand.z > 0.82 ? ember : cream, smoothstep(0.35, 1.0, aRand.z));
-    vColor = mix(vColor, ember, f * 0.8);
+    // Flag colours only while the flag is formed; the folds catch the light a little. The muted palette is
+    // lifted slightly: points rarely overlap here, so additive blending doesn't wash it out but dims it.
+    vec3 cloth = aFlagColor * (1.13 + 0.27 * cos(wave));
+    vColor = mix(vColor, cloth, 1.0 - k0);
     vAlpha = (0.85 + aRand.w * 0.4) * (1.0 - uScatter * 0.9);
     // Points on the far side of a shape fade, so its volume and outline read clearly.
     vDepth = smoothstep(-15.0, -8.5, mv.z);
@@ -238,6 +326,20 @@ const fragment = /* glsl */ `
 
 /* ------------------------------------------------------------------ */
 
+/*
+  Timeline as a share of the intro (16 s, see Intro.tsx): the dust gathers into the flag by GATHER,
+  then each [start, end] pair morphs to the next shape (flag → galaxy → bean → jebena → word),
+  with a hold in between, and everything explodes outward after EXPLODE. Captions in Intro.tsx follow these.
+*/
+const GATHER = 0.05;
+const MORPHS = [
+  [0.16, 0.24],
+  [0.32, 0.4],
+  [0.505, 0.585],
+  [0.69, 0.77],
+] as const;
+const EXPLODE = 0.89;
+
 function Particles({
   progress,
   count,
@@ -250,10 +352,13 @@ function Particles({
   onReady?: () => void;
 }) {
   const group = useRef<THREE.Group>(null);
-  const { size, viewport, gl } = useThree();
+  const { size, gl } = useThree();
 
   const geometry = useMemo(() => {
     const g = new THREE.BufferGeometry();
+    const f = flag(count);
+    g.setAttribute("aFlag", new THREE.BufferAttribute(f.points, 3));
+    g.setAttribute("aFlagColor", new THREE.BufferAttribute(f.colour, 3));
     g.setAttribute("position", new THREE.BufferAttribute(galaxy(count), 3));
     g.setAttribute("aP1", new THREE.BufferAttribute(bean(count), 3));
     g.setAttribute("aP2", new THREE.BufferAttribute(jebena(count), 3));
@@ -268,29 +373,17 @@ function Particles({
     () => ({
       uStage: { value: 0 },
       uTime: { value: 0 },
-      uScatter: { value: 0 },
+      // Starts fully scattered, so the dust gathers into the flag.
+      uScatter: { value: 1 },
       uPixel: { value: 1 },
       uFit: { value: 1 },
-      uMouse: { value: new THREE.Vector3(99, 99, 0) },
     }),
     [],
   );
 
   const material = useRef<THREE.ShaderMaterial>(null);
   const announced = useRef(false);
-  const mouse = useRef(new THREE.Vector3(99, 99, 0));
-  const pointer = useRef<THREE.Vector2 | null>(null);
   const spin = useRef(0);
-
-  // Track the pointer on the window: captions sit above the canvas and would swallow canvas events.
-  useEffect(() => {
-    const on = (e: PointerEvent) => {
-      pointer.current ??= new THREE.Vector2();
-      pointer.current.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
-    };
-    window.addEventListener("pointermove", on);
-    return () => window.removeEventListener("pointermove", on);
-  }, []);
 
   useFrame((_, delta) => {
     // R3F copies the uniforms prop onto the material, so update the material's own copy.
@@ -300,37 +393,23 @@ function Particles({
       onReady?.();
     }
     const p = progress.get();
-    // galaxy → bean (.1-.2) hold → jebena (.34-.44) hold → word (.58-.68) hold → explode after .86
-    const stage =
-      p < 0.1
-        ? 0
-        : p < 0.2
-          ? (p - 0.1) / 0.1
-          : p < 0.34
-            ? 1
-            : p < 0.44
-              ? 1 + (p - 0.34) / 0.1
-              : p < 0.58
-                ? 2
-                : Math.min(3, 2 + (p - 0.58) / 0.1);
+    const stage = MORPHS.reduce((s, [a, b]) => s + THREE.MathUtils.clamp((p - a) / (b - a), 0, 1), 0);
+    const gather = 1 - THREE.MathUtils.smoothstep(p, 0, GATHER);
+    const explode = Math.max(0, (p - EXPLODE) / (1 - EXPLODE));
     u.uStage.value = THREE.MathUtils.lerp(u.uStage.value, stage, 0.11);
-    u.uScatter.value = THREE.MathUtils.lerp(u.uScatter.value, Math.max(0, (p - 0.86) / 0.14), 0.1);
+    u.uScatter.value = THREE.MathUtils.lerp(u.uScatter.value, Math.max(gather, explode), 0.1);
     u.uTime.value += delta;
     u.uPixel.value = gl.getPixelRatio();
     u.uFit.value = Math.min(1, size.width / size.height / 1.45) * 0.95 + 0.05;
 
-    // Pointer in world units on the z=0 plane; parked off-screen until the visitor moves the mouse.
-    const pt = pointer.current;
-    if (pt) mouse.current.set((pt.x * viewport.width) / 2, (pt.y * viewport.height) / 2, 0);
-    u.uMouse.value.lerp(mouse.current, 0.15);
-
-    // Shapes turn slowly, then ease to face the camera for the word.
-    const facing = THREE.MathUtils.smoothstep(u.uStage.value, 2.2, 2.9);
+    // The flag and the word face the camera; the shapes in between turn slowly, then ease back to the front.
+    const facing = Math.max(
+      1 - THREE.MathUtils.smoothstep(u.uStage.value, 0.1, 0.8),
+      THREE.MathUtils.smoothstep(u.uStage.value, 3.2, 3.9),
+    );
     spin.current += delta * 0.3 * (1 - facing);
     const front = Math.round(spin.current / (Math.PI * 2)) * Math.PI * 2;
-    const g = group.current!;
-    g.rotation.y = THREE.MathUtils.lerp(spin.current, front, facing) + (pt?.x ?? 0) * 0.15;
-    g.rotation.x = -(pt?.y ?? 0) * 0.1;
+    group.current!.rotation.y = THREE.MathUtils.lerp(spin.current, front, facing);
   });
 
   return (

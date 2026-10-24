@@ -277,12 +277,14 @@ function German({ owner }: { owner: Owner }) {
       <p>
         Schriften werden von unserem eigenen Server geladen, nicht von Google. Wir setzen keine Analyse- oder
         Werbe-Cookies und keine Tracking-Dienste, daher gibt es nichts, dem Sie zustimmen müssten, und kein
-        Cookie-Banner. Ihre Sprachwahl und Ihr Warenkorb werden nur in Ihrem Browser gespeichert (localStorage), und
-        erst, wenn Sie eine Sprache wählen bzw. etwas in den Warenkorb legen. Wenn Sie sich anmelden, setzen wir ein
-        Sitzungs-Cookie (30 Tage); bei der Anmeldung mit Google zusätzlich für höchstens 10 Minuten ein Cookie zur
-        Absicherung des Anmeldevorgangs. Diese Speicherungen sind für die von Ihnen gewünschten Funktionen unbedingt
-        erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG). Unter „Cookie-Einstellungen“ (unten auf jeder Seite) sehen Sie, was
-        davon in Ihrem Browser gerade gespeichert ist, und können es löschen oder sich abmelden.
+        Cookie-Banner. Ihre Sprachwahl, Ihr Warenkorb und der Vermerk, dass Sie das Eingangs-Intro schon gesehen haben
+        (damit es nicht bei jedem Besuch erneut abläuft), werden nur in Ihrem Browser gespeichert (localStorage), und
+        erst, wenn Sie eine Sprache wählen, etwas in den Warenkorb legen bzw. das Intro einmal gesehen haben. Wenn Sie
+        sich anmelden, setzen wir ein Sitzungs-Cookie (30 Tage); bei der Anmeldung mit Google zusätzlich für höchstens
+        10 Minuten ein Cookie zur Absicherung des Anmeldevorgangs. Diese Speicherungen sind für die von Ihnen
+        gewünschten Funktionen unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG). Unter „Cookie-Einstellungen“ (unten auf
+        jeder Seite) sehen Sie, was davon in Ihrem Browser gerade gespeichert ist, und können es löschen oder sich
+        abmelden.
       </p>
 
       <H>13. Speicherdauer auf einen Blick</H>
@@ -500,12 +502,13 @@ function English({ owner }: { owner: Owner }) {
       <H id="cookies-en">12. Fonts, cookies and local storage</H>
       <p>
         Fonts are loaded from our own server, not from Google. We use no analytics or advertising cookies and no
-        tracking, so there is nothing to agree to and no cookie banner. Your language choice and basket are stored only
-        in your browser (localStorage), and only once you choose a language or add something to the basket. When you
-        sign in we set a session cookie (30 days), and for Google sign-in an additional cookie for at most 10 minutes to
-        secure the sign-in. These are strictly necessary for the functions you request (§ 25(2) no. 2 TDDDG). Under
-        &quot;Cookie settings&quot; (at the bottom of every page) you can see which of these are stored in your browser
-        right now, delete them or sign out.
+        tracking, so there is nothing to agree to and no cookie banner. Your language choice, your basket and a note
+        that you have already seen the opening intro (so it doesn&apos;t play on every visit) are stored only in your
+        browser (localStorage), and only once you choose a language, add something to the basket or have seen the intro
+        once. When you sign in we set a session cookie (30 days), and for Google sign-in an additional cookie for at
+        most 10 minutes to secure the sign-in. These are strictly necessary for the functions you request (§ 25(2) no. 2
+        TDDDG). Under &quot;Cookie settings&quot; (at the bottom of every page) you can see which of these are stored in
+        your browser right now, delete them or sign out.
       </p>
 
       <H>13. Retention at a glance</H>

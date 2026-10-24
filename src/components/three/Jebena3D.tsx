@@ -1,5 +1,6 @@
 "use client";
 
+import "./quiet-three";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
