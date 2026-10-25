@@ -48,7 +48,10 @@ import de.yetenbi.service.ui.components.PillButton
 import de.yetenbi.service.ui.components.Stat
 import de.yetenbi.service.ui.theme.Yt
 
-/* The day's takings: revenue, cash, card, tips, and every bill; owners can reopen one paid by mistake. */
+/*
+  The day's takings: revenue, cash, card, tips, and every bill; owners can reopen one paid by mistake.
+  Without payments in the app: only closed tables, guests and the order value (the money is counted at the till).
+*/
 @Composable
 fun TodayScreen(state: UiState, vm: AppViewModel) {
     val strings = LocalStrings.current
@@ -70,7 +73,13 @@ fun TodayScreen(state: UiState, vm: AppViewModel) {
         }
         item {
             val cents = { euros: Double -> (euros * 100).toInt() }
-            val stats = listOf(
+            // Counted from the list itself, so it works whatever the server puts in the summary.
+            val kept = state.today?.checks.orEmpty().filter { it.status != "void" }
+            val stats = if (!state.payments) listOf(
+                Triple(strings.today.orderValue, Money.format(kept.sumOf { it.totalCents }, strings.code), null),
+                Triple(strings.today.tables, kept.size.toString(), null),
+                Triple(strings.today.guests, kept.sumOf { it.guests }.toString(), null),
+            ) else listOf(
                 Triple(strings.today.revenue, Money.format(cents(summary?.total ?: 0.0), strings.code), strings.today.checks(summary?.paid ?: 0)),
                 Triple(strings.today.cash, Money.format(cents(summary?.cash ?: 0.0), strings.code), null),
                 Triple(strings.today.card, Money.format(cents(summary?.card ?: 0.0), strings.code), null),
@@ -79,15 +88,15 @@ fun TodayScreen(state: UiState, vm: AppViewModel) {
             if (compact) {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     stats.chunked(2).forEach { pair ->
-                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) { pair.forEach { (l, v, s) -> Stat(l, v, Modifier.weight(1f), sub = s, accent = if (l == strings.today.revenue) Yt.GoldSoft else Yt.Cream) } }
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) { pair.forEach { (l, v, s) -> Stat(l, v, Modifier.weight(1f), sub = s, accent = if (l == strings.today.revenue || l == strings.today.orderValue) Yt.GoldSoft else Yt.Cream) } }
                     }
                 }
             } else {
-                Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) { stats.forEach { (l, v, s) -> Stat(l, v, Modifier.weight(1f), sub = s, accent = if (l == strings.today.revenue) Yt.GoldSoft else Yt.Cream) } }
+                Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) { stats.forEach { (l, v, s) -> Stat(l, v, Modifier.weight(1f), sub = s, accent = if (l == strings.today.revenue || l == strings.today.orderValue) Yt.GoldSoft else Yt.Cream) } }
             }
         }
         val checks = state.today?.checks.orEmpty()
-        if (checks.isEmpty()) item { Box(Modifier.heightIn(min = 280.dp)) { EmptyState(strings.today.empty, strings.today.emptyHint) } }
+        if (checks.isEmpty()) item { Box(Modifier.heightIn(min = 280.dp)) { EmptyState(strings.today.empty, if (state.payments) strings.today.emptyHint else strings.today.closedHint) } }
         items(checks, key = { it.id }) { check ->
             Surface(onClick = { shown = check }, color = Yt.Coal, shape = MaterialTheme.shapes.large, modifier = Modifier.fillMaxWidth().testTag("closed-${check.number}")) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -97,6 +106,8 @@ fun TodayScreen(state: UiState, vm: AppViewModel) {
                         Text(
                             listOf(strings.common.guests(check.guests), check.closedBy, when {
                                 check.status == "void" -> strings.today.voided
+                                // Freed without payment in the app: no method to show.
+                                check.status != "paid" -> ""
                                 check.payment == "cash" -> strings.today.paidCash
                                 check.payment == "mixed" -> strings.today.paidMixed
                                 else -> strings.today.paidCard

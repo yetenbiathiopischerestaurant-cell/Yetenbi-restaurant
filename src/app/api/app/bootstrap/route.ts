@@ -1,4 +1,4 @@
-import { APP_FEEDBACK } from "@/lib/features";
+import { APP_FEEDBACK, APP_PAYMENTS } from "@/lib/features";
 import { appRoute } from "@/lib/server/app-auth";
 import { readMenu } from "@/lib/server/menu";
 import { listTables, menuStamp, popularDishes } from "@/lib/server/service";
@@ -32,7 +32,7 @@ export const GET = appRoute(async (_request, user) => {
       })),
     popular,
     stamp,
-    features: { feedback: APP_FEEDBACK },
+    features: { feedback: APP_FEEDBACK, payments: APP_PAYMENTS },
     serverTime: new Date().toISOString(),
   };
 });

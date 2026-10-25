@@ -96,6 +96,8 @@ data class UiState(
     val strings: Strings get() = stringsFor(language)
     val tables get() = boot?.tables.orEmpty()
     val categories get() = boot?.categories.orEmpty()
+    /* Whether the app takes payments; off, tables are only closed and paid at the till. True until the server says otherwise. */
+    val payments get() = boot?.features?.payments != false
     val roundCents get() = round.sumOf { it.dish.priceCents * it.qty }
     val roundCount get() = round.sumOf { it.qty }
     fun checkFor(tableId: String) = checks.firstOrNull { it.tableId == tableId }
@@ -188,7 +190,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 _state.value.selectedId?.let { id -> runCatching { applyCheck(api.check(id)) } }
             }
             "check_closed", "table_busy" -> {
-                notify(strings.error(e.code), error = true)
+                notify(strings.error(if (e.code == "check_closed" && !_state.value.payments) "check_closed_free" else e.code), error = true)
                 refresh()
             }
             else -> notify(strings.error(e.code), error = true)
@@ -567,6 +569,21 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 notify(strings.pay.paid(check.tableLabel, Money.format(check.totalCents + check.tipCents, strings.code)))
                 done(true)
             }
+        }
+    }
+
+    /*
+      "Tisch schließen" while the app takes no payments: the table becomes free, no payment, tip or receipt is booked.
+      key stays the same while the confirm dialog is open, so a retry after a dropped connection closes it once.
+    */
+    fun closeTable(key: String, done: () -> Unit) {
+        val id = _state.value.selectedId ?: return
+        act {
+            val check = api.close(id, key)
+            applyCheck(check)
+            _state.update { it.copy(selectedId = null, selected = null, round = emptyList(), unsentKey = null) }
+            notify(strings.check.closed(check.tableLabel, Money.format(check.totalCents, strings.code)))
+            done()
         }
     }
 

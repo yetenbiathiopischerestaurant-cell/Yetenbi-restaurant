@@ -97,6 +97,8 @@ export const adminDe = {
     },
   },
   dashboard: {
+    tablesToday: "Tische heute",
+    tablesTodaySub: (guests: number, value: string) => `${n(guests, "Gast", "Gäste")} · Bestellwert ${value}`,
     hello: (name: string, date: string) => `Hallo ${name} · ${date}`,
     todo: (count: number) => `Jetzt zu tun (${count})`,
     nothingTodo: "Gerade nichts zu tun",
@@ -509,6 +511,13 @@ export const adminDe = {
     pinSet: "PIN gesetzt.",
   },
   service: {
+    tablesClosed: "Tische geschlossen",
+    tablesClosedSub: (guests: number) => `${n(guests, "Gast", "Gäste")}`,
+    orderValue: "Bestellwert",
+    orderValueSub: "laut App; kassiert wird an der Kasse",
+    voidedTables: "Storniert",
+    closedWord: "geschlossen",
+    noTableClosed: "Noch kein Tisch geschlossen.",
     paidBy: { cash: "bar", card: "Karte", mixed: "bar + Karte" },
     revenueToday: "Umsatz heute",
     revenueSub: (bills: number, guests: number) =>

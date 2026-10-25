@@ -73,13 +73,13 @@ Website (Kasse, Lohnabrechnung, Papierlisten) gehören ebenfalls hinein.
 - **Löschung:** nach wenigen Tagen durch Vercel.
 
 ### 8. Service-App: Bestellungen am Tisch und Rechnungen
-- **Zweck:** Bestellungen am Tisch aufnehmen, an die Küche senden, Rechnungen teilen und kassieren, QR-Rechnung für Gäste.
-- **Betroffene / Daten:** Gäste – Tisch, Speisen, Wünsche, Platznummer, Beträge, Trinkgeld, Zahlungsart (kein Name); Beschäftigte – Name der Bedienung an jeder Runde, Rechnung und Zahlung mit Zeitpunkt.
+- **Zweck:** Bestellungen am Tisch aufnehmen, an die Küche senden, Tisch schließen. Seit Oktober 2026 wird in der App nicht mehr kassiert (`APP_PAYMENTS = false`): keine Zahlungen, kein Trinkgeld, keine QR-Rechnung. Ältere bezahlte Rechnungen bleiben gespeichert.
+- **Betroffene / Daten:** Gäste – Tisch, Speisen, Wünsche, Platznummer, Bestellwert (kein Name); bei älteren Rechnungen zusätzlich Beträge, Trinkgeld, Zahlungsart. Beschäftigte – Name der Bedienung an jeder Runde und beim Schließen, mit Zeitpunkt.
 - **Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO (Bewirtung, Beschäftigungsverhältnis); Aufbewahrung Art. 6 Abs. 1 lit. c DSGVO mit § 147 AO.
-- **Empfänger:** Inhaber/innen, Service, Küche (Küchenbildschirm mit Name der Bedienung); Gast über den zufälligen QR-Link.
-- **Löschung:** bezahlte und stornierte Rechnungen automatisch nach 10 Jahren.
+- **Empfänger:** Inhaber/innen, Service, Küche (Küchenbildschirm mit Name der Bedienung); bei älteren Rechnungen der Gast über den zufälligen QR-Link.
+- **Löschung:** geschlossene, bezahlte und stornierte Tische automatisch nach 10 Jahren.
 - **Information:** Gäste /datenschutz (Abschnitt 4), Team /datenschutz/team.
-- **Hinweis (außerhalb der DSGVO):** Die App schließt Rechnungen und erfasst Zahlungen. Ob sie damit als elektronische Kasse eine zertifizierte TSE und eine Meldung beim Finanzamt braucht (KassenSichV, § 146a AO), mit der Steuerberatung klären.
+- **Hinweis (außerhalb der DSGVO):** Die App erfasst keine Zahlungen mehr und ist damit keine elektronische Kasse (KassenSichV, § 146a AO). Kassiert wird außerhalb der App (offene Ladenkasse mit täglichem Kassenbericht, Kartenterminal). Mit der Steuerberatung bestätigen.
 
 ### 9. Feedback und Absturzberichte der Service-App
 - **Zweck:** Fehler finden und die App verbessern.

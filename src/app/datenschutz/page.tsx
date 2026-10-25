@@ -172,9 +172,9 @@ function German({ owner }: { owner: Owner }) {
       </p>
       <p>
         Bestellungen am Tisch nimmt das Team mit unserem internen Bestellsystem auf: Tisch, Speisen, Ihre Wünsche dazu
-        und gegebenenfalls die Platznummer, aber nicht Ihren Namen. Die bezahlte Rechnung (mit dem Namen der Bedienung)
-        bewahren wir wegen der steuerlichen Aufbewahrungspflicht (§ 147 AO, Art. 6 Abs. 1 lit. c DSGVO) zehn Jahre auf
-        und löschen sie danach automatisch.
+        und gegebenenfalls die Platznummer, aber nicht Ihren Namen. Bezahlt wird an der Kasse, nicht im Bestellsystem.
+        Die Bestellungen eines Tisches (mit dem Namen der Bedienung) bewahren wir wegen der steuerlichen
+        Aufbewahrungspflicht (§ 147 AO, Art. 6 Abs. 1 lit. c DSGVO) zehn Jahre auf und löschen sie danach automatisch.
       </p>
 
       <H>5. Online-Bestellungen</H>
@@ -291,7 +291,7 @@ function German({ owner }: { owner: Owner }) {
       <Table
         rows={[
           ["Reservierungen", "180 Tage nach dem Reservierungsdatum"],
-          ["Rechnungen aus dem Restaurant", "10 Jahre (§ 147 AO)"],
+          ["Bestellungen und Rechnungen aus dem Restaurant", "10 Jahre (§ 147 AO)"],
           ["Bestellungen", "180 Tage nach der Bestellung"],
           ["Kundenkonto", "bis Sie es löschen"],
           ["Notiz des Teams", "mit dem Konto bzw. sobald nichts anderes mehr von Ihnen gespeichert ist"],
@@ -407,8 +407,9 @@ function English({ owner }: { owner: Owner }) {
       </p>
       <p>
         At the table, the team takes orders with our internal ordering system: table, dishes, your wishes and, if
-        needed, the seat number, but not your name. We keep the paid bill (with the name of the staff member who served)
-        for ten years because tax law requires it (§ 147 AO, Art. 6(1)(c) GDPR) and then delete it automatically.
+        needed, the seat number, but not your name. Payment is taken at the till, not in the ordering system. We keep a
+        table&apos;s orders (with the name of the staff member who served) for ten years because tax law requires it (§
+        147 AO, Art. 6(1)(c) GDPR) and then delete them automatically.
       </p>
 
       <H>5. Online orders</H>
@@ -515,7 +516,7 @@ function English({ owner }: { owner: Owner }) {
       <Table
         rows={[
           ["Reservations", "180 days after the reservation date"],
-          ["Bills from the restaurant", "10 years (§ 147 AO)"],
+          ["Orders and bills from the restaurant", "10 years (§ 147 AO)"],
           ["Orders", "180 days after ordering"],
           ["Customer account", "until you delete it"],
           ["Team note", "with the account, or once nothing else of yours is stored"],

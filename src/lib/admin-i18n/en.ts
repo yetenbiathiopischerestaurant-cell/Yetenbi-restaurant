@@ -96,6 +96,8 @@ export const adminEn: AdminDict = {
     },
   },
   dashboard: {
+    tablesToday: "Tables today",
+    tablesTodaySub: (guests: number, value: string) => `${n(guests, "guest", "guests")} · order value ${value}`,
     hello: (name: string, date: string) => `Hello ${name} · ${date}`,
     todo: (count: number) => `To do now (${count})`,
     nothingTodo: "Nothing to do right now",
@@ -500,6 +502,13 @@ export const adminEn: AdminDict = {
     pinSet: "PIN set.",
   },
   service: {
+    tablesClosed: "Tables closed",
+    tablesClosedSub: (guests: number) => `${n(guests, "guest", "guests")}`,
+    orderValue: "Order value",
+    orderValueSub: "from the app; payment is taken at the till",
+    voidedTables: "Voided",
+    closedWord: "closed",
+    noTableClosed: "No table closed yet.",
     paidBy: { cash: "cash", card: "card", mixed: "cash + card" },
     revenueToday: "Revenue today",
     revenueSub: (bills: number, guests: number) => `${n(bills, "bill", "bills")} · ${n(guests, "guest", "guests")}`,

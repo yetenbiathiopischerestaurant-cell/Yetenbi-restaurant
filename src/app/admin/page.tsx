@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import ColumnChart from "@/components/admin/ColumnChart";
 import LiveRefresh from "@/components/LiveRefresh";
 import { todayISO } from "@/lib/booking";
-import { ONLINE_ORDERING } from "@/lib/features";
+import { APP_PAYMENTS, ONLINE_ORDERING } from "@/lib/features";
 import { hasAllergenData } from "@/lib/menu";
 import { adminText } from "@/lib/server/admin-lang";
 import { requireOwner } from "@/lib/server/auth";
@@ -195,9 +195,13 @@ async function Overview() {
         ) : (
           <>
             <Tile
-              label={text.restaurantToday}
-              value={euroShort(restaurant.total)}
-              sub={text.restaurantSub(restaurant.paid, restaurant.guests)}
+              label={APP_PAYMENTS ? text.restaurantToday : text.tablesToday}
+              value={APP_PAYMENTS ? euroShort(restaurant.total) : String(restaurant.closed + restaurant.paid)}
+              sub={
+                APP_PAYMENTS
+                  ? text.restaurantSub(restaurant.paid, restaurant.guests)
+                  : text.tablesTodaySub(restaurant.guests, euroShort(restaurant.orderValue))
+              }
               href="/admin/service"
             />
             <Tile

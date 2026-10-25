@@ -49,6 +49,8 @@ data class Strings(
         val later: String, val laterHint: String, val fire: (Int) -> String, val fired: String, val mergeTable: String, val mergeHint: String,
         val noOtherTables: String, val paid: String, val paidSoFar: (String) -> String, val stillDue: String,
         val unsent: String, val unsentHint: String, val sendAgain: String, val discard: String, val roundLocked: String,
+        val closeTable: String, val closeTitle: (String) -> String, val closeBody: (String) -> String, val close: String,
+        val closed: (String, String) -> String,
     )
     data class Pay(
         val title: (String) -> String, val method: String, val cash: String, val card: String, val tip: String, val noTip: String,
@@ -63,6 +65,7 @@ data class Strings(
         val title: String, val revenue: String, val cash: String, val card: String, val tips: String, val checks: (Int) -> String,
         val empty: String, val emptyHint: String, val paidCash: String, val paidCard: String, val paidMixed: String, val voided: String,
         val reopen: String, val previous: String, val next: String,
+        val orderValue: String, val tables: String, val guests: String, val closedHint: String,
     )
     data class Settings(
         val title: String, val signedInAs: String, val language: String, val bell: String, val bellHint: String,
@@ -128,6 +131,8 @@ private val de = Strings(
         noOtherTables = "Kein anderer Tisch ist besetzt.", paid = "Bezahlt", paidSoFar = { "Schon bezahlt: $it" }, stillDue = "Noch offen",
         unsent = "Senden nicht bestätigt", unsentHint = "Die Verbindung war weg. Nochmal senden ist sicher – die Küche bekommt es nur einmal.",
         sendAgain = "Nochmal senden", discard = "Verwerfen", roundLocked = "Erst nochmal senden oder verwerfen.",
+        closeTable = "Tisch schließen", closeTitle = { "Tisch $it schließen?" }, closeBody = { "Summe $it. Bitte an der Kasse kassieren." },
+        close = "Schließen", closed = { table, amount -> "Tisch $table geschlossen · $amount" },
     ),
     pay = Strings.Pay(
         title = { "Tisch $it kassieren" }, method = "Zahlart", cash = "Bar", card = "Karte", tip = "Trinkgeld", noTip = "Kein",
@@ -145,6 +150,7 @@ private val de = Strings(
         title = "Heute", revenue = "Umsatz", cash = "Bar", card = "Karte", tips = "Trinkgeld", checks = { "$it Rechnungen" },
         empty = "Noch keine Rechnung", emptyHint = "Bezahlte Tische erscheinen hier.", paidCash = "bar", paidCard = "Karte",
         paidMixed = "bar + Karte", voided = "storniert", reopen = "Wieder öffnen", previous = "Vortag", next = "Nächster Tag",
+        orderValue = "Bestellwert", tables = "Tische", guests = "Gäste", closedHint = "Geschlossene Tische erscheinen hier.",
     ),
     settings = Strings.Settings(
         title = "Einstellungen", signedInAs = "Angemeldet als", language = "Sprache", bell = "Klingel bei „Essen fertig“",
@@ -192,6 +198,7 @@ private val de = Strings(
         "table_busy" to "Dieser Tisch ist schon besetzt.",
         "table_not_found" to "Diesen Tisch gibt es nicht mehr.",
         "check_closed" to "Dieser Tisch ist schon abgerechnet.",
+        "check_closed_free" to "Dieser Tisch ist schon geschlossen.",
         "check_not_found" to "Rechnung nicht gefunden.",
         "dish_not_found" to "Ein Gericht ist nicht mehr auf der Karte.",
         "dish_sold_out" to "Ein Gericht ist gerade ausverkauft.",
@@ -256,6 +263,8 @@ private val en = Strings(
         noOtherTables = "No other table is taken.", paid = "Paid", paidSoFar = { "Paid so far: $it" }, stillDue = "Still due",
         unsent = "Not confirmed", unsentHint = "The connection dropped. Sending again is safe – the kitchen gets it only once.",
         sendAgain = "Send again", discard = "Discard", roundLocked = "Send again or discard first.",
+        closeTable = "Close table", closeTitle = { "Close table $it?" }, closeBody = { "Total $it. Please take payment at the till." },
+        close = "Close", closed = { table, amount -> "Table $table closed · $amount" },
     ),
     pay = Strings.Pay(
         title = { "Table $it – payment" }, method = "Method", cash = "Cash", card = "Card", tip = "Tip", noTip = "None",
@@ -273,6 +282,7 @@ private val en = Strings(
         title = "Today", revenue = "Revenue", cash = "Cash", card = "Card", tips = "Tips", checks = { "$it bills" },
         empty = "No bills yet", emptyHint = "Paid tables appear here.", paidCash = "cash", paidCard = "card",
         paidMixed = "cash + card", voided = "voided", reopen = "Reopen", previous = "Previous day", next = "Next day",
+        orderValue = "Order value", tables = "Tables", guests = "Guests", closedHint = "Closed tables appear here.",
     ),
     settings = Strings.Settings(
         title = "Settings", signedInAs = "Signed in as", language = "Language", bell = "Ring on “food ready”",
@@ -320,6 +330,7 @@ private val en = Strings(
         "table_busy" to "This table is already taken.",
         "table_not_found" to "This table no longer exists.",
         "check_closed" to "This table has already been paid.",
+        "check_closed_free" to "This table is already closed.",
         "check_not_found" to "Bill not found.",
         "dish_not_found" to "A dish is no longer on the menu.",
         "dish_sold_out" to "A dish is sold out right now.",

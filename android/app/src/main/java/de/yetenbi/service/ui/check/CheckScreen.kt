@@ -49,6 +49,7 @@ import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Spa
 import androidx.compose.material.icons.rounded.SwapHoriz
+import androidx.compose.material.icons.rounded.TaskAlt
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -102,7 +103,7 @@ import de.yetenbi.service.ui.tables.stateOf
 import de.yetenbi.service.ui.theme.Cormorant
 import de.yetenbi.service.ui.theme.Yt
 
-private enum class Dialog { None, Pay, Guests, Move, Merge, VoidCheck }
+private enum class Dialog { None, Pay, Close, Guests, Move, Merge, VoidCheck }
 
 /*
   One table's check. Tablet: the bill on the left (ready food, what is being ordered, what was ordered, the total),
@@ -126,7 +127,7 @@ fun CheckScreen(state: UiState, vm: AppViewModel) {
                 state.pane, vm::setPane, Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 6.dp), testTagPrefix = "pane",
             )
             Box(Modifier.weight(1f)) {
-                if (state.pane == Pane.Bill) BillPane(state, check, vm, onItem = { itemFor = it }, onNote = { noteFor = it }, onPay = { dialog = Dialog.Pay })
+                if (state.pane == Pane.Bill) BillPane(state, check, vm, onItem = { itemFor = it }, onNote = { noteFor = it }, onPay = { dialog = if (state.payments) Dialog.Pay else Dialog.Close })
                 else MenuPane(state, check, vm, onNote = { dish -> noteFor = RoundLine(dish, 0) })
             }
             if (state.pane == Pane.Menu && state.round.isNotEmpty()) SendBar(state, vm, onOpenRound = { vm.setPane(Pane.Bill) })
@@ -135,7 +136,7 @@ fun CheckScreen(state: UiState, vm: AppViewModel) {
         Row(Modifier.fillMaxSize()) {
             Column(Modifier.width(440.dp).fillMaxHeight().background(Yt.Ink)) {
                 Header(check, vm, onDialog = { dialog = it })
-                Box(Modifier.weight(1f)) { BillPane(state, check, vm, onItem = { itemFor = it }, onNote = { noteFor = it }, onPay = { dialog = Dialog.Pay }) }
+                Box(Modifier.weight(1f)) { BillPane(state, check, vm, onItem = { itemFor = it }, onNote = { noteFor = it }, onPay = { dialog = if (state.payments) Dialog.Pay else Dialog.Close }) }
             }
             Box(Modifier.fillMaxHeight().width(1.dp).background(Yt.Line))
             Box(Modifier.weight(1f)) { MenuPane(state, check, vm, onNote = { dish -> noteFor = RoundLine(dish, 0) }) }
@@ -144,6 +145,7 @@ fun CheckScreen(state: UiState, vm: AppViewModel) {
 
     when (dialog) {
         Dialog.Pay -> PayDialog(check, onPay = { method, part, tip, given, key, done -> vm.pay(method, part, tip, given, key) { closed -> done(closed); if (closed) dialog = Dialog.None } }, onDismiss = { dialog = Dialog.None })
+        Dialog.Close -> CloseTableDialog(check, onClose = { key -> vm.closeTable(key) { dialog = Dialog.None } }, onDismiss = { dialog = Dialog.None })
         Dialog.Guests -> GuestsDialog(check.guests, onSave = { vm.setGuests(it); dialog = Dialog.None }, onDismiss = { dialog = Dialog.None })
         Dialog.Move -> MoveDialog(state.freeTables, onPick = { vm.moveTo(it); dialog = Dialog.None }, onDismiss = { dialog = Dialog.None })
         Dialog.Merge -> MergeDialog(state.checks.filter { it.id != check.id }, onPick = { vm.merge(it); dialog = Dialog.None }, onDismiss = { dialog = Dialog.None })
@@ -228,7 +230,9 @@ private fun BillPane(state: UiState, check: Check, vm: AppViewModel, onItem: (Ch
             }
             Spacer(Modifier.height(10.dp))
             if (state.round.isNotEmpty()) SendButton(state, vm)
-            else PillButton(strings.check.payButton(Money.format(check.dueCents, strings.code)), onPay, icon = Icons.Rounded.Payments, enabled = check.dueCents > 0, big = true, modifier = Modifier.fillMaxWidth(), testTag = "pay")
+            else if (state.payments) PillButton(strings.check.payButton(Money.format(check.dueCents, strings.code)), onPay, icon = Icons.Rounded.Payments, enabled = check.dueCents > 0, big = true, modifier = Modifier.fillMaxWidth(), testTag = "pay")
+            // No payment in the app: the total above is for the till; this only frees the table.
+            else PillButton(strings.check.closeTable, onPay, icon = Icons.Rounded.TaskAlt, enabled = check.isOpen && check.dueCents > 0, big = true, modifier = Modifier.fillMaxWidth(), testTag = "close-table")
         }
     }
 }

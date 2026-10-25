@@ -15,6 +15,7 @@ import {
 } from "@/lib/service";
 import { ApiError, type AppUser } from "./app-auth";
 import { audit } from "./audit";
+import { APP_PAYMENTS } from "@/lib/features";
 import { db } from "./db";
 import { readMenu } from "./menu";
 
@@ -206,8 +207,10 @@ export async function daySummary(date: string) {
       where status <> 'open' and (closed_at at time zone 'Europe/Berlin')::date = ${date}::date
     )
     select (select count(*) from closed where status = 'paid')::int as paid,
+           (select count(*) from closed where status = 'closed')::int as closed,
+           (select coalesce(sum(total), 0) from closed where status = 'closed') as order_value,
            (select count(*) from closed where status = 'void')::int as voided,
-           (select coalesce(sum(guests), 0) from closed where status = 'paid')::int as guests,
+           (select coalesce(sum(guests), 0) from closed where status in ('paid', 'closed'))::int as guests,
            coalesce(sum(p.amount), 0) as total,
            coalesce(sum(p.tip), 0) as tips,
            coalesce(sum(p.amount) filter (where p.method = 'cash'), 0) as cash,
@@ -217,6 +220,9 @@ export async function daySummary(date: string) {
   return {
     date,
     paid: Number(row.paid),
+    /** Tables closed without payment in the app, and the value of what they ordered (not takings). */
+    closed: Number(row.closed),
+    orderValue: Number(row.order_value),
     voided: Number(row.voided),
     total: Number(row.total),
     tips: Number(row.tips),
@@ -443,6 +449,8 @@ export async function serveReady(checkId: number) {
   ("total_changed"). The check closes when the payments add up to the bill.
 */
 export async function payCheck(user: Actor, id: number, input: Record<string, unknown>) {
+  // Payments off: nothing is booked. Apps from before 1.2 still send "pay"; for them it just closes the table.
+  if (!APP_PAYMENTS) return closeCheck(user, id);
   const key = typeof input.key === "string" ? input.key : null;
   if (key !== null && !CLIENT_KEY.test(key)) throw new ApiError(422, "key_invalid");
   if (key !== null && (await paymentKeyUsed(key))) return getCheck(id);
@@ -567,6 +575,32 @@ export async function voidCheck(user: Actor, id: number, reason: string) {
       owing,
       reason,
     });
+  return getCheck(id);
+}
+
+/**
+  "Tisch schließen": the table is free again; no payment, tip, method or receipt is recorded (payment is taken
+  outside the app). Unserved food counts as served. Closing twice is harmless: a closed check is returned as is.
+*/
+export async function closeCheck(user: Actor, id: number) {
+  const check = await getCheck(id);
+  if (check.status === "closed") return check;
+  if (check.status !== "open") throw new ApiError(409, "check_closed");
+  const [closed] = (await db()`
+    update table_checks c
+    set status = 'closed', total = coalesce((
+          select sum(round(unit * 100) * qty) / 100.0 from table_check_items where check_id = c.id and status <> 'void'
+        ), 0),
+        closed_at = now(), closed_by_name = ${user.name}, updated_at = now()
+    where c.id = ${id} and c.status = 'open'
+    returning c.id
+  `) as Row[];
+  if (!closed) {
+    const now = await getCheck(id);
+    if (now.status === "closed") return now;
+    throw new ApiError(409, "check_closed");
+  }
+  await db()`update table_check_items set status = 'served', served_at = coalesce(served_at, now()) where check_id = ${id} and status in ('held', 'sent', 'ready')`;
   return getCheck(id);
 }
 

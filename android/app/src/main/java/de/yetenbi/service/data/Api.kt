@@ -146,6 +146,10 @@ class Api(baseUrl: String, private val tokenProvider: () -> String?, client: OkH
             givenCents?.let { put("given", it / 100.0) }
         })
 
+    /* "Tisch schließen": frees the table without recording a payment (payment is taken at the till). key makes a repeat harmless. */
+    suspend fun close(id: Long, key: String): Check =
+        send("POST", "/api/app/checks/$id/close", buildJsonObject { put("key", key) })
+
     suspend fun voidCheck(id: Long, reason: String): Check =
         send("POST", "/api/app/checks/$id/void", buildJsonObject { put("reason", reason) })
 

@@ -44,8 +44,9 @@ data class Dish(
 @Serializable
 data class Category(val id: String, val title: L, val drinks: Boolean = false, val items: List<Dish> = emptyList())
 
+/* payments: false when payment is taken outside the app (till / card terminal); then tables are only closed. */
 @Serializable
-data class Features(val feedback: Boolean = false)
+data class Features(val feedback: Boolean = false, val payments: Boolean = true)
 
 @Serializable
 data class Bootstrap(
@@ -129,7 +130,9 @@ data class Check(
     val due: Double? = null,
     val receiptToken: String? = null,
 ) {
+    /* status: "open", "paid", "void" or "closed" (freed without a payment in the app); unknown ones are kept as text. */
     val isOpen get() = status == "open"
+    val isClosed get() = status == "closed"
     val totalCents get() = if (isOpen) items.sumOf { it.lineCents } else (total * 100).roundToInt()
     val tipCents get() = (tip * 100).roundToInt()
     val paidCents get() = payments.sumOf { it.amountCents }

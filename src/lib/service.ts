@@ -7,7 +7,8 @@ import type { L } from "./data";
   Prices always come from the menu on the server; the app only sends dish ids, quantities, notes and seats.
 */
 
-export type CheckStatus = "open" | "paid" | "void";
+/** "closed": the table was freed without payment in the app (payments off, see APP_PAYMENTS). */
+export type CheckStatus = "open" | "paid" | "void" | "closed";
 export type ItemStatus = "held" | "sent" | "ready" | "served" | "void";
 export type PayMethod = "cash" | "card";
 

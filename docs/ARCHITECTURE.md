@@ -111,7 +111,11 @@ Change all three together.
 `src/lib/features.ts`: `ONLINE_ORDERING` (off: `/bestellen` redirects home, `/api/order` refuses; the website says
 "dine in and take away"; the admin hides Bestellungen, the drivers' screen `/lieferung`, the driver role, delivery
 settings and every online-order figure in the dashboard, reports, customers and kitchen screen), `APP_LOGIN` (off:
-the app signs in as a shared demo account), `APP_FEEDBACK`. Change the switch and deploy; the app needs no update.
+the app signs in as a shared demo account), `APP_FEEDBACK`, `APP_PAYMENTS` (off: the app is no till — "Tisch
+schließen" frees a table with status `closed` and records no payment, tip or receipt; `/pay` from older apps does the
+same; the admin shows tables and order value instead of takings. Payment is taken outside the app: open cash box with
+a daily count, card terminal. Turning it on again needs a certified TSE, KassenSichV). Change the switch and deploy;
+the app needs no update (from app 1.2 the app hides its pay screens when `payments` is off).
 
 The Android app is the restaurant's internal tool: the public website has no page or link for it. It shares only the
 backend (`/api/app/*`), the accounts managed in /admin/team, the menu and the kitchen screen.

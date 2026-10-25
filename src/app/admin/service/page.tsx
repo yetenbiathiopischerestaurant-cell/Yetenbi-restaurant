@@ -1,3 +1,4 @@
+import { APP_PAYMENTS } from "@/lib/features";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import LiveRefresh from "@/components/LiveRefresh";
@@ -81,20 +82,33 @@ async function Service() {
   return (
     <>
       <LiveRefresh seconds={20} />
-      <section className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Figure
-          label={text.revenueToday}
-          value={euro(summary.total)}
-          sub={text.revenueSub(summary.paid, summary.guests)}
-        />
-        <Figure label={text.cash} value={euro(summary.cash)} />
-        <Figure label={text.card} value={euro(summary.card)} />
-        <Figure
-          label={text.tips}
-          value={euro(summary.tips)}
-          sub={summary.voided ? text.voided(summary.voided) : undefined}
-        />
-      </section>
+      {APP_PAYMENTS ? (
+        <section className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Figure
+            label={text.revenueToday}
+            value={euro(summary.total)}
+            sub={text.revenueSub(summary.paid, summary.guests)}
+          />
+          <Figure label={text.cash} value={euro(summary.cash)} />
+          <Figure label={text.card} value={euro(summary.card)} />
+          <Figure
+            label={text.tips}
+            value={euro(summary.tips)}
+            sub={summary.voided ? text.voided(summary.voided) : undefined}
+          />
+        </section>
+      ) : (
+        // payments are taken outside the app: tables and order value, no takings
+        <section className="mt-10 grid gap-4 sm:grid-cols-3">
+          <Figure
+            label={text.tablesClosed}
+            value={String(summary.closed + summary.paid)}
+            sub={text.tablesClosedSub(summary.guests)}
+          />
+          <Figure label={text.orderValue} value={euro(summary.orderValue)} sub={text.orderValueSub} />
+          <Figure label={text.voidedTables} value={String(summary.voided)} />
+        </section>
+      )}
 
       <section className="mt-12">
         <h2 className="font-display text-2xl font-semibold text-gold-soft">
@@ -114,7 +128,7 @@ async function Service() {
       <section className="mt-12">
         <h2 className="font-display text-2xl font-semibold text-gold-soft">{text.closedToday}</h2>
         {closed.length === 0 ? (
-          <p className="mt-4 text-cream/55">{text.noBill}</p>
+          <p className="mt-4 text-cream/55">{APP_PAYMENTS ? text.noBill : text.noTableClosed}</p>
         ) : (
           <ul className="mt-4 divide-y divide-gold/10 border-y border-gold/10 text-sm">
             {closed.map((check) => (
@@ -126,7 +140,9 @@ async function Service() {
                 <span className={check.status === "void" ? "text-[#f0a080]" : "text-cream"}>
                   {check.status === "void"
                     ? text.voidedWord
-                    : `${euro(check.total)} ${text.paidBy[check.payment ?? "card"]}${check.payments.length > 1 ? ` ${text.parts(check.payments.length)}` : ""}${check.tip ? ` ${text.tip(euro(check.tip))}` : ""}`}
+                    : check.status === "closed"
+                      ? `${euro(check.total)} · ${text.closedWord}`
+                      : `${euro(check.total)} ${text.paidBy[check.payment ?? "card"]}${check.payments.length > 1 ? ` ${text.parts(check.payments.length)}` : ""}${check.tip ? ` ${text.tip(euro(check.tip))}` : ""}`}
                 </span>
               </li>
             ))}

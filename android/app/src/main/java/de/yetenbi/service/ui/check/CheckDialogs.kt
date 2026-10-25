@@ -17,6 +17,7 @@ import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.CreditCard
 import androidx.compose.material.icons.rounded.Payments
+import androidx.compose.material.icons.rounded.TaskAlt
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -39,6 +40,7 @@ import de.yetenbi.service.data.CheckItem
 import de.yetenbi.service.data.DiningTable
 import de.yetenbi.service.data.Dish
 import de.yetenbi.service.data.ItemStatus
+import de.yetenbi.service.data.Keys
 import de.yetenbi.service.data.Money
 import de.yetenbi.service.data.PayMethod
 import de.yetenbi.service.i18n.LocalStrings
@@ -124,6 +126,22 @@ fun VoidCheckDialog(onVoid: (String) -> Unit, onDismiss: () -> Unit) {
             }
         },
         confirmButton = { PillButton(strings.check.voidCheck, { onVoid(reason) }, kind = ButtonKind.Danger, icon = Icons.Rounded.Block, testTag = "confirm-void-check") },
+        dismissButton = { PillButton(strings.common.cancel, onDismiss, kind = ButtonKind.Ghost) },
+    )
+}
+
+/* "Tisch schließen" (no payments in the app): the waiter takes the money at the till, the table becomes free. */
+@Composable
+fun CloseTableDialog(check: Check, onClose: (key: String) -> Unit, onDismiss: () -> Unit) {
+    val strings = LocalStrings.current
+    // One key per dialog: pressing again after a dropped connection closes the table only once.
+    val key = remember(check.id) { Keys.new() }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = Yt.Coal,
+        title = { Text(strings.check.closeTitle(check.tableLabel), style = MaterialTheme.typography.headlineSmall, color = Yt.Cream) },
+        text = { Text(strings.check.closeBody(Money.format(check.dueCents, strings.code)), style = MaterialTheme.typography.bodyMedium, color = Yt.Sand) },
+        confirmButton = { PillButton(strings.check.close, { onClose(key) }, icon = Icons.Rounded.TaskAlt, testTag = "confirm-close-table") },
         dismissButton = { PillButton(strings.common.cancel, onDismiss, kind = ButtonKind.Ghost) },
     )
 }
