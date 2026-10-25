@@ -7,7 +7,7 @@ import { button, detailsTable, emailLayout, escapeHtml, formatLongDate, paragrap
 import { isMailerConfigured, restaurantInbox, sendEmail } from "./send";
 import { reservationTexts, type ReservationEmailKind } from "./texts";
 
-/** Booking received / confirmed / declined, to the guest in the language they booked in. */
+/** Booking received / confirmed / declined / cancelled by the restaurant, to the guest in the language they booked in. */
 export async function sendGuestEmail(kind: ReservationEmailKind, reservation: Reservation, origin = siteUrl()) {
   // Bookings the team enters for phone callers may have no email address.
   if (!isMailerConfigured() || !reservation.email) return;
@@ -23,7 +23,7 @@ export async function sendGuestEmail(kind: ReservationEmailKind, reservation: Re
     [referenceLabel, reservation.reference],
   ]);
   if (reservation.staffNote) body += quote(reservation.staffNote, text.staffNote);
-  if (kind !== "declined") {
+  if (kind !== "declined" && kind !== "cancelled") {
     body += `<p style="margin:18px 0 0;font-size:14px">${textLink(cancelUrl(origin, reservation.reference), text.cancel)}</p>`;
   }
   body += paragraph(text.outro, "margin-top:22px;color:#b9ab92");

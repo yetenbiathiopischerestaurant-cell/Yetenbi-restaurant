@@ -22,7 +22,8 @@ export async function decide(form: FormData) {
     .trim();
   if (!Number.isInteger(id) || !["confirmed", "declined", "cancelled", "pending"].includes(status)) return;
   const reservation = await setStatus(id, status, note);
-  if (reservation && (status === "confirmed" || status === "declined")) await sendGuestEmail(status, reservation);
+  // Reopening ("pending") is an internal undo, so the guest isn't emailed about it.
+  if (reservation && status !== "pending") await sendGuestEmail(status, reservation);
   if (reservation) {
     const what = {
       confirmed: "Reservierung bestätigt",

@@ -6,7 +6,7 @@ import type { Reservation } from "../reservations";
 // The wording of the guest emails in German, English and Amharic.
 // Emails to the team are German only and written in reservation-emails.ts / order-emails.ts.
 
-export type ReservationEmailKind = "received" | "confirmed" | "declined";
+export type ReservationEmailKind = "received" | "confirmed" | "declined" | "cancelled";
 
 export const reservationTexts: Record<
   Locale,
@@ -31,6 +31,11 @@ export const reservationTexts: Record<
       intro:
         "leider können wir zu dieser Zeit keinen Tisch anbieten. Ruft uns gerne an, dann finden wir eine andere Zeit.",
     },
+    cancelled: {
+      subject: (reservation) => `Storniert: eure Reservierung bei Yetenbi (${reservation.reference})`,
+      intro:
+        "leider mussten wir diese Reservierung stornieren. Das tut uns leid! Ruft uns gerne an, dann finden wir eine andere Zeit.",
+    },
     labels: ["Datum", "Uhrzeit", "Personen", "Nummer"],
     outro: "Bis bald in der Theaterstraße 6, Würzburg.",
     staffNote: "Nachricht vom Restaurant",
@@ -49,6 +54,10 @@ export const reservationTexts: Record<
       subject: (reservation) => `Your request at Yetenbi (${reservation.reference})`,
       intro: "unfortunately we can't offer a table at that time. Give us a call and we'll find another one.",
     },
+    cancelled: {
+      subject: (reservation) => `Cancelled: your reservation at Yetenbi (${reservation.reference})`,
+      intro: "unfortunately we had to cancel this reservation. We're sorry! Give us a call and we'll find another time.",
+    },
     labels: ["Date", "Time", "Guests", "Reference"],
     outro: "See you soon at Theaterstraße 6, Würzburg.",
     staffNote: "Message from the restaurant",
@@ -66,6 +75,10 @@ export const reservationTexts: Record<
     declined: {
       subject: (reservation) => `ጥያቄዎ – Yetenbi (${reservation.reference})`,
       intro: "ይቅርታ፣ በዚህ ሰዓት ቦታ የለንም። እባክዎ ይደውሉልን፣ ሌላ ሰዓት እንፈልግልዎታለን።",
+    },
+    cancelled: {
+      subject: (reservation) => `ተሰርዟል፦ ቦታዎ በYetenbi (${reservation.reference})`,
+      intro: "ይቅርታ፣ ይህን ቦታ ለመሰረዝ ተገደናል። እባክዎ ይደውሉልን፣ ሌላ ሰዓት እንፈልግልዎታለን።",
     },
     labels: ["ቀን", "ሰዓት", "የሰው ብዛት", "ቁጥር"],
     outro: "በቅርቡ እንገናኝ፣ Theaterstraße 6, Würzburg።",
