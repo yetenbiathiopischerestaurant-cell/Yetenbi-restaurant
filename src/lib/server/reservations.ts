@@ -19,7 +19,7 @@ export type Reservation = BookingRequest & {
 type Row = {
   id: string;
   reference: string;
-  date: string;
+  date: string | Date;
   time: string;
   guests: number;
   name: string;
@@ -33,10 +33,22 @@ type Row = {
   created_at: string;
 };
 
+/**
+  The database driver returns a `date` column as a JS Date at local midnight, not as text, so
+  String(date) gave "Thu Oct 29" and broke every date shown to staff and in emails.
+*/
+export function isoDate(value: string | Date) {
+  if (value instanceof Date) {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())}`;
+  }
+  return String(value).slice(0, 10);
+}
+
 const toReservation = (row: Row): Reservation => ({
   id: Number(row.id),
   reference: row.reference,
-  date: String(row.date).slice(0, 10),
+  date: isoDate(row.date),
   time: row.time,
   guests: row.guests,
   name: row.name,
