@@ -69,16 +69,20 @@ async function signIn(page, [email, password], to) {
   // load the target page fresh, so nothing of the login page is still on screen
   await page.goto(page.url(), { waitUntil: "networkidle" });
 }
-/** Skips the particle intro and waits until it has gone (the page can't scroll while it is on screen). */
+/**
+  Skips the particle intro and waits until it has gone and the header has slid in (the page can't scroll and the
+  header sits off-screen while it plays). Slow devices (WebKit on a busy machine) can take a while to show it.
+*/
 async function skipIntro(page) {
   await page
     .getByRole("button", { name: /Intro überspringen/ })
-    .click({ timeout: 2000 })
+    .click({ timeout: 15000 })
     .catch(() => {});
   await page
     .locator('[aria-label="Intro"]')
-    .waitFor({ state: "detached", timeout: 10000 })
+    .waitFor({ state: "detached", timeout: 25000 })
     .catch(() => {});
+  await page.waitForTimeout(1500); // the header's entrance
 }
 // Online ordering can be switched off (lib/features.ts): /bestellen then sends visitors home.
 const ORDERING_ON = (await fetch(`${SITE}/bestellen`, { redirect: "manual" })).status === 200;
