@@ -10,6 +10,8 @@
 import { neon } from "@neondatabase/serverless";
 
 const OWNER_EMAIL = "yetenbiathiopischerestaurant@gmail.com";
+// Accounts that are not test logins and stay as they are.
+const ALSO_KEEP = ["ethiogermnay@gmail.com", "yadavaryan2073@gmail.com"];
 const apply = process.argv.includes("--apply");
 
 if (!process.env.DATABASE_URL) {
@@ -23,7 +25,11 @@ if (!owner || owner.role !== "owner") {
   console.error(`Stopped: no owner account with ${OWNER_EMAIL}. Nothing was changed.`);
   process.exit(1);
 }
-console.log(`Keeping the owner: ${owner.name} <${owner.email}> (id ${owner.id})\n`);
+const kept = await sql`select id, email from users where lower(email) = any(${ALSO_KEEP})`;
+const keepIds = [Number(owner.id), ...kept.map((user) => Number(user.id))];
+console.log(`Keeping the owner: ${owner.name} <${owner.email}> (id ${owner.id})`);
+for (const user of kept) console.log(`Keeping: ${user.email} (id ${user.id})`);
+console.log("");
 
 const count = async (query) => Number((await query)[0].n);
 const plan = [
@@ -37,18 +43,18 @@ const plan = [
   ["Order blocks", sql`select count(*) n from order_blocks`],
   ["Past closed days", sql`select count(*) n from closures where date < current_date`],
   ["Attempt counters", sql`select count(*) n from rate_hits`],
-  ["Other accounts (guests and test team logins)", sql`select count(*) n from users where id <> ${owner.id}`],
+  ["Other accounts (guests and test team logins)", sql`select count(*) n from users where id <> all(${keepIds})`],
   [
     "Sign-ins, reset and confirmation links of other accounts",
     sql`
-    select (select count(*) from sessions where user_id <> ${owner.id})
-         + (select count(*) from password_resets where user_id <> ${owner.id})
-         + (select count(*) from email_verifications where user_id <> ${owner.id}) as n`,
+    select (select count(*) from sessions where user_id <> all(${keepIds}))
+         + (select count(*) from password_resets where user_id <> all(${keepIds}))
+         + (select count(*) from email_verifications where user_id <> all(${keepIds})) as n`,
   ],
 ];
 for (const [label, query] of plan) console.log(`${String(await count(query)).padStart(6)}  ${label}`);
 
-const others = await sql`select name, email, role from users where id <> ${owner.id} order by role, email`;
+const others = await sql`select name, email, role from users where id <> all(${keepIds}) order by role, email`;
 if (others.length) {
   console.log("\nAccounts that would be deleted:");
   for (const user of others) console.log(`        ${user.role.padEnd(8)} ${user.email}  (${user.name})`);
@@ -70,6 +76,6 @@ await sql.transaction([
   sql`delete from order_blocks`,
   sql`delete from closures where date < current_date`,
   sql`delete from rate_hits`,
-  sql`delete from users where id <> ${owner.id}`, // their sessions, reset and confirmation links go with them
+  sql`delete from users where id <> all(${keepIds})`, // their sessions, reset and confirmation links go with them
 ]);
-console.log("\nDone. Only the owner's account and the site's content are left.");
+console.log("\nDone. Only the kept accounts and the site's content are left.");
