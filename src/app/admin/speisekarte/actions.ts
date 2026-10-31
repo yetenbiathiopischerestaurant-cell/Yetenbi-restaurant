@@ -18,6 +18,7 @@ import {
   updateDish,
   type DishInput,
 } from "@/lib/server/menu";
+import { readSiteSections, saveSiteSections } from "@/lib/server/site-sections";
 
 /* Create, edit, delete and reorder the menu. Every change refreshes the website's cached menu ("menu" tag). */
 
@@ -167,6 +168,18 @@ export async function toggleAvailable(form: FormData) {
   const dish = await findDish(dishId);
   await audit(me, "menu", available ? "Wieder verfügbar" : "Ausverkauft gemeldet", dish?.name.de ?? dishId);
   refresh();
+}
+
+/** Switch the menu or the reservation section on the website off for a while, and back on. */
+export async function toggleSection(form: FormData) {
+  const me = await requireOwner();
+  const key = form.get("section") === "reservations" ? "reservations" : "menu";
+  const on = form.get("on") === "true";
+  await saveSiteSections({ ...(await readSiteSections()), [key]: on });
+  const name = key === "menu" ? "Speisekarte" : "Reservierung";
+  await audit(me, "settings", on ? "Auf der Website eingeblendet" : "Auf der Website ausgeblendet", name);
+  updateTag("sections");
+  revalidatePath("/admin/speisekarte");
 }
 
 export async function moveEntry(form: FormData) {

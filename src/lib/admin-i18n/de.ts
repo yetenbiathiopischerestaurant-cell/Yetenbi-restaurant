@@ -190,6 +190,16 @@ export const adminDe = {
     closedSaved: "Schließtag gespeichert.",
   },
   menu: {
+    sections: {
+      title: "Auf der Website",
+      lead: "Blendet die Speisekarte oder die Reservierung vorübergehend aus, z. B. während ihr die Karte umbaut. Schaltet sie danach hier wieder ein.",
+      menu: "Speisekarte",
+      reservations: "Reservierung",
+      shown: "Sichtbar",
+      hidden: "Ausgeblendet",
+      hide: "Ausblenden",
+      show: "Wieder einblenden",
+    },
     intro:
       "Hier pflegt ihr die ganze Speisekarte: Kategorien und Gerichte anlegen, ändern, sortieren und löschen. Jede Änderung ist sofort auf der Website sichtbar, auch in der Service-App. „Ausverkauft“ nimmt ein Gericht nur für heute aus der Bestellung.",
     introOrders:

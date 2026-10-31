@@ -12,6 +12,7 @@ import Magnetic from "./motion/Magnetic";
 import { useIntro } from "./intro/IntroState";
 import LanguageToggle from "./LanguageToggle";
 import { useHtmlLang, useLanguage } from "@/lib/language";
+import { useSections } from "./Business";
 
 const spring = [0.32, 0.72, 0, 1] as const;
 
@@ -21,6 +22,7 @@ export default function Header() {
   const { t } = useLanguage();
   useHtmlLang();
   const me = useAccount();
+  const sections = useSections();
   const accountHref = me ? homeFor(me.role) : "/login";
   // The team gets a labelled button to their screen; guests the account icon.
   const screen = me ? staffScreen(me.role) : null;
@@ -28,7 +30,7 @@ export default function Header() {
   const accountLabel = staffLabel ?? (me ? t.account.myAccount : t.account.signIn);
   const links = [
     { href: "#platte", label: t.nav.links.platte },
-    { href: "#speisekarte", label: t.nav.links.karte },
+    ...(sections.menu ? [{ href: "#speisekarte", label: t.nav.links.karte }] : []),
     { href: "#kaffee", label: t.nav.links.kaffee },
     { href: "#besuch", label: t.nav.links.anfahrt },
     ...(ONLINE_ORDERING ? [{ href: "/bestellen", label: t.order.navLink }] : []),
@@ -92,17 +94,19 @@ export default function Header() {
               </Link>
             )}
             <LanguageToggle />
-            <Magnetic strength={0.2}>
-              <a
-                href="#reservieren"
-                className="group flex items-center gap-3 rounded-full btn-gild py-1.5 pl-5 pr-1.5 text-sm hover:bg-eth-green hover:bg-none hover:text-cream font-medium text-ink transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97]"
-              >
-                {t.nav.reserve}
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink/10 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:-translate-y-px group-hover:translate-x-0.5 group-hover:scale-105">
-                  <ArrowUpRight size={15} weight="bold" />
-                </span>
-              </a>
-            </Magnetic>
+            {sections.reservations && (
+              <Magnetic strength={0.2}>
+                <a
+                  href="#reservieren"
+                  className="group flex items-center gap-3 rounded-full btn-gild py-1.5 pl-5 pr-1.5 text-sm hover:bg-eth-green hover:bg-none hover:text-cream font-medium text-ink transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97]"
+                >
+                  {t.nav.reserve}
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink/10 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:-translate-y-px group-hover:translate-x-0.5 group-hover:scale-105">
+                    <ArrowUpRight size={15} weight="bold" />
+                  </span>
+                </a>
+              </Magnetic>
+            )}
           </div>
 
           <button
@@ -161,19 +165,21 @@ export default function Header() {
               {accountLabel}
             </Link>
             <LanguageToggle className="mt-6 w-max" layoutId="lang-pill-mobile" />
-            <motion.a
-              href="#reservieren"
-              className="mt-6 flex items-center justify-between rounded-full btn-gild py-2 pl-6 pr-2 font-medium hover:bg-eth-green hover:bg-none hover:text-cream text-ink"
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, ease: spring, delay: 0.4 }}
-            >
-              {t.nav.reserve}
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink/10">
-                <ArrowUpRight size={18} weight="bold" />
-              </span>
-            </motion.a>
+            {sections.reservations && (
+              <motion.a
+                href="#reservieren"
+                className="mt-6 flex items-center justify-between rounded-full btn-gild py-2 pl-6 pr-2 font-medium hover:bg-eth-green hover:bg-none hover:text-cream text-ink"
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6, ease: spring, delay: 0.4 }}
+              >
+                {t.nav.reserve}
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink/10">
+                  <ArrowUpRight size={18} weight="bold" />
+                </span>
+              </motion.a>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

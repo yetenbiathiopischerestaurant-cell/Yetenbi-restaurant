@@ -19,34 +19,43 @@ import { getPhotos } from "@/lib/server/photos";
 import { MenuProvider } from "@/components/MenuFacts";
 import { getMenu } from "@/lib/server/menu";
 import { getBusiness } from "@/lib/server/business";
-import { HoursProvider } from "@/components/Business";
+import { HoursProvider, SectionsProvider } from "@/components/Business";
+import { getSiteSections } from "@/lib/server/site-sections";
 
 export default async function Home() {
   // photos and menu from the database (cached; refreshed when the owner changes them)
-  const [photos, menu, business] = await Promise.all([getPhotos(), getMenu(), getBusiness()]);
+  // The owner can switch the menu and the reservation section off for a while (admin → Speisekarte).
+  const [photos, menu, business, sections] = await Promise.all([
+    getPhotos(),
+    getMenu(),
+    getBusiness(),
+    getSiteSections(),
+  ]);
   return (
     <PhotosProvider photos={photos}>
       <MenuProvider menu={menu}>
         <HoursProvider hours={business.hours}>
-          <StructuredData menu={menu} hours={business.hours} />
-          <Intro />
-          <ScrollProgress />
-          <SideRail />
-          <Header />
-          {/* overflow-x-clip (not hidden) so the pinned platter and coffee rounds keep working */}
-          <main id="main" className="w-full max-w-full flex-1 overflow-x-clip">
-            <Hero />
-            <Manifesto />
-            <Platte />
-            <MenuCard />
-            <Buna />
-            <ProverbBand />
-            <Info />
-            <Amharisch />
-            <Visit />
-            <Reservation />
-          </main>
-          <Footer />
+          <SectionsProvider sections={sections}>
+            <StructuredData menu={sections.menu ? menu : []} hours={business.hours} />
+            <Intro />
+            <ScrollProgress />
+            <SideRail />
+            <Header />
+            {/* overflow-x-clip (not hidden) so the pinned platter and coffee rounds keep working */}
+            <main id="main" className="w-full max-w-full flex-1 overflow-x-clip">
+              <Hero />
+              <Manifesto />
+              <Platte />
+              {sections.menu && <MenuCard />}
+              <Buna />
+              <ProverbBand />
+              <Info />
+              <Amharisch />
+              <Visit />
+              {sections.reservations && <Reservation />}
+            </main>
+            <Footer />
+          </SectionsProvider>
         </HoursProvider>
       </MenuProvider>
     </PhotosProvider>

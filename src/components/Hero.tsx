@@ -13,6 +13,7 @@ import Stela, { STELA_FLOORS } from "./heritage/Stela";
 import { LalibelaCross, Tibeb } from "./heritage/Ornaments";
 import { Photo } from "@/components/Photos";
 import HeroTitle from "./HeroTitle";
+import { useSections } from "./Business";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const intro = 0.15; // the entrance starts when the particle intro hands over
@@ -26,6 +27,7 @@ export default function Hero() {
   const fade = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
   const { done } = useIntro();
   const { t } = useLanguage();
+  const sections = useSections();
   const [lit, setLit] = useState(0);
 
   // Once the lines are drawn, the windows light up one storey at a time.
@@ -124,18 +126,20 @@ export default function Hero() {
           animate={done ? { opacity: 1, y: 0 } : undefined}
           transition={{ duration: 1.2, ease, delay: intro + 1 }}
         >
-          <Magnetic>
-            <a
-              href="#speisekarte"
-              className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full btn-gild px-8 py-4 font-semibold text-ink hover:text-cream"
-            >
-              <span className="absolute inset-0 -translate-x-full bg-eth-green transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
-              <span className="relative">{t.hero.cta}</span>
-              <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-ink/10 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1 group-hover:-translate-y-px">
-                <ArrowRight size={14} weight="bold" />
-              </span>
-            </a>
-          </Magnetic>
+          {sections.menu && (
+            <Magnetic>
+              <a
+                href="#speisekarte"
+                className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full btn-gild px-8 py-4 font-semibold text-ink hover:text-cream"
+              >
+                <span className="absolute inset-0 -translate-x-full bg-eth-green transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-0" />
+                <span className="relative">{t.hero.cta}</span>
+                <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-ink/10 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1 group-hover:-translate-y-px">
+                  <ArrowRight size={14} weight="bold" />
+                </span>
+              </a>
+            </Magnetic>
+          )}
           <Magnetic>
             <a
               href={restaurant.phoneHref}

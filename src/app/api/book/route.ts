@@ -8,6 +8,7 @@ import { upcomingClosures } from "@/lib/server/closures";
 import { getCurrentUser } from "@/lib/server/auth";
 import { isLimited, RATE, recordHit, visitorKey } from "@/lib/server/rate-limit";
 import { getBusiness } from "@/lib/server/business";
+import { getSiteSections } from "@/lib/server/site-sections";
 
 /*
   Reservation requests from the website, from signed-in guests with a confirmed email address only (like online
@@ -17,6 +18,8 @@ import { getBusiness } from "@/lib/server/business";
 */
 export async function POST(request: Request) {
   if (!hasDatabase()) return Response.json({ code: "unavailable" }, { status: 503 });
+  // The owner has switched online reservations off for now (admin → Speisekarte).
+  if (!(await getSiteSections()).reservations) return Response.json({ code: "off" }, { status: 403 });
   const me = await getCurrentUser();
   if (!me) return Response.json({ code: "login" }, { status: 401 });
   if (!me.emailVerified) return Response.json({ code: "verify" }, { status: 403 });

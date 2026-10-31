@@ -7,6 +7,7 @@ import { getPasswordHash, requireUser } from "@/lib/server/auth";
 import { listForUser } from "@/lib/server/reservations";
 import { listOrdersForUser } from "@/lib/server/orders";
 import ProfileView from "./ProfileView";
+import { getSiteSections } from "@/lib/server/site-sections";
 
 export const metadata: Metadata = { title: "Mein Konto", robots: { index: false } };
 
@@ -14,10 +15,11 @@ export const metadata: Metadata = { title: "Mein Konto", robots: { index: false 
 async function ProfileData() {
   await connection();
   const user = await requireUser();
-  const [bookings, hash, orders] = await Promise.all([
+  const [bookings, hash, orders, sections] = await Promise.all([
     listForUser(user.id),
     getPasswordHash(user.id),
     listOrdersForUser(user.id),
+    getSiteSections(),
   ]);
   return (
     <ProfileView
@@ -38,6 +40,7 @@ async function ProfileData() {
         status: booking.status,
       }))}
       today={todayISO()}
+      canBook={sections.reservations}
       hasPassword={hash !== "none"}
       orders={orders.map((order) => ({
         reference: order.reference,

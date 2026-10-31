@@ -7,7 +7,8 @@ import { readMenu } from "@/lib/server/menu";
 import AdminHeader from "../AdminHeader";
 import { ONLINE_ORDERING } from "@/lib/features";
 import { adminText } from "@/lib/server/admin-lang";
-import { moveEntry, toggleAvailable } from "./actions";
+import { readSiteSections } from "@/lib/server/site-sections";
+import { moveEntry, toggleAvailable, toggleSection } from "./actions";
 import { CategoryForm, DishForm } from "./Forms";
 
 const small =
@@ -46,7 +47,8 @@ async function Editor() {
   const { t, lang } = await adminText();
   const text = t.menu;
   if (!hasDatabase()) return <p className="mt-12 text-cream/70">{t.common.noDatabase}</p>;
-  const menu = await readMenu();
+  const [menu, sections] = await Promise.all([readMenu(), readSiteSections()]);
+  const switches = text.sections;
   const categories = menu.map((category) => ({
     id: category.id,
     title: category.title[lang],
@@ -55,6 +57,38 @@ async function Editor() {
   const moveLabels = { up: text.up, down: text.down };
   return (
     <>
+      <section className="mt-8 border border-gold/30 bg-ink/40 p-5 md:p-7">
+        <h2 className="font-display text-2xl font-semibold text-gold-soft">{switches.title}</h2>
+        <p className="mt-2 max-w-3xl text-sm text-cream/65">{switches.lead}</p>
+        <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+          {(["menu", "reservations"] as const).map((key) => {
+            const on = sections[key];
+            return (
+              <li
+                key={key}
+                className="flex flex-wrap items-center justify-between gap-3 border border-gold/15 px-4 py-3"
+              >
+                <p className="text-cream">
+                  <strong className="font-semibold">{switches[key]}</strong>{" "}
+                  <span className={`ml-1 text-xs font-semibold ${on ? "text-[#7fcf9c]" : "text-[#f0a080]"}`}>
+                    · {on ? switches.shown : switches.hidden}
+                  </span>
+                </p>
+                <form action={toggleSection}>
+                  <input type="hidden" name="section" value={key} />
+                  <input type="hidden" name="on" value={on ? "false" : "true"} />
+                  <button
+                    className={`rounded-full px-4 py-1 text-sm font-semibold ${on ? "border border-[#f0a080]/60 text-[#f0a080] hover:bg-[#f0a080] hover:text-ink" : "bg-[#7fcf9c] text-ink"}`}
+                  >
+                    {on ? switches.hide : switches.show}
+                  </button>
+                </form>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
       <div className="mt-8 max-w-3xl space-y-3 text-sm leading-relaxed text-cream/70">
         <p>{ONLINE_ORDERING ? text.introOrders : text.intro}</p>
         <p>{ONLINE_ORDERING ? text.allergensRuleOrders : text.allergensRule}</p>

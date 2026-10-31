@@ -23,6 +23,8 @@ type Props = {
   user: { name: string; email: string; phone: string; role: Role; locale: Locale; emailVerified: boolean };
   bookings: ProfileBooking[];
   today: string;
+  /** false while the owner has switched online reservations off */
+  canBook: boolean;
   /** false for accounts that only sign in with Google */
   hasPassword: boolean;
   orders: {
@@ -51,7 +53,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export default function ProfileView({ user, bookings, today, hasPassword, orders }: Props) {
+export default function ProfileView({ user, bookings, today, canBook, hasPassword, orders }: Props) {
   const { t } = useLanguage();
   const text = t.account;
   const screen = staffScreen(user.role as Role);
@@ -135,12 +137,14 @@ export default function ProfileView({ user, bookings, today, hasPassword, orders
 
       <Section title={text.upcoming}>
         {renderList(upcoming, true)}
-        <Link
-          href="/#reservieren"
-          className="mt-6 inline-block text-sm font-semibold text-gold-soft underline decoration-gold/40 underline-offset-4"
-        >
-          {text.bookNow}
-        </Link>
+        {canBook && (
+          <Link
+            href="/#reservieren"
+            className="mt-6 inline-block text-sm font-semibold text-gold-soft underline decoration-gold/40 underline-offset-4"
+          >
+            {text.bookNow}
+          </Link>
+        )}
       </Section>
 
       {orders.length > 0 && (

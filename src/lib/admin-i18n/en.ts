@@ -188,6 +188,16 @@ export const adminEn: AdminDict = {
     closedSaved: "Closed day saved.",
   },
   menu: {
+    sections: {
+      title: "On the website",
+      lead: "Hide the menu or the reservation section for a while, e.g. while you rework the menu. Switch it back on here afterwards.",
+      menu: "Menu",
+      reservations: "Reservations",
+      shown: "Shown",
+      hidden: "Hidden",
+      hide: "Hide",
+      show: "Show again",
+    },
     intro:
       "Here you keep the whole menu: add, edit, sort and delete categories and dishes. Every change shows on the website straight away, and in the service app too. “Sold out” takes a dish off for today only.",
     introOrders:
