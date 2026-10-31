@@ -56,7 +56,8 @@ export const reservationTexts: Record<
     },
     cancelled: {
       subject: (reservation) => `Cancelled: your reservation at Yetenbi (${reservation.reference})`,
-      intro: "unfortunately we had to cancel this reservation. We're sorry! Give us a call and we'll find another time.",
+      intro:
+        "unfortunately we had to cancel this reservation. We're sorry! Give us a call and we'll find another time.",
     },
     labels: ["Date", "Time", "Guests", "Reference"],
     outro: "See you soon at Theaterstraße 6, Würzburg.",
