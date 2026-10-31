@@ -24,7 +24,8 @@ const contentSecurityPolicy = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  "upgrade-insecure-requests",
+  // Not in development: the dev server is plain http, also when opened from a phone on the home network.
+  ...(isDev ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
 /*
@@ -41,6 +42,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Lets the dev server be opened from other devices on the home network (e.g. http://192.168.178.25:3000).
+  allowedDevOrigins: ["192.168.*.*", "10.*.*.*"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
