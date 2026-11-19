@@ -42,6 +42,10 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  experimental: {
+    // Coding agents are told when a Next.js security release is out (set with the 16.4.6 upgrade).
+    agentUpgrade: "security",
+  },
   // Lets the dev server be opened from other devices on the home network (e.g. http://192.168.178.25:3000).
   allowedDevOrigins: ["192.168.*.*", "10.*.*.*"],
   async headers() {
