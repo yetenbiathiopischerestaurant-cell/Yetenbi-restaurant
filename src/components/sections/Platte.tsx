@@ -14,73 +14,43 @@ import hero from "../../../public/img/hero.jpg";
 import { Ambient, ease, Heading } from "../ui/primitives";
 import { LalibelaCross } from "../heritage/Ornaments";
 import { useLanguage } from "@/lib/language";
-import type { Dict } from "@/lib/i18n";
-import type { Tag } from "@/lib/data";
 import { geez } from "@/lib/ethiopic";
-import { useDishUrl } from "@/components/Photos";
+import { useDishUrl, useMenuPhoto } from "@/components/Photos";
+import { useMenu } from "@/components/MenuFacts";
+import { priceText, tagsOf, type Dish as MenuDish } from "@/lib/menu";
 
-type Dish = {
-  name: string;
-  amharic: string;
-  price: string;
-  slug: keyof Dict["platte"]["dishes"];
-  tags: Tag[];
-  photo: string; // pre-cropped 320px dish photo
+/*
+  The platter shows the menu itself: the first dish of every tab (Vorspeisen first, the last tab last), in the
+  order of the menu in /admin. Each dish gets a photo: its own where there is one, otherwise one for its tab.
+  The owner can replace these pictures in /admin → Fotos.
+*/
+const PHOTO_BY_DISH: Record<string, string> = {
+  "fleisch-0": "/img/dish/kitfo.jpg",
+  "fleisch-6": "/img/dish/kitfo.jpg",
+  "fleisch-1": "/img/dish/tibs.jpg",
+  "fleisch-2": "/img/dish/keywot.jpg",
+  "vegan-1": "/img/dish/shiro.jpg",
+  "vegan-2": "/img/dish/misir.jpg",
+  "vegan-3": "/img/dish/atkilt.jpg",
+  "beilagen-0": "/img/dish/misir.jpg",
+  "beilagen-1": "/img/dish/misir.jpg",
+  "beilagen-2": "/img/dish/shiro.jpg",
+  "beilagen-5": "/img/dish/atkilt.jpg",
 };
+const PHOTO_BY_TAB: Record<string, string> = {
+  vorspeisen: "/img/bowls.jpg",
+  vegan: "/img/platter.jpg",
+  fleisch: "/img/dish/keywot.jpg",
+  kinder: "/img/baskets.jpg",
+  beilagen: "/img/dish/misir.jpg",
+  kalt: "/img/cups.jpg",
+  heiss: "/img/cups.jpg",
+  kaffee: "/img/jebena-pour.jpg",
+};
+const photoOf = (dish: MenuDish) => PHOTO_BY_DISH[dish.id] ?? PHOTO_BY_TAB[dish.categoryId] ?? "/img/platter.jpg";
 
-const dishes: Dish[] = [
-  {
-    name: "Kitfo",
-    amharic: "የተንቢ ክትፎ",
-    price: "18,00",
-    tags: ["special"],
-    slug: "kitfo",
-    photo: "/img/dish/kitfo.jpg",
-  },
-  {
-    name: "Shekila Tibs",
-    amharic: "ሸክላ ጥብስ",
-    price: "17,00",
-    tags: ["spicy"],
-    slug: "tibs",
-    photo: "/img/dish/tibs.jpg",
-  },
-  {
-    name: "Key Wot",
-    amharic: "ቀይ ወጥ",
-    price: "16,00",
-    tags: ["spicy"],
-    slug: "keywot",
-    photo: "/img/dish/keywot.jpg",
-  },
-  {
-    name: "Misir Wot",
-    amharic: "ምስር ወጥ",
-    price: "15,00",
-    tags: ["vegan", "glutenfree"],
-    slug: "misir",
-    photo: "/img/dish/misir.jpg",
-  },
-  {
-    name: "Shiro Wot",
-    amharic: "ሽሮ ወጥ",
-    price: "15,00",
-    tags: ["vegan", "glutenfree"],
-    slug: "shiro",
-    photo: "/img/dish/shiro.jpg",
-  },
-  {
-    name: "Atkilt Wot",
-    amharic: "አትክልት ወጥ",
-    price: "15,00",
-    tags: ["vegan", "mild"],
-    slug: "atkilt",
-    photo: "/img/dish/atkilt.jpg",
-  },
-];
-
-const N = dishes.length;
-const STEP = 360 / N;
+/** Distance of the dishes from the centre, in % of the plate. */
+const RADIUS = 33;
 
 // Spongy injera surface: fractal noise turned into scattered pores over a warm teff base.
 const injera = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.11' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.33 0 0 0 0 0.22 0 0 0 0 0.12 0 0 0 -3.2 1.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E")`;
@@ -90,10 +60,21 @@ const injera = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg
   The section pins and the platter turns as you scroll; whichever dish reaches the top is presented beside it.
 */
 export default function Platte() {
+  const menu = useMenu();
+  // first dish of every tab that has one, with the tab's title
+  const dishes = menu.flatMap((category) => (category.items[0] ? [{ ...category.items[0], tab: category.title }] : []));
+  const N = Math.max(1, dishes.length);
+  const STEP = 360 / N;
+  // Dish size follows the number of dishes: about 70% of the gap between two neighbours, so even the
+  // enlarged one at the top never touches the next (8 dishes: about 18% of the plate).
+  const size = Math.min(26, 2 * RADIUS * Math.sin(Math.PI / N) * 0.7);
   const root = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const [active, setActive] = useState(0);
   const dishUrl = useDishUrl();
+  const menuPhoto = useMenuPhoto();
+  // the dish's own photo if the owner uploaded one, else the picture for its tab
+  const pictureOf = (d: MenuDish) => menuPhoto(d.id) ?? dishUrl(photoOf(d));
   const { t, locale } = useLanguage();
   const { scrollYProgress } = useScroll({ target: root, offset: ["start start", "end end"] });
   const turn = useSpring(useTransform(scrollYProgress, [0.06, 0.94], [0, -(N - 1) * STEP]), {
@@ -106,7 +87,8 @@ export default function Platte() {
     setActive(Math.min(N - 1, Math.max(0, Math.round(((progress - 0.06) / 0.88) * (N - 1)))));
   });
 
-  const dish = dishes[active];
+  const dish = dishes[Math.min(active, dishes.length - 1)];
+  if (!dish) return null;
 
   return (
     <section ref={root} id="platte" className="relative" style={{ height: `${N * 70 + 60}vh` }}>
@@ -153,13 +135,18 @@ export default function Platte() {
                 {/* dishes */}
                 {dishes.map((d, i) => {
                   const angle = (i * STEP - 90) * (Math.PI / 180);
-                  const r = 31;
+                  const r = RADIUS;
                   const on = i === active;
                   return (
                     <div
-                      key={d.name}
-                      className="absolute h-[27%] w-[27%] -translate-x-1/2 -translate-y-1/2"
-                      style={{ left: `${50 + r * Math.cos(angle)}%`, top: `${50 + r * Math.sin(angle)}%` }}
+                      key={d.id}
+                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                      style={{
+                        left: `${50 + r * Math.cos(angle)}%`,
+                        top: `${50 + r * Math.sin(angle)}%`,
+                        width: `${size}%`,
+                        height: `${size}%`,
+                      }}
                     >
                       <div
                         className={`h-full w-full rounded-full shadow-[0_8px_18px_rgba(40,20,8,0.55),inset_0_0_14px_rgba(0,0,0,0.35)] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
@@ -168,7 +155,7 @@ export default function Platte() {
                             : "scale-95 brightness-[0.8] saturate-[0.85]"
                         }`}
                         style={{
-                          backgroundImage: `url(${dishUrl(d.photo)})`,
+                          backgroundImage: `url(${pictureOf(d)})`,
                           backgroundSize: "cover",
                           borderRadius: "48% 52% 50% 50% / 52% 48% 52% 48%",
                         }}
@@ -186,38 +173,51 @@ export default function Platte() {
           <div className="relative min-h-[13rem] md:col-span-6 md:min-h-[24rem]">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
-                key={dish.name}
+                key={dish.id}
                 initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -18, filter: "blur(6px)" }}
                 transition={{ duration: 0.55, ease }}
               >
-                <p className="font-ethiopic text-lg text-gold/90" lang="am">
-                  {dish.amharic}
-                </p>
-                <h3 className="mt-1 flex overflow-hidden pb-2 font-display text-[clamp(2.75rem,6.5vw,6rem)] font-bold leading-[0.95] tracking-[0.02em]">
-                  {dish.name
+                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-gold">{dish.tab[locale]}</p>
+                {dish.amharic && dish.amharic !== dish.name[locale] && (
+                  <p className="mt-2 font-ethiopic text-lg text-gold/90" lang="am">
+                    {dish.amharic}
+                  </p>
+                )}
+                <h3 className="mt-1 flex flex-wrap gap-x-[0.3em] overflow-hidden pb-2 font-display text-[clamp(2.2rem,5vw,4.6rem)] font-bold leading-[0.98] tracking-[0.02em]">
+                  {dish.name[locale]
                     .toUpperCase()
-                    .split("")
-                    .map((line, i) => (
-                      <motion.span
-                        key={i}
-                        className="inline-block whitespace-pre bg-gradient-to-b from-[#f6e2a8] via-gold-soft to-gold bg-clip-text text-transparent"
-                        initial={{ y: "105%", rotate: 8 }}
-                        animate={{ y: "0%", rotate: 0 }}
-                        transition={{ duration: 0.9, ease, delay: i * 0.035 }}
-                      >
-                        {line}
-                      </motion.span>
+                    .split(" ")
+                    .map((word, w) => (
+                      <span key={w} className="inline-block whitespace-nowrap">
+                        {word.split("").map((letter, i) => (
+                          <motion.span
+                            key={i}
+                            className="inline-block bg-gradient-to-b from-[#f6e2a8] via-gold-soft to-gold bg-clip-text text-transparent"
+                            initial={{ y: "105%", rotate: 8 }}
+                            animate={{ y: "0%", rotate: 0 }}
+                            transition={{ duration: 0.9, ease, delay: (w * 6 + i) * 0.03 }}
+                          >
+                            {letter}
+                          </motion.span>
+                        ))}
+                      </span>
                     ))}
                 </h3>
-                <p className="mt-3 max-w-md font-display text-lg italic leading-snug text-cream/85 md:mt-4 md:text-2xl">
-                  {t.platte.dishes[dish.slug]}
-                </p>
+                {dish.description && (
+                  <p className="mt-3 line-clamp-4 max-w-md font-display text-lg italic leading-snug text-cream/85 md:mt-4 md:text-xl">
+                    {dish.description[locale]}
+                  </p>
+                )}
                 <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
-                  <span className="font-display text-3xl text-gold-soft md:text-4xl">{dish.price} €</span>
+                  {dish.price > 0 && (
+                    <span className="font-display text-3xl text-gold-soft md:text-4xl">{priceText(dish.price)} €</span>
+                  )}
                   <span className="text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-cream/68">
-                    {dish.tags.map((tag) => t.tags[tag]).join(" / ")}
+                    {tagsOf(dish)
+                      .map((tag) => t.tags[tag])
+                      .join(" / ")}
                   </span>
                 </div>
               </motion.div>
@@ -227,10 +227,10 @@ export default function Platte() {
 
         {/* Where on the platter we are */}
         <div className="relative mx-auto w-full max-w-7xl">
-          <ol className="hidden grid-cols-6 gap-3 md:grid">
+          <ol className="hidden gap-3 md:grid" style={{ gridTemplateColumns: `repeat(${N}, minmax(0, 1fr))` }}>
             {dishes.map((d, i) => (
               <li
-                key={d.name}
+                key={d.id}
                 className={`text-sm transition-colors duration-500 ${i === active ? "text-cream" : "text-cream/55"}`}
               >
                 <span className="block h-px overflow-hidden bg-cream/15">
@@ -238,11 +238,11 @@ export default function Platte() {
                     className={`block h-full bg-gold transition-[width] duration-700 ${i <= active ? "w-full" : "w-0"}`}
                   />
                 </span>
-                <span className="mt-2 flex items-baseline gap-2 font-display text-base">
+                <span className="mt-2 flex items-baseline gap-2 font-display text-sm leading-tight">
                   <span lang="am" className="font-ethiopic text-xs text-gold/70">
                     {geez(i + 1)}
                   </span>
-                  {d.name}
+                  <span className="truncate">{d.tab[locale]}</span>
                 </span>
               </li>
             ))}

@@ -141,6 +141,9 @@ export const adminDe = {
     status: { pending: "Offen", confirmed: "Bestätigt", declined: "Abgelehnt", cancelled: "Storniert" },
     byPhone: "Telefon",
     yourMessage: "Eure Nachricht:",
+    preorder: "Vorbestellte Gerichte",
+    preorderTotal: "Summe",
+    noPrice: "ohne Preis",
     messagePlaceholder: "Optionale Nachricht an den Gast",
     accept: "Annehmen",
     decline: "Ablehnen",
@@ -246,6 +249,11 @@ export const adminDe = {
     deposit: "Pfand (€)",
     options: "Auf Wunsch / Extras",
     noPrice: "Preis fehlt",
+    photo: "Foto des Gerichts (optional)",
+    photoHint:
+      "Erscheint auf der Speisekarte neben dem Gericht, auf der drehenden Platte und bei der Vorbestellung. Ohne Foto bleibt alles wie es ist. Am besten ein Foto von oben.",
+    photoRemove: "Foto entfernen",
+    photoAfterCreate: "Ein Foto könnt ihr hochladen, sobald das Gericht angelegt ist.",
     optionsHint:
       "Was Gäste zu diesem Gericht dazu wählen können, z. B. „mit Sauce“ oder „leicht angebraten“. Aufpreis leer lassen, wenn es nichts kostet.",
     optionName: "Extra",
@@ -273,7 +281,7 @@ export const adminDe = {
   },
   photos: {
     lead: (mb: number) =>
-      `Hier ersetzt ihr die Fotos der Website durch eure eigenen. Ein hochgeladenes Foto ist sofort auf der Website zu sehen; „Zurück zum Original“ stellt das ursprüngliche Bild wieder her. Querformat wirkt am besten, bei Gerichten ein Foto von oben. Bis ${mb} MB, JPG, PNG, WebP, AVIF oder HEIC (iPhone).`,
+      `Hier ersetzt ihr die Fotos der Website durch eure eigenen. Ein hochgeladenes Foto ist sofort auf der Website zu sehen; „Zurück zum Original“ stellt das ursprüngliche Bild wieder her. Querformat wirkt am besten, bei Gerichten ein Foto von oben. Bis ${mb} MB, JPG, PNG, WebP, AVIF oder HEIC (iPhone). Fotos einzelner Gerichte ladet ihr unter Speisekarte beim jeweiligen Gericht hoch.`,
     cloudinaryMissing:
       "Cloudinary ist noch nicht eingerichtet (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET fehlen). Hochladen geht erst danach.",
     own: "Eigenes Foto",
@@ -281,13 +289,28 @@ export const adminDe = {
     reset: "Zurück zum Original",
     slots: {
       hero: { label: "Titelbild", where: "Ganz oben, hinter dem Namen; auch Hintergrund bei „Die Platte“" },
-      platter: { label: "Platte", where: "Willkommen-Text (kleines Bild im Satz)" },
-      baskets: { label: "Körbe", where: "Willkommen-Text und Hintergrund" },
-      "jebena-pour": { label: "Kaffee eingießen", where: "Willkommen-Text und Kaffeezeremonie, Runde 1" },
-      cups: { label: "Tassen", where: "Kaffeezeremonie Runde 2, Speisekarte rechts, Anfahrt" },
-      incense: { label: "Weihrauch", where: "Kaffeezeremonie, Runde 3" },
+      platter: {
+        label: "Platte",
+        where: "Willkommen-Text (Küche); Die Platte: veganer Reiter, solange das Gericht kein eigenes Foto hat",
+      },
+      baskets: {
+        label: "Körbe",
+        where: "Willkommen-Text (Injera) und Hintergrund; Die Platte: Kinder-Reiter ohne eigenes Foto",
+      },
+      "jebena-pour": {
+        label: "Kaffee eingießen",
+        where: "Willkommen-Text (Schluss) und Kaffeezeremonie, Runde 1; Die Platte: Kaffee-Reiter ohne eigenes Foto",
+      },
+      cups: {
+        label: "Tassen",
+        where: "Kaffeezeremonie Runde 2, Speisekarte rechts, Anfahrt; Die Platte: Getränke ohne eigenes Foto",
+      },
+      incense: { label: "Weihrauch", where: "Willkommen-Text (Mittelstück) und Kaffeezeremonie, Runde 3" },
       "jebena-set": { label: "Jebena-Set", where: "Speisekarte links, Anfahrt (großes Bogenbild)" },
-      bowls: { label: "Schalen", where: "Hintergrund der Speisekarte" },
+      bowls: {
+        label: "Schalen",
+        where: "Hintergrund der Speisekarte, Willkommen-Text; Die Platte: Vorspeisen ohne eigenes Foto",
+      },
       "dish/kitfo": { label: "Gericht: Kitfo", where: "Die Platte" },
       "dish/tibs": { label: "Gericht: Tibs", where: "Die Platte" },
       "dish/keywot": { label: "Gericht: Key Wot", where: "Die Platte" },

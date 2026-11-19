@@ -71,6 +71,62 @@ export const ADDITIVES: { code: number; label: L }[] = [
   { code: 12, label: { de: "chininhaltig", en: "contains quinine", am: "ኪኒን ያለው" } },
 ];
 
+/* ---------- dishes chosen with a table reservation ---------- */
+
+/** What the reservation form sends: a dish, how many, and which of its options (by position). */
+export type PreorderLine = { id: string; qty: number; options: number[] };
+/** What is stored with the reservation: a copy of name, price and chosen options as they were when booked. */
+export type PreorderItem = { id: string; name: L; qty: number; price: number; options: DishOption[] };
+
+export const PREORDER_LIMITS = { lines: 30, qty: 20 } as const;
+
+/**
+  Turns what a guest sent into stored lines, checked against the menu: unknown or sold-out dishes, odd amounts and
+  options the dish does not have are dropped; the same dish with the same options is merged. Never throws.
+*/
+export function preorderFrom(menu: Menu, raw: unknown): PreorderItem[] {
+  if (!Array.isArray(raw)) return [];
+  const dishes = new Map(menu.flatMap((category) => category.items).map((dish) => [dish.id, dish] as const));
+  const lines = new Map<string, PreorderItem>();
+  for (const entry of raw.slice(0, PREORDER_LIMITS.lines)) {
+    if (!entry || typeof entry !== "object") continue;
+    const { id, qty, options } = entry as Partial<PreorderLine>;
+    const dish = typeof id === "string" ? dishes.get(id) : undefined;
+    const amount = Math.floor(Number(qty));
+    if (!dish || !dish.available || !(amount >= 1)) continue;
+    const picked = [...new Set(Array.isArray(options) ? options.map(Number) : [])]
+      .filter((index) => Number.isInteger(index) && index >= 0 && index < dish.options.length)
+      .sort((a, b) => a - b);
+    const key = `${dish.id}|${picked.join(",")}`;
+    const line = lines.get(key);
+    const qtyTotal = Math.min(PREORDER_LIMITS.qty, (line?.qty ?? 0) + amount);
+    lines.set(key, {
+      id: dish.id,
+      name: dish.name,
+      qty: qtyTotal,
+      price: dish.price,
+      options: picked.map((index) => dish.options[index]),
+    });
+  }
+  return [...lines.values()];
+}
+
+/** Price of one line (dish plus surcharges, times the amount); 0 while the dish has no price yet. */
+export const preorderLineTotal = (item: PreorderItem) =>
+  item.qty * (item.price + item.options.reduce((sum, option) => sum + option.price, 0));
+
+/** Sum of the lines that have a price, and whether some dish has no price yet. */
+export function preorderTotal(items: PreorderItem[]) {
+  return {
+    total: items.reduce((sum, item) => sum + (item.price > 0 ? preorderLineTotal(item) : 0), 0),
+    unpriced: items.some((item) => item.price <= 0),
+  };
+}
+
+/** One line as text, e.g. "2 × Sambusa Linsen (mit Sauce)". */
+export const preorderText = (item: PreorderItem, locale: keyof L) =>
+  `${item.qty} × ${item.name[locale]}${item.options.length ? ` (${item.options.map((option) => option.name[locale]).join(", ")})` : ""}`;
+
 /** Dishes that can be ordered online right now, by id (prices and names for the order and the server). */
 export const catalogOf = (menu: Menu) =>
   new Map(

@@ -9,6 +9,8 @@ import { getCurrentUser } from "@/lib/server/auth";
 import { isLimited, RATE, recordHit, visitorKey } from "@/lib/server/rate-limit";
 import { getBusiness } from "@/lib/server/business";
 import { getSiteSections } from "@/lib/server/site-sections";
+import { getMenu } from "@/lib/server/menu";
+import { preorderFrom } from "@/lib/menu";
 
 /*
   Reservation requests from the website, from signed-in guests with a confirmed email address only (like online
@@ -19,12 +21,13 @@ import { getSiteSections } from "@/lib/server/site-sections";
 export async function POST(request: Request) {
   if (!hasDatabase()) return Response.json({ code: "unavailable" }, { status: 503 });
   // The owner has switched online reservations off for now (admin → Speisekarte).
-  if (!(await getSiteSections()).reservations) return Response.json({ code: "off" }, { status: 403 });
+  const sections = await getSiteSections();
+  if (!sections.reservations) return Response.json({ code: "off" }, { status: 403 });
   const me = await getCurrentUser();
   if (!me) return Response.json({ code: "login" }, { status: 401 });
   if (!me.emailVerified) return Response.json({ code: "verify" }, { status: 403 });
 
-  let body: Partial<BookingRequest> & { locale?: string; website?: string };
+  let body: Partial<BookingRequest> & { locale?: string; website?: string; preorder?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -58,7 +61,13 @@ export async function POST(request: Request) {
     return Response.json({ code: "busy" }, { status: 429 });
   await recordHit("book-ip", ip);
 
-  const reservation = await createReservation(clean, locale, { userId: me.id });
+  // Dishes chosen with the booking (optional, only while the menu is shown): checked against the menu, names and
+  // prices copied from it.
+  const preorder =
+    sections.menu && Array.isArray(body.preorder) && body.preorder.length
+      ? preorderFrom(await getMenu(), body.preorder)
+      : [];
+  const reservation = await createReservation(clean, locale, { userId: me.id, preorder });
   const origin = new URL(request.url).origin;
   after(async () => {
     await notifyRestaurant(reservation, origin);

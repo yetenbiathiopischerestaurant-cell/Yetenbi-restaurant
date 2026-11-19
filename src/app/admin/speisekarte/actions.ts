@@ -19,6 +19,9 @@ import {
   type DishInput,
 } from "@/lib/server/menu";
 import { readSiteSections, saveSiteSections } from "@/lib/server/site-sections";
+import { clearPhoto } from "@/lib/server/photos";
+import { destroy, isCloudinaryConfigured } from "@/lib/server/cloudinary";
+import { dishSlot } from "@/lib/photos";
 
 /* Create, edit, delete and reorder the menu. Every change refreshes the website's cached menu ("menu" tag). */
 
@@ -181,7 +184,11 @@ export async function removeDish(_: MenuState, form: FormData): Promise<MenuStat
   const dishId = readText(form, "id", 60);
   const gone = await findDish(dishId);
   await deleteDish(dishId);
+  // its photo goes too (from the website and from Cloudinary)
+  const photo = await clearPhoto(dishSlot(dishId));
+  if (photo && isCloudinaryConfigured()) await destroy(photo.publicId);
   await audit(me, "menu", "Gericht gelöscht", gone?.name.de ?? dishId);
+  if (photo) updateTag("photos");
   refresh();
   return { ok: t.menu.deleted };
 }

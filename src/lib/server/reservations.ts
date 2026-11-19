@@ -2,6 +2,7 @@ import "server-only";
 import { randomInt } from "node:crypto";
 import type { BookingRequest } from "@/lib/booking";
 import type { Locale } from "@/lib/i18n";
+import type { PreorderItem } from "@/lib/menu";
 import { db } from "./db";
 
 export type Status = "pending" | "confirmed" | "declined" | "cancelled";
@@ -14,6 +15,8 @@ export type Reservation = BookingRequest & {
   staffNote: string;
   source: "website" | "phone";
   createdAt: string;
+  /** Dishes chosen while booking (optional), as they were on the menu then. */
+  preorder: PreorderItem[];
 };
 
 type Row = {
@@ -31,6 +34,7 @@ type Row = {
   staff_note: string;
   source: "website" | "phone";
   created_at: string;
+  preorder: PreorderItem[] | null;
 };
 
 /**
@@ -60,6 +64,7 @@ const toReservation = (row: Row): Reservation => ({
   staffNote: row.staff_note,
   source: row.source ?? "website",
   createdAt: String(row.created_at),
+  preorder: Array.isArray(row.preorder) ? row.preorder : [],
 });
 
 // No 0/O/1/I so references can be read out on the phone.
@@ -83,13 +88,15 @@ export async function createReservation(
     source = "website",
     status = "pending",
     userId = null,
-  }: { source?: "website" | "phone"; status?: Status; userId?: number | null } = {},
+    preorder = [],
+  }: { source?: "website" | "phone"; status?: Status; userId?: number | null; preorder?: PreorderItem[] } = {},
 ) {
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
       const [row] = (await db()`
-        insert into reservations (reference, date, time, guests, name, email, phone, note, locale, source, status, user_id)
-        values (${newReference()}, ${input.date}, ${input.time}, ${input.guests}, ${input.name}, ${input.email}, ${input.phone}, ${input.note}, ${locale}, ${source}, ${status}, ${userId})
+        insert into reservations (reference, date, time, guests, name, email, phone, note, locale, source, status, user_id, preorder)
+        values (${newReference()}, ${input.date}, ${input.time}, ${input.guests}, ${input.name}, ${input.email}, ${input.phone}, ${input.note}, ${locale}, ${source}, ${status}, ${userId},
+                ${JSON.stringify(preorder)}::jsonb)
         returning *
       `) as Row[];
       return toReservation(row);

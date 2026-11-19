@@ -10,6 +10,9 @@ import { adminText } from "@/lib/server/admin-lang";
 import { readSiteSections } from "@/lib/server/site-sections";
 import { moveEntry, toggleAvailable, toggleSection } from "./actions";
 import { CategoryForm, DishForm } from "./Forms";
+import { getPhotos } from "@/lib/server/photos";
+import { isCloudinaryConfigured } from "@/lib/server/cloudinary";
+import { cloudinaryUrl, dishSlot } from "@/lib/photos";
 
 const small =
   "rounded-full border border-cream/25 px-2.5 py-0.5 text-xs text-cream/75 hover:border-gold hover:text-gold-soft disabled:opacity-30";
@@ -47,7 +50,13 @@ async function Editor() {
   const { t, lang } = await adminText();
   const text = t.menu;
   if (!hasDatabase()) return <p className="mt-12 text-cream/70">{t.common.noDatabase}</p>;
-  const [menu, sections] = await Promise.all([readMenu(), readSiteSections()]);
+  const [menu, sections, photos] = await Promise.all([readMenu(), readSiteSections(), getPhotos()]);
+  const uploads = isCloudinaryConfigured();
+  /** Square preview of a dish's own photo, if it has one. */
+  const photoOf = (id: string) => {
+    const up = photos[dishSlot(id)];
+    return up ? cloudinaryUrl(up.url, "c_fill,g_auto,w_160,h_160,f_auto,q_auto") : undefined;
+  };
   const switches = text.sections;
   const categories = menu.map((category) => ({
     id: category.id,
@@ -176,7 +185,13 @@ async function Editor() {
                   <details className="mt-2">
                     <summary className="cursor-pointer text-xs text-cream/55 hover:text-cream">{text.edit}</summary>
                     <div className="mt-4">
-                      <DishForm dish={d} categories={categories} categoryId={category.id} />
+                      <DishForm
+                        dish={d}
+                        categories={categories}
+                        categoryId={category.id}
+                        photo={photoOf(d.id)}
+                        uploads={uploads}
+                      />
                     </div>
                   </details>
                 </li>

@@ -12,6 +12,7 @@ import { ClosedDayForm, PhoneBookingForm } from "../AdminForms";
 import AdminHeader from "../AdminHeader";
 import { adminText } from "@/lib/server/admin-lang";
 import type { AdminDict } from "@/lib/admin-i18n";
+import { preorderLineTotal, preorderText, preorderTotal, priceText } from "@/lib/menu";
 
 const TONE: Record<Status, string> = {
   pending: "border-gold/60 text-gold-soft",
@@ -27,6 +28,33 @@ const dayLabel = (iso: string, intl: string) =>
     month: "long",
     timeZone: "UTC",
   });
+
+/** The dishes the guest chose while booking, so the kitchen can prepare them. */
+function Preorder({ reservation, t }: { reservation: Reservation; t: AdminDict }) {
+  const text = t.reservations;
+  const { total, unpriced } = preorderTotal(reservation.preorder);
+  return (
+    <div className="mt-4 border border-gold/20 bg-coal/60 p-4">
+      <p className="text-[0.62rem] font-semibold uppercase tracking-[0.25em] text-gold">{text.preorder}</p>
+      <ul className="mt-2 space-y-1 text-sm text-cream/90">
+        {reservation.preorder.map((item, index) => (
+          <li key={index} className="flex justify-between gap-4">
+            <span>{preorderText(item, "de")}</span>
+            <span className="shrink-0 tabular-nums text-cream/60">
+              {item.price > 0 ? `${priceText(preorderLineTotal(item))} €` : text.noPrice}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 flex justify-between border-t border-gold/15 pt-2 text-sm text-gold-soft">
+        <span>{text.preorderTotal}</span>
+        <span className="tabular-nums">
+          {priceText(total)} €{unpriced ? ` + ${text.noPrice}` : ""}
+        </span>
+      </p>
+    </div>
+  );
+}
 
 function Card({ reservation, past, t }: { reservation: Reservation; past: boolean; t: AdminDict }) {
   const text = t.reservations;
@@ -63,6 +91,7 @@ function Card({ reservation, past, t }: { reservation: Reservation; past: boolea
       {reservation.note && (
         <p className="mt-3 border-l-2 border-gold/50 pl-3 text-sm italic text-cream/80">{reservation.note}</p>
       )}
+      {reservation.preorder.length > 0 && <Preorder reservation={reservation} t={t} />}
       {reservation.staffNote && (
         <p className="mt-2 text-xs text-cream/55">
           {text.yourMessage} {reservation.staffNote}

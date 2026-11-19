@@ -23,6 +23,14 @@ export const PHOTO_SLOTS: PhotoSlot[] = [
 ];
 export const SLOT_KEYS = new Set(PHOTO_SLOTS.map((s) => s.key));
 
+/*
+  Photos of single dishes, uploaded in /admin → Speisekarte at the dish (optional). Stored with the other photos,
+  under "menu/<dish id>". Shown beside the dish on the menu card, on the turning platter and in the reservation's
+  dish picker; a dish without one simply shows no photo (the platter then uses a picture for its tab).
+*/
+export const dishSlot = (dishId: string) => `menu/${dishId}`;
+export const isDishSlot = (slot: string) => /^menu\/[a-z0-9-]{1,40}$/.test(slot);
+
 /** An uploaded photo: Cloudinary address, size, and a tiny blurred preview shown while it loads. */
 export type Photo = { url: string; publicId: string; width: number; height: number; blur: string };
 export type Photos = Record<string, Photo>;

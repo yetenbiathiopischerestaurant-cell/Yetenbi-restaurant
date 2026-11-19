@@ -34,7 +34,7 @@ const same = (s: string): L => ({ de: s, en: s, am: s });
   Dish names stay in their Ethiopian form; descriptions are given in German, English and Amharic.
   Amharic text should be checked by a native speaker. Prices of new dishes are still open ("0,00").
 */
-export const seedMenu: MenuCategory[] = [
+const cardMenu: MenuCategory[] = [
   {
     id: "vorspeisen",
     title: { de: "Vorspeisen", en: "Starters", am: "መግቢያዎች" },
@@ -343,10 +343,10 @@ export const seedMenu: MenuCategory[] = [
         name: { de: "Mineralwasser mit Kohlensäure", en: "Sparkling water", am: "አምቦ ውሃ" },
         price: "2,00",
       },
-      { id: "kalt-0", name: same("Coca-Cola"), price: "2,50" },
-      { id: "kalt-1", name: same("Coca-Cola Zero"), price: "2,50" },
-      { id: "kalt-2", name: same("Fanta"), price: "2,50" },
-      { id: "kalt-3", name: same("Sprite"), price: "2,50" },
+      { id: "kalt-0", name: same("Coca-Cola"), amharic: "ኮካ ኮላ", price: "2,50" },
+      { id: "kalt-1", name: same("Coca-Cola Zero"), amharic: "ኮካ ኮላ ዜሮ", price: "2,50" },
+      { id: "kalt-2", name: same("Fanta"), amharic: "ፋንታ", price: "2,50" },
+      { id: "kalt-3", name: same("Sprite"), amharic: "ስፕራይት", price: "2,50" },
       { id: "kalt-6", name: { de: "Eistee", en: "Iced tea", am: "ቀዝቃዛ ሻይ" }, price: "2,50" },
       { id: "kalt-9", name: { de: "Mangosaft", en: "Mango juice", am: "የማንጎ ጭማቂ" }, price: "3,00" },
       { id: "kalt-7", name: { de: "Orangensaft", en: "Orange juice", am: "የብርቱካን ጭማቂ" }, price: "3,00" },
@@ -418,3 +418,11 @@ export const seedMenu: MenuCategory[] = [
     ],
   },
 ];
+
+/** In Amharic, a dish whose name is the same in every language is shown in Ge'ez script (its `amharic` spelling). */
+export const seedMenu: MenuCategory[] = cardMenu.map((category) => ({
+  ...category,
+  items: category.items.map((item) =>
+    item.amharic && item.name.am === item.name.de ? { ...item, name: { ...item.name, am: item.amharic } } : item,
+  ),
+}));

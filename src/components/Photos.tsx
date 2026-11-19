@@ -2,7 +2,7 @@
 
 import Image, { type ImageLoader, type ImageProps, type StaticImageData } from "next/image";
 import { createContext, useContext } from "react";
-import { cloudinaryUrl, slotOf, type Photo as Uploaded, type Photos } from "@/lib/photos";
+import { cloudinaryUrl, dishSlot, slotOf, type Photo as Uploaded, type Photos } from "@/lib/photos";
 
 /* Owner-uploaded photos (Cloudinary) replace the built-in pictures wherever these helpers are used. */
 
@@ -43,6 +43,15 @@ export function Photo({ src, alt, placeholder, ...props }: Omit<ImageProps, "src
 export function useAmbientUrl(img: StaticImageData) {
   const up = useUploaded(img);
   return up ? cloudinaryUrl(up.url, "w_96,e_blur:400,q_40,f_auto") : `/img/ambient/${slotOf(img.src)}.jpg`;
+}
+
+/** The owner's photo of a menu dish as a square crop of `px` pixels, or undefined while there is none. */
+export function useMenuPhoto() {
+  const photos = useContext(PhotosContext);
+  return (dishId: string, px = 320) => {
+    const up = photos[dishSlot(dishId)];
+    return up ? cloudinaryUrl(up.url, `c_fill,g_auto,w_${px},h_${px},f_auto,q_auto`) : undefined;
+  };
 }
 
 /** Turns a dish picture path into a square, 320px crop of the uploaded photo, if there is one (the platter). */

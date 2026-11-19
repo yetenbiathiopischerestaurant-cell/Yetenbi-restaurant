@@ -50,8 +50,8 @@ export default async function Home() {
               <ProverbBand />
               <Info />
               <Amharisch />
-              {sections.reservations && <Reservation />}
               {sections.menu && <MenuCard />}
+              {sections.reservations && <Reservation />}
               {/* the map and directions close the page, just above the footer with the jebena */}
               <Visit />
             </main>

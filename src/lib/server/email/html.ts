@@ -97,7 +97,7 @@ export function detailsTable(rows: [label: string, value: string][]) {
   return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:18px 0;width:100%">${html}</table>`;
 }
 
-/** Item lines with prices, then the total. `extras` are lines like deposit or delivery fee. */
+/** Item lines with prices, then the total. `extras` are lines like deposit or delivery fee. NaN shows as "–". */
 export function priceTable(
   lines: [label: string, amount: number][],
   extras: [string, number][],
@@ -105,7 +105,7 @@ export function priceTable(
   total: number,
 ) {
   const row = (label: string, amount: number, color: string) =>
-    `<tr><td style="padding:4px 0;color:${color}">${escapeHtml(label)}</td><td style="padding:4px 0;text-align:right;color:${color}">${formatEuro(amount)}</td></tr>`;
+    `<tr><td style="padding:4px 0;color:${color}">${escapeHtml(label)}</td><td style="padding:4px 0;text-align:right;color:${color}">${Number.isFinite(amount) ? formatEuro(amount) : "–"}</td></tr>`;
   const totalStyle = `padding:10px 0 0;border-top:1px solid ${colors.border};color:${colors.goldLight}`;
   return `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;font-size:15px">
   ${lines.map(([label, amount]) => row(label, amount, colors.body)).join("")}

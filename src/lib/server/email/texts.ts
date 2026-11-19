@@ -15,6 +15,7 @@ export const reservationTexts: Record<
     outro: string;
     staffNote: string;
     cancel: string;
+    preorder: { title: string; total: string; unpriced: string };
   }
 > = {
   de: {
@@ -40,6 +41,11 @@ export const reservationTexts: Record<
     outro: "Bis bald in der Theaterstraße 6, Würzburg.",
     staffNote: "Nachricht vom Restaurant",
     cancel: "Doch verhindert? Hier könnt ihr die Reservierung stornieren.",
+    preorder: {
+      title: "Eure Gerichte (vorbestellt)",
+      total: "Summe",
+      unpriced: "Gerichte ohne Preis sind noch nicht eingerechnet.",
+    },
   },
   en: {
     received: {
@@ -63,6 +69,11 @@ export const reservationTexts: Record<
     outro: "See you soon at Theaterstraße 6, Würzburg.",
     staffNote: "Message from the restaurant",
     cancel: "Can't make it after all? Cancel your reservation here.",
+    preorder: {
+      title: "Your dishes (pre-ordered)",
+      total: "Total",
+      unpriced: "Dishes without a price yet are not included.",
+    },
   },
   am: {
     received: {
@@ -85,6 +96,11 @@ export const reservationTexts: Record<
     outro: "በቅርቡ እንገናኝ፣ Theaterstraße 6, Würzburg።",
     staffNote: "ከምግብ ቤቱ መልእክት",
     cancel: "መምጣት ካልቻሉ ቦታውን እዚህ ይሰርዙ።",
+    preorder: {
+      title: "አስቀድመው የመረጧቸው ምግቦች",
+      total: "ድምር",
+      unpriced: "ዋጋ ያልተሰጣቸው ምግቦች አልተካተቱም።",
+    },
   },
 };
 

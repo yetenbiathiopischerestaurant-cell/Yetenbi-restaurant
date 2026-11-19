@@ -5,6 +5,9 @@ import { ADDITIVES, ALLERGENS, DISH_TAGS, type Dish, type MenuCategory } from "@
 import { useAdminText } from "@/components/admin/AdminLang";
 import { ONLINE_ORDERING } from "@/lib/features";
 import { removeCategory, removeDish, saveCategory, saveDish, type MenuState } from "./actions";
+import Uploader from "../fotos/Uploader";
+import { resetPhoto } from "../fotos/actions";
+import { dishSlot } from "@/lib/photos";
 
 const field =
   "w-full border-0 border-b border-gold/30 bg-transparent px-0 pb-1.5 pt-1 text-base text-cream placeholder:text-cream/35 focus:border-gold focus:outline-none [color-scheme:dark]";
@@ -198,10 +201,16 @@ export function DishForm({
   dish,
   categories,
   categoryId,
+  photo,
+  uploads = false,
 }: {
   dish?: Dish;
   categories: { id: string; title: string; drinks: boolean }[];
   categoryId: string;
+  /** preview of the dish's own photo, if it has one */
+  photo?: string;
+  /** whether photo uploads are set up (Cloudinary) */
+  uploads?: boolean;
 }) {
   const [state, action, pending] = useActionState(saveDish, null);
   const [delState, delAction, deleting] = useActionState(removeDish, null);
@@ -362,6 +371,41 @@ export function DishForm({
           <Message state={state} />
         </div>
       </form>
+      <fieldset className="border-t border-gold/15 pt-4">
+        <legend className={`${label} mb-1.5`}>{text.photo}</legend>
+        {dish ? (
+          <div className="flex flex-wrap items-center gap-4">
+            {photo && (
+              // eslint-disable-next-line @next/next/no-img-element -- preview, already sized by Cloudinary
+              <img
+                src={photo}
+                alt=""
+                width={80}
+                height={80}
+                className="h-20 w-20 rounded-full object-cover ring-1 ring-gold/40"
+              />
+            )}
+            <div className="space-y-2">
+              <p className="text-xs text-cream/55">{text.photoHint}</p>
+              {uploads ? (
+                <Uploader slot={dishSlot(dish.id)} replace={Boolean(photo)} />
+              ) : (
+                <p className="text-xs text-[#f0a080]">{t.photos.errors.notConfigured}</p>
+              )}
+              {photo && (
+                <form action={resetPhoto}>
+                  <input type="hidden" name="slot" value={dishSlot(dish.id)} />
+                  <button className="text-xs text-cream/55 underline underline-offset-4 hover:text-[#f0a080]">
+                    {text.photoRemove}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-cream/55">{text.photoAfterCreate}</p>
+        )}
+      </fieldset>
       {dish && (
         <form
           action={delAction}

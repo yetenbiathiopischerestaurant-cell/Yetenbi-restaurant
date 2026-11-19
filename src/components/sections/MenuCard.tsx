@@ -13,7 +13,7 @@ import Embers from "../motion/Embers";
 import { Ambient, ease, FlagWash, GoldButton, Lead, Rise, Title } from "../ui/primitives";
 import { AksumFrame, Harag, LalibelaCross, Tibeb } from "../heritage/Ornaments";
 import { useLanguage } from "@/lib/language";
-import { Photo } from "@/components/Photos";
+import { Photo, useMenuPhoto } from "@/components/Photos";
 import { AllergenFacts, DrinkFacts, FactsLegend, useMenu, useTagLabels } from "@/components/MenuFacts";
 import { hasAllergenData, priceText, type Dish } from "@/lib/menu";
 import { ONLINE_ORDERING } from "@/lib/features";
@@ -61,65 +61,82 @@ function Ornament() {
 function Item({ item, compact, drink }: { item: Dish; compact: boolean; drink: boolean }) {
   const { t, locale } = useLanguage();
   const tags = useTagLabels(item);
+  // the owner's photo of the dish, if one was uploaded (/admin → Speisekarte)
+  const photo = useMenuPhoto()(item.id, 240);
   return (
     <motion.li
       variants={{ hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease } } }}
-      className="group"
+      className={`group ${photo ? "flex items-start gap-4 md:gap-5" : ""}`}
     >
-      <div className="flex items-baseline gap-3">
-        <h4
-          className={`font-display font-semibold text-cream transition-colors duration-500 group-hover:text-gold-soft ${
-            compact ? "text-xl" : "text-[1.6rem] leading-tight"
+      {photo && (
+        // eslint-disable-next-line @next/next/no-img-element -- already sized and compressed by Cloudinary
+        <img
+          src={photo}
+          alt={item.name[locale]}
+          width={120}
+          height={120}
+          loading="lazy"
+          className={`shrink-0 rounded-full object-cover ring-1 ring-gold/40 shadow-[0_10px_24px_-10px_rgba(0,0,0,0.8)] ${
+            compact ? "h-14 w-14" : "h-20 w-20 md:h-24 md:w-24"
           }`}
-        >
-          {item.name[locale]}
-        </h4>
-        {/* price 0 = not set yet: no price and no dotted leader */}
-        {item.price > 0 && (
-          <>
-            <span aria-hidden className="mb-1.5 flex-1 border-b border-dotted border-gold/35" />
-            <span
-              className={`shrink-0 whitespace-nowrap font-display tabular-nums text-gold-soft ${compact ? "text-xl" : "text-[1.6rem]"}`}
-            >
-              {priceText(item.price)} €
-            </span>
-          </>
+        />
+      )}
+      <div className={photo ? "min-w-0 flex-1" : undefined}>
+        <div className="flex items-baseline gap-3">
+          <h4
+            className={`font-display font-semibold text-cream transition-colors duration-500 group-hover:text-gold-soft ${
+              compact ? "text-xl" : "text-[1.6rem] leading-tight"
+            }`}
+          >
+            {item.name[locale]}
+          </h4>
+          {/* price 0 = not set yet: no price and no dotted leader */}
+          {item.price > 0 && (
+            <>
+              <span aria-hidden className="mb-1.5 flex-1 border-b border-dotted border-gold/35" />
+              <span
+                className={`shrink-0 whitespace-nowrap font-display tabular-nums text-gold-soft ${compact ? "text-xl" : "text-[1.6rem]"}`}
+              >
+                {priceText(item.price)} €
+              </span>
+            </>
+          )}
+        </div>
+        {item.amharic && item.amharic !== item.name[locale] && (
+          <p className="mt-0.5 font-ethiopic text-[13px] text-gold/60" lang="am">
+            {item.amharic}
+          </p>
         )}
+        {item.description && (
+          <p
+            className={`max-w-[60ch] leading-relaxed text-cream/68 ${compact ? "mt-0.5 text-sm" : "mt-2 text-[0.95rem]"}`}
+          >
+            {item.description[locale]}
+          </p>
+        )}
+        {item.options.length > 0 && (
+          <p className={`text-cream/68 ${compact ? "mt-0.5 text-sm" : "mt-2 text-[0.95rem]"}`}>
+            <span className="font-semibold text-gold/80">{t.menu.options}:</span>{" "}
+            {item.options
+              .map((option) =>
+                option.price > 0 ? `${option.name[locale]} (+${priceText(option.price)} €)` : option.name[locale],
+              )
+              .join(" · ")}
+          </p>
+        )}
+        {drink && (
+          <p className="mt-0.5">
+            <DrinkFacts dish={item} />
+          </p>
+        )}
+        {!item.available && (
+          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#f0a080]">{t.menu.soldOut}</p>
+        )}
+        {tags.length > 0 && !compact && (
+          <p className="mt-2 font-display text-[0.95rem] italic text-gold/80">{tags.join(", ")}</p>
+        )}
+        <AllergenFacts dish={item} className="mt-1" />
       </div>
-      {item.amharic && (
-        <p className="mt-0.5 font-ethiopic text-[13px] text-gold/60" lang="am">
-          {item.amharic}
-        </p>
-      )}
-      {item.description && (
-        <p
-          className={`max-w-[60ch] leading-relaxed text-cream/68 ${compact ? "mt-0.5 text-sm" : "mt-2 text-[0.95rem]"}`}
-        >
-          {item.description[locale]}
-        </p>
-      )}
-      {item.options.length > 0 && (
-        <p className={`text-cream/68 ${compact ? "mt-0.5 text-sm" : "mt-2 text-[0.95rem]"}`}>
-          <span className="font-semibold text-gold/80">{t.menu.options}:</span>{" "}
-          {item.options
-            .map((option) =>
-              option.price > 0 ? `${option.name[locale]} (+${priceText(option.price)} €)` : option.name[locale],
-            )
-            .join(" · ")}
-        </p>
-      )}
-      {drink && (
-        <p className="mt-0.5">
-          <DrinkFacts dish={item} />
-        </p>
-      )}
-      {!item.available && (
-        <p className="mt-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#f0a080]">{t.menu.soldOut}</p>
-      )}
-      {tags.length > 0 && !compact && (
-        <p className="mt-2 font-display text-[0.95rem] italic text-gold/80">{tags.join(", ")}</p>
-      )}
-      <AllergenFacts dish={item} className="mt-1" />
     </motion.li>
   );
 }

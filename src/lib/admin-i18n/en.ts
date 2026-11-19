@@ -139,6 +139,9 @@ export const adminEn: AdminDict = {
     status: { pending: "Open", confirmed: "Confirmed", declined: "Declined", cancelled: "Cancelled" },
     byPhone: "Phone",
     yourMessage: "Your message:",
+    preorder: "Pre-ordered dishes",
+    preorderTotal: "Total",
+    noPrice: "no price",
     messagePlaceholder: "Optional message to the guest",
     accept: "Accept",
     decline: "Decline",
@@ -244,6 +247,11 @@ export const adminEn: AdminDict = {
     deposit: "Deposit (€)",
     options: "On request / extras",
     noPrice: "No price yet",
+    photo: "Photo of the dish (optional)",
+    photoHint:
+      "Shown beside the dish on the menu, on the turning platter and in the pre-order. Without a photo nothing changes. A photo from above works best.",
+    photoRemove: "Remove photo",
+    photoAfterCreate: "You can upload a photo once the dish has been created.",
     optionsHint:
       "What guests can add to this dish, e.g. “with sauce” or “lightly seared”. Leave the surcharge empty if it is free.",
     optionName: "Extra",
@@ -271,7 +279,7 @@ export const adminEn: AdminDict = {
   },
   photos: {
     lead: (mb: number) =>
-      `Here you replace the website's pictures with your own photos. An uploaded photo shows on the website straight away; “Back to the original” brings back the original picture. Landscape works best, and dishes look best photographed from above. Up to ${mb} MB, JPG, PNG, WebP, AVIF or HEIC (iPhone).`,
+      `Here you replace the website's pictures with your own photos. An uploaded photo shows on the website straight away; “Back to the original” brings back the original picture. Landscape works best, and dishes look best photographed from above. Up to ${mb} MB, JPG, PNG, WebP, AVIF or HEIC (iPhone). Photos of single dishes are uploaded under Menu, at the dish.`,
     cloudinaryMissing:
       "Cloudinary is not set up yet (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET are missing). Uploading works only after that.",
     own: "Your photo",
@@ -279,13 +287,28 @@ export const adminEn: AdminDict = {
     reset: "Back to the original",
     slots: {
       hero: { label: "Title picture", where: "At the very top, behind the name; also the background of “The platter”" },
-      platter: { label: "Platter", where: "Welcome text (small picture in the sentence)" },
-      baskets: { label: "Baskets", where: "Welcome text and background" },
-      "jebena-pour": { label: "Pouring coffee", where: "Welcome text and coffee ceremony, round 1" },
-      cups: { label: "Cups", where: "Coffee ceremony round 2, menu on the right, directions" },
-      incense: { label: "Incense", where: "Coffee ceremony, round 3" },
+      platter: {
+        label: "Platter",
+        where: "Welcome text (cuisine); the platter: vegan tab while the dish has no photo of its own",
+      },
+      baskets: {
+        label: "Baskets",
+        where: "Welcome text (injera) and background; the platter: children's tab without its own photo",
+      },
+      "jebena-pour": {
+        label: "Pouring coffee",
+        where: "Welcome text (closing) and coffee ceremony, round 1; the platter: coffee tab without its own photo",
+      },
+      cups: {
+        label: "Cups",
+        where: "Coffee ceremony round 2, menu on the right, directions; the platter: drinks without their own photo",
+      },
+      incense: { label: "Incense", where: "Welcome text (centrepiece) and coffee ceremony, round 3" },
       "jebena-set": { label: "Jebena set", where: "Menu on the left, directions (large arched picture)" },
-      bowls: { label: "Bowls", where: "Background of the menu" },
+      bowls: {
+        label: "Bowls",
+        where: "Background of the menu, welcome text; the platter: starters without their own photo",
+      },
       "dish/kitfo": { label: "Dish: Kitfo", where: "The platter" },
       "dish/tibs": { label: "Dish: Tibs", where: "The platter" },
       "dish/keywot": { label: "Dish: Key Wot", where: "The platter" },

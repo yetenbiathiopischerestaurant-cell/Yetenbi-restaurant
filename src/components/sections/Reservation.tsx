@@ -24,6 +24,8 @@ import { AksumFrame, LalibelaCross, Tibeb } from "../heritage/Ornaments";
 import { useHours } from "@/components/Business";
 import BackHomeLink from "@/components/BackHomeLink";
 import VerifyNotice from "@/components/account/VerifyNotice";
+import { useSections } from "@/components/Business";
+import PreorderPicker, { picksToLines, type Picks } from "./PreorderPicker";
 
 const inputClass =
   "w-full border-0 border-b bg-transparent px-0 pb-3 pt-1 font-display text-2xl text-cream placeholder:text-cream/35 transition-colors duration-500 focus:outline-none [color-scheme:dark] disabled:opacity-50";
@@ -67,7 +69,7 @@ function Field({
 type Outcome = { kind: "booked"; reference: string; email: string } | { kind: "whatsapp"; link: string };
 
 /** The ticket mirrors the form as you type. */
-function Ticket({ form }: { form: BookingRequest }) {
+function Ticket({ form, dishes }: { form: BookingRequest; dishes: number }) {
   const { t, locale } = useLanguage();
   const dateLabel = form.date
     ? new Date(`${form.date}T12:00:00Z`).toLocaleDateString(t.dateLocale, {
@@ -82,6 +84,7 @@ function Ticket({ form }: { form: BookingRequest }) {
     { label: t.reserve.time, value: form.time ? t.clock(form.time) : "" },
     { label: t.reserve.name, value: form.name.trim() },
     { label: t.reserve.phone, value: form.phone.trim() },
+    ...(dishes ? [{ label: t.reserve.preorder.ticket, value: String(dishes) }] : []),
   ];
   return (
     <AksumFrame>
@@ -91,7 +94,7 @@ function Ticket({ form }: { form: BookingRequest }) {
           <div className="flex items-start justify-between">
             <div>
               <p className="font-display text-2xl font-bold tracking-[0.2em] text-gold-soft">YETENBI</p>
-              <p className="text-[0.6rem] uppercase tracking-[0.4em] text-cream/55">Restaurant & Café</p>
+              <p className="text-[0.6rem] uppercase tracking-[0.4em] text-cream/55">{t.reserve.ticketSub}</p>
             </div>
             <LalibelaCross className="h-10 w-10 text-gold" />
           </div>
@@ -149,6 +152,10 @@ export default function Reservation() {
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const [today, setToday] = useState<string>();
   const [honeypot, setHoneypot] = useState("");
+  // Dishes chosen with the booking (optional); offered only while the menu is shown on the website.
+  const [picks, setPicks] = useState<Picks>({});
+  const menuOn = useSections().menu;
+  const dishCount = Object.values(picks).reduce((sum, pick) => sum + pick.qty, 0);
   const account = useAccount();
   const closures = useClosures();
   const week = useHours();
@@ -209,7 +216,12 @@ export default function Reservation() {
       const response = await fetch("/api/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, locale, website: honeypot }),
+        body: JSON.stringify({
+          ...form,
+          locale,
+          website: honeypot,
+          preorder: menuOn ? picksToLines(picks) : [],
+        }),
       });
       const data = await response.json().catch(() => ({}));
       if (response.status === 201) {
@@ -237,6 +249,7 @@ export default function Reservation() {
 
   const reset = () => {
     setOutcome(null);
+    setPicks({});
     setForm((current) => ({ ...EMPTY, name: current.name, email: current.email, phone: current.phone }));
   };
 
@@ -432,6 +445,11 @@ export default function Reservation() {
                       />
                     </Field>
                   </div>
+                  {menuOn && (
+                    <div className="md:col-span-2">
+                      <PreorderPicker picks={picks} onChange={setPicks} />
+                    </div>
+                  )}
                   {/* honeypot for bots: hidden from people and screen readers */}
                   <input
                     type="text"
@@ -477,7 +495,7 @@ export default function Reservation() {
 
           <Rise className="lg:col-span-5" delay={0.15}>
             <div className="lg:sticky lg:top-28">
-              <Ticket form={form} />
+              <Ticket form={form} dishes={menuOn ? dishCount : 0} />
             </div>
           </Rise>
         </div>
