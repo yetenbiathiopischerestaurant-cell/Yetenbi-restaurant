@@ -8,7 +8,14 @@ export const de = {
   daysShort: ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
   clock: (t: string) => `${t} Uhr`,
   nav: {
-    links: { platte: "Die Platte", karte: "Speisekarte", kaffee: "Kaffee", anfahrt: "Anfahrt" },
+    links: {
+      willkommen: "Über uns",
+      amharisch: "Amharisch",
+      platte: "Die Platte",
+      karte: "Speisekarte",
+      kaffee: "Kaffee",
+      anfahrt: "Anfahrt",
+    },
     reserve: "Tisch reservieren",
     open: "Menü öffnen",
     close: "Menü schließen",

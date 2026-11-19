@@ -9,7 +9,7 @@ export const am: Dict = {
   daysShort: ["ሰኞ", "ማክ", "ረቡ", "ሐሙ", "ዓር", "ቅዳ", "እሑ"],
   clock: (t: string) => t,
   nav: {
-    links: { platte: "መሶብ", karte: "የምግብ ዝርዝር", kaffee: "ቡና", anfahrt: "አድራሻ" },
+    links: { willkommen: "ስለ እኛ", amharisch: "አማርኛ", platte: "መሶብ", karte: "የምግብ ዝርዝር", kaffee: "ቡና", anfahrt: "አድራሻ" },
     reserve: "ቦታ ያስይዙ",
     open: "ምናሌ ክፈት",
     close: "ምናሌ ዝጋ",

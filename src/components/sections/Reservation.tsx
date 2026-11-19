@@ -331,7 +331,7 @@ export default function Reservation() {
                   onSubmit={submit}
                   initial={false}
                   exit={{ opacity: 0, y: -12 }}
-                  className="grid gap-x-10 gap-y-10 md:grid-cols-2"
+                  className="grid min-w-0 gap-x-10 gap-y-10 md:grid-cols-2 [&>*]:min-w-0"
                 >
                   <Field id="res-name" label={t.reserve.name} error={errorText(errors.name)}>
                     <input

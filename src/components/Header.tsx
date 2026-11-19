@@ -28,10 +28,13 @@ export default function Header() {
   const screen = me ? staffScreen(me.role) : null;
   const staffLabel = screen ? t.account.staffLabel[screen] : null;
   const accountLabel = staffLabel ?? (me ? t.account.myAccount : t.account.signIn);
+  // every section of the home page, in page order (the reservation has its own button)
   const links = [
+    { href: "#willkommen", label: t.nav.links.willkommen },
     { href: "#platte", label: t.nav.links.platte },
-    ...(sections.menu ? [{ href: "#speisekarte", label: t.nav.links.karte }] : []),
     { href: "#kaffee", label: t.nav.links.kaffee },
+    { href: "#amharisch", label: t.nav.links.amharisch },
+    ...(sections.menu ? [{ href: "#speisekarte", label: t.nav.links.karte }] : []),
     { href: "#besuch", label: t.nav.links.anfahrt },
     ...(ONLINE_ORDERING ? [{ href: "/bestellen", label: t.order.navLink }] : []),
   ];
@@ -66,7 +69,7 @@ export default function Header() {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="rounded-full px-4 py-2 text-[0.85rem] text-cream/80 transition-colors duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-cream/[0.06] hover:text-cream"
+                  className="whitespace-nowrap rounded-full px-3 py-2 text-[0.82rem] text-cream/80 xl:px-4 xl:text-[0.85rem] transition-colors duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-cream/[0.06] hover:text-cream"
                 >
                   {link.label}
                 </a>

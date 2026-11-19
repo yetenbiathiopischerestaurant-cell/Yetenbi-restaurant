@@ -42,7 +42,7 @@ function DishRow({
     });
   return (
     <li className={`py-3 ${dish.available ? "" : "opacity-50"}`}>
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         {photo && (
           // eslint-disable-next-line @next/next/no-img-element -- already sized and compressed by Cloudinary
           <img
@@ -55,7 +55,7 @@ function DishRow({
           />
         )}
         <div className="min-w-0 flex-1">
-          <p className="font-display text-lg leading-tight text-cream">{dish.name[locale]}</p>
+          <p className="break-words font-display text-base leading-tight text-cream sm:text-lg">{dish.name[locale]}</p>
           <p className="text-xs text-cream/55">
             {dish.available
               ? dish.price > 0
@@ -65,7 +65,7 @@ function DishRow({
           </p>
         </div>
         {dish.available && (
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <button
               type="button"
               className={round}
@@ -136,12 +136,12 @@ export default function PreorderPicker({ picks, onChange }: { picks: Picks; onCh
     chosen.filter(([id]) => dishes.get(id)!.categoryId === categoryId).reduce((sum, [, pick]) => sum + pick.qty, 0);
 
   return (
-    <div className="border border-gold/25 bg-ink/40">
+    <div className="w-full min-w-0 max-w-full overflow-hidden border border-gold/25 bg-ink/40">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+        className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left sm:gap-4 sm:px-5"
       >
         <span>
           <span className="block text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-gold">
@@ -166,11 +166,11 @@ export default function PreorderPicker({ picks, onChange }: { picks: Picks; onCh
             transition={{ duration: 0.45, ease }}
             className="overflow-hidden"
           >
-            <div className="border-t border-gold/20 px-5 pb-5 pt-4">
+            <div className="border-t border-gold/20 px-4 pb-5 pt-4 sm:px-5">
               <div
                 role="tablist"
                 aria-label={t.menu.categories}
-                className="-mx-5 flex gap-5 overflow-x-auto px-5 pb-1 [scrollbar-width:none]"
+                className="-mx-4 flex max-w-[calc(100%+2rem)] gap-4 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:-mx-5 sm:max-w-[calc(100%+2.5rem)] sm:gap-5 sm:px-5"
               >
                 {menu.map((c) => (
                   <button
@@ -212,7 +212,7 @@ export default function PreorderPicker({ picks, onChange }: { picks: Picks; onCh
                       const dish = dishes.get(id)!;
                       const extras = pick.options.map((index) => dish.options[index]?.name[locale]).filter(Boolean);
                       return (
-                        <li key={id} className="flex items-baseline justify-between gap-3">
+                        <li key={id} className="flex min-w-0 items-baseline justify-between gap-3 break-words">
                           <span>
                             {pick.qty} × {dish.name[locale]}
                             {extras.length > 0 && <span className="text-cream/55"> ({extras.join(", ")})</span>}

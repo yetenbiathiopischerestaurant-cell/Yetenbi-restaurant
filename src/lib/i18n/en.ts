@@ -8,7 +8,14 @@ export const en: Dict = {
   daysShort: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
   clock: (t: string) => t,
   nav: {
-    links: { platte: "The platter", karte: "Menu", kaffee: "Coffee", anfahrt: "Find us" },
+    links: {
+      willkommen: "About us",
+      amharisch: "Amharic",
+      platte: "The platter",
+      karte: "Menu",
+      kaffee: "Coffee",
+      anfahrt: "Find us",
+    },
     reserve: "Book a table",
     open: "Open menu",
     close: "Close menu",
