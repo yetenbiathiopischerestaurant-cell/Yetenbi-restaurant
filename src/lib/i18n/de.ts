@@ -22,7 +22,7 @@ export const de = {
   hero: {
     photoAlt: "Äthiopische Beyaynetu-Platte mit Injera, Wots und Gemüse",
     welcome: "Willkommen",
-    tagline: "Restaurant & Café · Authentisch Äthiopisch",
+    tagline: "YETENBI Äthiopisches Restaurant Würzburg",
     subtitle: "Würzige Wots, frisches Injera und duftender Jebena-Kaffee, mitten in Würzburg.",
     cta: "Speisekarte entdecken",
     services: "Vor Ort & zum Abholen",

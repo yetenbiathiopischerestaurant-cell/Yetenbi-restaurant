@@ -46,13 +46,14 @@ export default async function Home() {
               <Hero />
               <Manifesto />
               <Platte />
-              {sections.menu && <MenuCard />}
               <Buna />
               <ProverbBand />
               <Info />
               <Amharisch />
-              <Visit />
               {sections.reservations && <Reservation />}
+              {sections.menu && <MenuCard />}
+              {/* the map and directions close the page, just above the footer with the jebena */}
+              <Visit />
             </main>
             <Footer />
           </SectionsProvider>

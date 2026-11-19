@@ -245,6 +245,7 @@ export const adminDe = {
     volume: "Menge (Liter)",
     deposit: "Pfand (€)",
     options: "Auf Wunsch / Extras",
+    noPrice: "Preis fehlt",
     optionsHint:
       "Was Gäste zu diesem Gericht dazu wählen können, z. B. „mit Sauce“ oder „leicht angebraten“. Aufpreis leer lassen, wenn es nichts kostet.",
     optionName: "Extra",

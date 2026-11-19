@@ -243,6 +243,7 @@ export const adminEn: AdminDict = {
     volume: "Volume (litres)",
     deposit: "Deposit (€)",
     options: "On request / extras",
+    noPrice: "No price yet",
     optionsHint:
       "What guests can add to this dish, e.g. “with sauce” or “lightly seared”. Leave the surcharge empty if it is free.",
     optionName: "Extra",

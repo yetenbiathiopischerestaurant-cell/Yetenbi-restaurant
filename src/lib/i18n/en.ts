@@ -22,7 +22,7 @@ export const en: Dict = {
   hero: {
     photoAlt: "Ethiopian beyaynetu platter with injera, wots and vegetables",
     welcome: "Welcome",
-    tagline: "Restaurant & Café · Authentically Ethiopian",
+    tagline: "YETENBI Ethiopian Restaurant Würzburg",
     subtitle: "Spiced wots, fresh injera and fragrant jebena coffee, in the heart of Würzburg.",
     cta: "Explore the menu",
     services: "Dine in & take away",

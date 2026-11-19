@@ -130,7 +130,19 @@ async function Editor() {
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <p className={d.available ? "text-cream" : "text-cream/45 line-through"}>
                       <strong className="font-semibold">{d.name[lang]}</strong>{" "}
-                      <span className="text-cream/55">· {priceText(d.price)} €</span>
+                      {d.price > 0 ? (
+                        <span className="text-cream/55">· {priceText(d.price)} €</span>
+                      ) : (
+                        // no price yet: hidden on the website and not orderable until one is entered
+                        <span className="ml-1 rounded-full border border-[#f0a080]/60 px-2 py-0.5 text-[0.65rem] text-[#f0a080] no-underline">
+                          {text.noPrice}
+                        </span>
+                      )}
+                      {d.options.length > 0 && (
+                        <span className="ml-2 text-xs text-gold/70">
+                          + {d.options.map((option) => option.name[lang]).join(", ")}
+                        </span>
+                      )}
                       {ONLINE_ORDERING && !d.orderable && (
                         <span className="ml-2 rounded-full border border-cream/20 px-2 py-0.5 text-[0.65rem] text-cream/55 no-underline">
                           {text.menuOnly}
