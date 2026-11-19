@@ -30,8 +30,15 @@ export const de = {
   },
   manifesto: {
     label: "Willkommen bei Yetenbi",
-    // [0] [1] [2] are the inline photos, *word is set in gold italics
-    text: "Bei uns isst man mit den Händen [0] von *einer *Platte, [1] und trinkt Kaffee, der *dreimal eingeschenkt wird [2] Äthiopisch, mitten in Würzburg.",
+    // the restaurant's introduction from the menu card, as written there (*word = gold italics, not shown)
+    body: [
+      "Die äthiopische Küche besticht durch eine Vielzahl an *veganen *Saucen, von denen wir eine Auswahl anbieten. Dazu traditionelle Fleischgerichte *(halal). Zu jedem Gericht wird das traditionelle Fladenbrot *Injera gereicht.",
+      "Es besteht aus *Teff (Zwerghirse)-Sauerteig. Teff ist basisch und stark eisenhaltig, und wird in Äthiopien seit *über *3.000 *Jahren angebaut.",
+      "Mit jedem Biss erleben Sie bei *YETENBI den Geschmack Äthiopiens, der *Wiege *der *Menschheit.",
+      "Alle Speisen können auch in *Kombination bestellt werden. Zu jedem Gericht *Vorspeise *nach *Wahl möglich.",
+      "Wir wünschen Ihnen einen schönen Aufenthalt und *guten *Appetit!",
+    ],
+    sign: "Ihr YETENBI Team",
   },
   platte: {
     label: "Die Platte",
@@ -64,6 +71,7 @@ export const de = {
       "Alle Preise in Euro inkl. MwSt. Allergene (Buchstaben) und Zusatzstoffe (Zahlen) stehen bei den Gerichten.",
     allergens: "Allergene",
     soldOut: "Zurzeit nicht verfügbar",
+    options: "Auf Wunsch",
     additives: "Zusatzstoffe",
     legend: "Allergene und Zusatzstoffe: Erklärung der Kürzel",
     perLitre: (price: string) => `${price}/l`,

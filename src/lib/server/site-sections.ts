@@ -10,7 +10,11 @@ export async function getSiteSections(): Promise<SiteSections> {
   cacheLife("max");
   if (!hasDatabase()) return DEFAULT_SECTIONS;
   try {
-    return await readSiteSections();
+    const sections = await readSiteSections();
+    // Local preview only: PREVIEW_MENU=1 in .env.local shows the menu on `npm run dev` even while the owner has it
+    // switched off on the live site. Ignored in production builds.
+    if (process.env.NODE_ENV === "development" && process.env.PREVIEW_MENU === "1") return { ...sections, menu: true };
+    return sections;
   } catch (error) {
     console.error("Could not load site sections", error);
     return DEFAULT_SECTIONS;

@@ -17,7 +17,8 @@
     "db:migrate": "node --env-file-if-exists=.env.local scripts/migrate.mjs",
     "test:accounts": "node --env-file-if-exists=.env.local scripts/create-test-accounts.mjs",
     "app:release": "node --env-file-if-exists=.env.local scripts/release-app.mjs",
-    "db:wipe-test": "node --env-file-if-exists=.env.local scripts/wipe-test-data.mjs"
+    "db:wipe-test": "node --env-file-if-exists=.env.local scripts/wipe-test-data.mjs",
+    "menu:sync": "node --env-file-if-exists=.env.local scripts/sync-menu.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",

@@ -55,6 +55,30 @@ function readTranslated(form: FormData, key: string, maxLength: number): L | nul
   };
 }
 
+/**
+  The dish's options: rows of option_de / option_en / option_am / option_price in the same order. Rows without a
+  German name are dropped; at most 12. Returns null when a surcharge is not a valid amount.
+*/
+function readOptions(form: FormData): DishInput["options"] | null {
+  const names = form.getAll("option_de").map(String);
+  const en = form.getAll("option_en").map(String);
+  const am = form.getAll("option_am").map(String);
+  const prices = form.getAll("option_price").map(String);
+  const options: DishInput["options"] = [];
+  for (const [index, raw] of names.entries()) {
+    const de = raw.trim().slice(0, 60);
+    if (!de) continue;
+    const priceText = (prices[index] ?? "").replace(",", ".").trim();
+    const price = priceText ? Number(priceText) : 0;
+    if (!Number.isFinite(price) || price < 0 || price > 99) return null;
+    options.push({
+      name: { de, en: en[index]?.trim().slice(0, 60) || de, am: am[index]?.trim().slice(0, 60) || de },
+      price: Math.round(price * 100) / 100,
+    });
+  }
+  return options.slice(0, 12);
+}
+
 async function findDish(id: string) {
   return (await readMenu()).flatMap((category) => category.items).find((dish) => dish.id === id);
 }
@@ -108,6 +132,8 @@ export async function saveDish(_: MenuState, form: FormData): Promise<MenuState>
   const deposit = readNumber(form, "deposit");
   if (Number.isNaN(volume) || (volume !== null && volume > 5)) return { error: errors.volume };
   if (Number.isNaN(deposit) || (deposit !== null && deposit > 5)) return { error: errors.deposit };
+  const options = readOptions(form);
+  if (!options) return { error: errors.optionPrice };
 
   const dish: DishInput = {
     categoryId,
@@ -134,6 +160,7 @@ export async function saveDish(_: MenuState, form: FormData): Promise<MenuState>
     deposit: category.drinks && deposit ? Math.round(deposit * 100) / 100 : 0,
     orderable: form.get("orderable") === "on",
     available: form.get("available") === "on",
+    options,
   };
   const before = id ? await findDish(id) : undefined;
   if (id) await updateDish(id, dish);

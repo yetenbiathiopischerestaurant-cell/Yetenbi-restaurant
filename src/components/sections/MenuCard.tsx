@@ -74,12 +74,17 @@ function Item({ item, compact, drink }: { item: Dish; compact: boolean; drink: b
         >
           {item.name[locale]}
         </h4>
-        <span aria-hidden className="mb-1.5 flex-1 border-b border-dotted border-gold/35" />
-        <span
-          className={`shrink-0 whitespace-nowrap font-display tabular-nums text-gold-soft ${compact ? "text-xl" : "text-[1.6rem]"}`}
-        >
-          {priceText(item.price)} €
-        </span>
+        {/* price 0 = not set yet: no price and no dotted leader */}
+        {item.price > 0 && (
+          <>
+            <span aria-hidden className="mb-1.5 flex-1 border-b border-dotted border-gold/35" />
+            <span
+              className={`shrink-0 whitespace-nowrap font-display tabular-nums text-gold-soft ${compact ? "text-xl" : "text-[1.6rem]"}`}
+            >
+              {priceText(item.price)} €
+            </span>
+          </>
+        )}
       </div>
       {item.amharic && (
         <p className="mt-0.5 font-ethiopic text-[13px] text-gold/60" lang="am">
@@ -91,6 +96,16 @@ function Item({ item, compact, drink }: { item: Dish; compact: boolean; drink: b
           className={`max-w-[60ch] leading-relaxed text-cream/68 ${compact ? "mt-0.5 text-sm" : "mt-2 text-[0.95rem]"}`}
         >
           {item.description[locale]}
+        </p>
+      )}
+      {item.options.length > 0 && (
+        <p className={`text-cream/68 ${compact ? "mt-0.5 text-sm" : "mt-2 text-[0.95rem]"}`}>
+          <span className="font-semibold text-gold/80">{t.menu.options}:</span>{" "}
+          {item.options
+            .map((option) =>
+              option.price > 0 ? `${option.name[locale]} (+${priceText(option.price)} €)` : option.name[locale],
+            )
+            .join(" · ")}
         </p>
       )}
       {drink && (

@@ -24,6 +24,10 @@ const toDish = (row: Row): Dish => ({
   deposit: Number(row.deposit ?? 0),
   orderable: Boolean(row.orderable),
   available: Boolean(row.available),
+  options: ((row.options as Dish["options"]) ?? []).map((option) => ({
+    name: option.name,
+    price: Number(option.price),
+  })),
 });
 
 /** The whole menu, categories and items in their order. Uncached; for the admin pages. */
@@ -108,9 +112,10 @@ export type DishInput = Omit<Dish, "id" | "categoryId"> & { categoryId: string }
 export async function createDish(dish: DishInput) {
   const id = `i-${randomBytes(4).toString("hex")}`;
   await db()`
-    insert into menu_items (id, category_id, name, amharic, description, price, tags, gluten, allergens, additives, volume, deposit, orderable, available, position)
+    insert into menu_items (id, category_id, name, amharic, description, price, tags, gluten, allergens, additives, volume, deposit, orderable, available, options, position)
     values (${id}, ${dish.categoryId}, ${JSON.stringify(dish.name)}::jsonb, ${dish.amharic}, ${jsonOrNull(dish.description)}::jsonb, ${dish.price},
             ${dish.tags}, ${dish.gluten}, ${dish.allergens}, ${dish.additives}, ${dish.volume}, ${dish.deposit}, ${dish.orderable}, ${dish.available},
+            ${JSON.stringify(dish.options)}::jsonb,
             (select coalesce(max(position), -1) + 1 from menu_items where category_id = ${dish.categoryId}))
   `;
   return id;
@@ -122,7 +127,8 @@ export async function updateDish(id: string, dish: DishInput) {
       category_id = ${dish.categoryId}, name = ${JSON.stringify(dish.name)}::jsonb, amharic = ${dish.amharic},
       description = ${jsonOrNull(dish.description)}::jsonb, price = ${dish.price}, tags = ${dish.tags}, gluten = ${dish.gluten},
       allergens = ${dish.allergens}, additives = ${dish.additives}, volume = ${dish.volume}, deposit = ${dish.deposit},
-      orderable = ${dish.orderable}, available = ${dish.available}, updated_at = now()
+      orderable = ${dish.orderable}, available = ${dish.available}, options = ${JSON.stringify(dish.options)}::jsonb,
+      updated_at = now()
     where id = ${id}
   `;
 }

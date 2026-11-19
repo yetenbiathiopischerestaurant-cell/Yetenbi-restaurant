@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { ADDITIVES, ALLERGENS, DISH_TAGS, type Dish, type MenuCategory } from "@/lib/menu";
 import { useAdminText } from "@/components/admin/AdminLang";
 import { ONLINE_ORDERING } from "@/lib/features";
@@ -85,6 +85,63 @@ function ThreeLanguages({
     <div className="grid gap-4 sm:grid-cols-3">
       {[one("de", t.menu.languages.de), one("en", t.menu.languages.en), one("am", t.menu.languages.am)]}
     </div>
+  );
+}
+
+/* ---------- dish options ---------- */
+
+type OptionRow = { key: number; de: string; en: string; am: string; price: string };
+
+/** Options a guest can ask for with the dish, one row each: name in three languages and a surcharge. */
+function OptionsField({ options }: { options: Dish["options"] }) {
+  const { t } = useAdminText();
+  const text = t.menu;
+  const [rows, setRows] = useState<OptionRow[]>(() =>
+    options.map((option, index) => ({
+      key: index,
+      ...option.name,
+      price: option.price ? option.price.toFixed(2).replace(".", ",") : "",
+    })),
+  );
+  const add = () =>
+    setRows((current) => [
+      ...current,
+      { key: Math.max(-1, ...current.map((row) => row.key)) + 1, de: "", en: "", am: "", price: "" },
+    ]);
+  const remove = (key: number) => setRows((current) => current.filter((row) => row.key !== key));
+  return (
+    <fieldset className="space-y-3">
+      <legend className={`${label} mb-1`}>{text.options}</legend>
+      <p className="text-xs text-cream/55">{text.optionsHint}</p>
+      {rows.map((row) => (
+        <div key={row.key} className="grid items-end gap-3 sm:grid-cols-[1fr_1fr_1fr_7rem_auto]">
+          <Field name="option_de" title={`${text.optionName} ${text.languages.de}`} value={row.de} maxLength={60} />
+          <Field name="option_en" title={`${text.optionName} ${text.languages.en}`} value={row.en} maxLength={60} />
+          <Field name="option_am" title={`${text.optionName} ${text.languages.am}`} value={row.am} maxLength={60} />
+          <Field
+            name="option_price"
+            title={text.optionPrice}
+            value={row.price}
+            inputMode="decimal"
+            placeholder="0,00"
+          />
+          <button
+            type="button"
+            onClick={() => remove(row.key)}
+            className="pb-1.5 text-xs text-cream/55 underline underline-offset-4 hover:text-[#f0a080]"
+          >
+            {text.removeOption}
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={add}
+        className="rounded-full border border-gold/40 px-4 py-1.5 text-xs font-semibold text-gold-soft hover:bg-gold/10"
+      >
+        + {text.addOption}
+      </button>
+    </fieldset>
   );
 }
 
@@ -178,6 +235,7 @@ export function DishForm({
           </label>
         </div>
         <ThreeLanguages name="description" title={text.description} value={dish?.description} area />
+        <OptionsField options={dish?.options ?? []} />
 
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-cream/85">
           {ONLINE_ORDERING ? (

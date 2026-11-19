@@ -10,6 +10,9 @@ import type { L, Tag } from "./data";
 export type GlutenClaim = "free" | "noGluten" | "none";
 export type DishTag = Exclude<Tag, "glutenfree">;
 
+/** Something a guest can ask for with a dish ("mit Sauce", "leicht angebraten"); price = surcharge, 0 = free. */
+export type DishOption = { name: L; price: number };
+
 export type Dish = {
   id: string;
   categoryId: string;
@@ -25,6 +28,7 @@ export type Dish = {
   deposit: number;
   orderable: boolean;
   available: boolean;
+  options: DishOption[];
 };
 
 export type MenuCategory = { id: string; title: L; note: L | null; drinks: boolean; items: Dish[] };
@@ -71,7 +75,10 @@ export const ADDITIVES: { code: number; label: L }[] = [
 export const catalogOf = (menu: Menu) =>
   new Map(
     menu.flatMap((category) =>
-      category.items.filter((dish) => dish.orderable && dish.available).map((dish) => [dish.id, dish] as const),
+      // price 0 = not set yet, so not orderable
+      category.items
+        .filter((dish) => dish.orderable && dish.available && dish.price > 0)
+        .map((dish) => [dish.id, dish] as const),
     ),
   );
 export type Catalog = ReturnType<typeof catalogOf>;

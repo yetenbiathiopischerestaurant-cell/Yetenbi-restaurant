@@ -30,7 +30,15 @@ export const en: Dict = {
   },
   manifesto: {
     label: "Welcome to Yetenbi",
-    text: "Here you eat with your hands [0] from *one *platter, [1] and drink coffee that is *poured *three *times [2] Ethiopian, in the heart of Würzburg.",
+    // the restaurant's introduction from the menu card, as written there (*word = gold italics, not shown)
+    body: [
+      "Ethiopian cuisine stands out for its wide variety of *vegan *sauces, a selection of which we offer. Alongside them, traditional meat dishes *(halal). Every dish is served with the traditional flatbread *injera.",
+      "It is made from *teff (a tiny ancient grain) sourdough. Teff is alkaline and rich in iron, and has been grown in Ethiopia for *more *than *3,000 *years.",
+      "With every bite at *YETENBI you taste Ethiopia, the *cradle *of *humankind.",
+      "All dishes can also be ordered as a *combination. A *starter *of *your *choice is available with every dish.",
+      "We wish you a pleasant stay and *enjoy *your *meal!",
+    ],
+    sign: "Your YETENBI team",
   },
   platte: {
     label: "The platter",
@@ -63,6 +71,7 @@ export const en: Dict = {
       "All prices in euros incl. VAT. Allergens (letters) and additives (numbers) are listed with each dish.",
     allergens: "Allergens",
     soldOut: "Currently unavailable",
+    options: "On request",
     additives: "Additives",
     legend: "Allergens and additives: what the codes mean",
     perLitre: (price: string) => `${price}/l`,

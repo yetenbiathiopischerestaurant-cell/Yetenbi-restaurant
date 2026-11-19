@@ -18,19 +18,20 @@ if (n === 0) {
   const [old] = await sql`select value from settings where key = 'menu_info'`;
   const info = old?.value ?? {};
   for (const [c, category] of seedMenu.entries()) {
-    const drinks = ["kaffee", "heiss", "kalt"].includes(category.id);
+    const drinks = Boolean(category.drinks);
     await sql`insert into menu_categories (id, title, note, drinks, position)
               values (${category.id}, ${JSON.stringify(category.title)}::jsonb, ${category.note ? JSON.stringify(category.note) : null}::jsonb, ${drinks}, ${c})`;
     for (const [i, item] of category.items.entries()) {
-      const id = `${category.id}-${i}`;
+      const id = item.id;
       const d = info[id] ?? {};
       const glutenTag = item.tags?.includes("glutenfree");
       const gluten = d.gluten && d.gluten !== "keep" ? d.gluten : glutenTag ? "free" : "none";
-      await sql`insert into menu_items (id, category_id, name, amharic, description, price, tags, gluten, allergens, additives, volume, deposit, orderable, position)
+      await sql`insert into menu_items (id, category_id, name, amharic, description, price, tags, gluten, allergens, additives, volume, deposit, orderable, options, position)
         values (${id}, ${category.id}, ${JSON.stringify(item.name)}::jsonb, ${item.amharic ?? ""}, ${item.description ? JSON.stringify(item.description) : null}::jsonb,
                 ${Number(item.price.replace(",", "."))}, ${(item.tags ?? []).filter((t) => t !== "glutenfree")}, ${gluten},
                 ${d.allergens ?? []}, ${d.additives ?? []}, ${d.volume ?? null}, ${d.deposit ?? 0},
-                ${item.name.de !== "Jebena Buna"}, ${i})`;
+                ${!item.cardOnly},
+                ${JSON.stringify((item.options ?? []).map((o) => ({ name: o.name, price: Number(o.price.replace(",", ".")) })))}::jsonb, ${i})`;
     }
   }
 }

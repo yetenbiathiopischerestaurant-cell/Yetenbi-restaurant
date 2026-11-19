@@ -46,3 +46,6 @@ next-env.d.ts
 
 # device test suite output
 /test-results/
+
+# graphify knowledge graph (local tooling)
+graphify-out/
