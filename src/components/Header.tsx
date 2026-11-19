@@ -64,12 +64,12 @@ export default function Header() {
             <span className="font-display text-xl font-bold tracking-[0.2em] text-gold-soft">YETENBI</span>
           </a>
 
-          <ul className="hidden items-center gap-1 lg:flex">
+          <ul className="hidden items-center gap-0 lg:flex xl:gap-1">
             {links.map((link) => (
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="whitespace-nowrap rounded-full px-3 py-2 text-[0.82rem] text-cream/80 xl:px-4 xl:text-[0.85rem] transition-colors duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-cream/[0.06] hover:text-cream"
+                  className="whitespace-nowrap rounded-full px-2.5 py-2 text-[0.82rem] text-cream/80 xl:px-4 xl:text-[0.85rem] transition-colors duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-cream/[0.06] hover:text-cream"
                 >
                   {link.label}
                 </a>
@@ -101,7 +101,7 @@ export default function Header() {
               <Magnetic strength={0.2}>
                 <a
                   href="#reservieren"
-                  className="group flex items-center gap-3 rounded-full btn-gild py-1.5 pl-5 pr-1.5 text-sm hover:bg-eth-green hover:bg-none hover:text-cream font-medium text-ink transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97]"
+                  className="group flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full btn-gild py-1.5 pl-4 pr-1.5 text-sm xl:gap-3 xl:pl-5 hover:bg-eth-green hover:bg-none hover:text-cream font-medium text-ink transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97]"
                 >
                   {t.nav.reserve}
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink/10 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:-translate-y-px group-hover:translate-x-0.5 group-hover:scale-105">
